@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Next.js
+.next/
+out/
+.vercel/
+
+# Environment — NEVER commit real keys
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test artifacts
+coverage/
+.coverage
+htmlcov/
+playwright-report/
+test-results/
+
+# Resume fixtures are real documents — keep them out of git until anonymized
+apps/api/tests/fixtures/resumes/*.pdf
+!apps/api/tests/fixtures/resumes/.gitkeep
+
+# Generated
+packages/contracts/generated/

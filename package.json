@@ -1,0 +1,16 @@
+{
+  "name": "roleva",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Roleva — evidence-based resume analyzer",
+  "scripts": {
+    "dev:web": "pnpm --filter @roleva/web dev",
+    "build:web": "pnpm --filter @roleva/web build",
+    "lint:web": "pnpm --filter @roleva/web lint",
+    "typecheck:web": "pnpm --filter @roleva/web typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.22.0"
+}
