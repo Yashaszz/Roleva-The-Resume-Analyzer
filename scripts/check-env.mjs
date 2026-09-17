@@ -141,4 +141,7 @@ if (process.argv.includes('--live') && !failed) {
 
 console.log('\n' + '='.repeat(46));
 console.log(failed ? 'RESULT: not ready' : 'RESULT: ready');
-process.exit(failed ? 1 : 0);
+
+// Set exitCode rather than calling process.exit(): on Windows, exiting while
+// undici still holds an open socket from the live check trips a libuv assertion.
+process.exitCode = failed ? 1 : 0;

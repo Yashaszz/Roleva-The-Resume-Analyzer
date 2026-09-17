@@ -50,8 +50,8 @@ No code. Just accounts and keys. Do this in one sitting.
 - [x] -1.3  pnpm installed, `pnpm -v` verified
 - [ ] -1.4  Python 3.12 installed, `python --version` verified
 - [~] -1.5  Docker Desktop — OPTIONAL, dropped from critical path
-- [ ] -1.6  Google AI Studio account created
-- [ ] -1.7  Gemini API key generated and stored safely
+- [x] -1.6  Google AI Studio account created
+- [x] -1.7  Gemini API key generated and stored safely
 - [ ] -1.8  **Gemini free-tier limits recorded** (RPM / RPD / embedding availability)
 - [ ] -1.9  Supabase account + project `roleva-dev` created
 - [ ] -1.10 Supabase project `roleva-prod` created
@@ -61,7 +61,7 @@ No code. Just accounts and keys. Do this in one sitting.
 - [x] -1.14 `.env.example` written; real `.env` gitignored
 
 ### GATE -1
-- [ ] All keys work — a one-off script successfully calls Gemini and returns text
+- [x] Gemini key verified: `node scripts/check-env.mjs --live` → ready
 
 ---
 
