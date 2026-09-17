@@ -4,6 +4,8 @@
   "private": true,
   "description": "Roleva — evidence-based resume analyzer",
   "scripts": {
+    "check:env": "node scripts/check-env.mjs",
+    "check:env:live": "node scripts/check-env.mjs --live",
     "dev:web": "pnpm --filter @roleva/web dev",
     "build:web": "pnpm --filter @roleva/web build",
     "lint:web": "pnpm --filter @roleva/web lint",
