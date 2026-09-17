@@ -125,12 +125,51 @@ if (process.argv.includes('--live') && !failed) {
     } else {
       const data = await res.json();
       const names = (data.models ?? []).map((m) => m.name.replace('models/', ''));
-      console.log(`  OK       key authenticates, ${names.length} models available`);
+      console.log(`  OK       key authenticates, ${names.length} models listed`);
 
-      for (const wanted of [env.GEMINI_MODEL_MAIN, env.GEMINI_MODEL_LIGHT, env.GEMINI_EMBED_MODEL]) {
-        if (!wanted) continue;
-        const found = names.some((n) => n === wanted || n.startsWith(wanted));
-        console.log(`  ${found ? 'OK      ' : 'WARN    '} ${wanted}${found ? '' : '  — not in this account'}`);
+      // Being listed is NOT the same as being usable: retired models still
+      // appear in the listing but return 404 to accounts created after their
+      // cutoff. Only an actual call proves a model works, so each configured
+      // model gets one minimal request.
+      const checks = [
+        [env.GEMINI_MODEL_MAIN, 'generateContent'],
+        [env.GEMINI_MODEL_LIGHT, 'generateContent'],
+        [env.GEMINI_EMBED_MODEL, 'embedContent'],
+      ];
+
+      for (const [model, method] of checks) {
+        if (!model) continue;
+        if (!names.includes(model)) {
+          console.log(`  FAIL     ${model}  — not listed for this account`);
+          failed = true;
+          continue;
+        }
+
+        const body =
+          method === 'embedContent'
+            ? { content: { parts: [{ text: 'ping' }] } }
+            : {
+                contents: [{ parts: [{ text: 'Reply with {"ok":true}' }] }],
+                generationConfig: { temperature: 0, responseMimeType: 'application/json' },
+              };
+
+        const probe = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:${method}`,
+          {
+            method: 'POST',
+            headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          },
+        );
+
+        if (probe.ok) {
+          console.log(`  OK       ${model}  usable`);
+        } else {
+          const detail = await probe.json().catch(() => ({}));
+          const msg = (detail?.error?.message ?? '').slice(0, 80);
+          console.log(`  FAIL     ${model}  HTTP ${probe.status} — ${msg}`);
+          failed = true;
+        }
       }
     }
   } catch (err) {

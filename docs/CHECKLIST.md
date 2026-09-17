@@ -16,7 +16,7 @@
 - [x] Repo scaffolded, domain models written, DB schema written
 - [ ] **← YOU ARE HERE. Blocked on: Python 3.12 install + Gemini/Supabase keys.**
 
-**Progress: 17 / 216 tasks (~8%) — foundation scaffolded.**
+**Progress: 23 / 216 tasks (~11%) — LLM + privacy layer working against live Gemini.**
 
 ---
 
@@ -24,8 +24,8 @@
 
 | Phase | Name | Tasks | Done | Status |
 |---|---|---|---|---|
-| -1 | Accounts & Prerequisites | 14 | 4 | In progress |
-| 0 | Foundation | 23 | 7 | In progress |
+| -1 | Accounts & Prerequisites | 14 | 6 | Nearly done |
+| 0 | Foundation | 23 | 11 | In progress |
 | 1 | Parsing Pipeline | 20 | 0 | Not started |
 | 2 | JD & Matching | 18 | 0 | Not started |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
@@ -37,7 +37,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **216** | **17** | **8%** |
+| **TOTAL** | | **216** | **23** | **11%** |
 
 ---
 
@@ -48,11 +48,11 @@ No code. Just accounts and keys. Do this in one sitting.
 - [x] -1.1  GitHub repo `roleva` created (private for now)
 - [x] -1.2  Node.js 20+ installed, `node -v` verified
 - [x] -1.3  pnpm installed, `pnpm -v` verified
-- [ ] -1.4  Python 3.12 installed, `python --version` verified
+- [x] -1.4  Python 3.12 installed, `python --version` verified
 - [~] -1.5  Docker Desktop — OPTIONAL, dropped from critical path
 - [x] -1.6  Google AI Studio account created
 - [x] -1.7  Gemini API key generated and stored safely
-- [ ] -1.8  **Gemini free-tier limits recorded** (RPM / RPD / embedding availability)
+- [x] -1.8  **Gemini free-tier limits recorded** (RPM / RPD / embedding availability)
 - [ ] -1.9  Supabase account + project `roleva-dev` created
 - [ ] -1.10 Supabase project `roleva-prod` created
 - [ ] -1.11 Vercel account created, GitHub connected
@@ -84,7 +84,7 @@ The contract layer. Get this right or everything downstream churns.
 - [ ] 0.10 Supabase Auth configured (email + Google OAuth, verification ON)
 
 ## Skeletons
-- [ ] 0.11 FastAPI app boots, `/health` returns 200
+- [x] 0.11 FastAPI app boots, `/health` returns 200
 - [ ] 0.12 JWT verification middleware (validates Supabase token)
 - [ ] 0.13 Next.js app boots, Tailwind v4 + `tokens.css` in place
 - [ ] 0.14 Structured logging with **no content logged**
@@ -95,9 +95,9 @@ The contract layer. Get this right or everything downstream churns.
 - [ ] 0.17 OpenAPI → TypeScript type generation working
 
 ## LLM & privacy layer
-- [ ] 0.18 LLM provider adapter interface + Gemini implementation
-- [ ] 0.19 Token-bucket rate limiter + `llm_usage` tracking
-- [ ] 0.20 **PII redactor + restorer, with unit tests**
+- [x] 0.18 LLM provider adapter interface + Gemini implementation
+- [x] 0.19 Token-bucket rate limiter + `llm_usage` tracking
+- [x] 0.20 **PII redactor + restorer, with unit tests**
 - [x] 0.21 CI: lint + typecheck + pytest + vitest on every push
 
 ## Test corpus (do not skip)
@@ -108,7 +108,7 @@ The contract layer. Get this right or everything downstream churns.
 - [ ] CI green
 - [ ] A user can sign up, verify email, and log in
 - [ ] RLS proven: user A cannot read user B's row
-- [ ] PII redactor round-trips text with zero loss
+- [x] PII redactor round-trips text with zero loss
 
 ---
 

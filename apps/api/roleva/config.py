@@ -32,10 +32,13 @@ class Settings(BaseSettings):
     supabase_jwt_secret: str = ""
 
     # --- gemini ---
+    # Versions are pinned deliberately. The `-latest` aliases would let Google
+    # swap the model under us, and Roleva promises that the same resume and job
+    # description always produce the same scores.
     gemini_api_key: str = ""
-    gemini_model_main: str = "gemini-2.5-flash"
-    gemini_model_light: str = "gemini-2.5-flash-lite"
-    gemini_embed_model: str = "gemini-embedding-001"
+    gemini_model_main: str = "gemini-3.6-flash"
+    gemini_model_light: str = "gemini-3.5-flash-lite"
+    gemini_embed_model: str = "gemini-embedding-2"
 
     # --- free-tier guardrails ---
     llm_max_rpm: int = Field(default=10, ge=1)

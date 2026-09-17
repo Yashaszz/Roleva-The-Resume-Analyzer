@@ -21,7 +21,7 @@ class AnalysisStatus(StrEnum):
     PENDING = "pending"
     RUNNING = "running"
     COMPLETE = "complete"
-    PARTIAL = "partial"   # some stages failed; report still useful
+    PARTIAL = "partial"  # some stages failed; report still useful
     FAILED = "failed"
 
 

@@ -48,12 +48,12 @@ class Span(StrictModel):
 class Provenance(StrEnum):
     """How a claim was produced. Rendered in the UI so users can weigh it."""
 
-    RULE = "rule"           # deterministic rule fired
-    COMPUTED = "computed"   # arithmetic over other values
-    LEXICAL = "lexical"     # exact / alias / fuzzy string match
-    SEMANTIC = "semantic"   # embedding similarity
-    JUDGED = "judged"       # LLM adjudication
-    EXTRACTED = "extracted" # LLM extraction into a schema
+    RULE = "rule"  # deterministic rule fired
+    COMPUTED = "computed"  # arithmetic over other values
+    LEXICAL = "lexical"  # exact / alias / fuzzy string match
+    SEMANTIC = "semantic"  # embedding similarity
+    JUDGED = "judged"  # LLM adjudication
+    EXTRACTED = "extracted"  # LLM extraction into a schema
 
 
 class ConfidenceBand(StrEnum):

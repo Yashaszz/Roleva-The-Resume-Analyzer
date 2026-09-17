@@ -38,7 +38,7 @@ MESSAGES: dict[ErrorCode, tuple[int, str]] = {
         "This doesn't look like a PDF file. Please upload a .pdf resume.",
     ),
     ErrorCode.FILE_TOO_LARGE: (
-        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+        status.HTTP_413_CONTENT_TOO_LARGE,
         "Your file is larger than 8 MB. Try exporting a smaller version.",
     ),
     ErrorCode.TOO_MANY_PAGES: (
