@@ -178,6 +178,61 @@ if (process.argv.includes('--live') && !failed) {
   }
 }
 
+// --- supabase ---------------------------------------------------------------
+if (process.argv.includes('--live')) {
+  console.log('\nLive Supabase check');
+  const url = env.SUPABASE_URL;
+  const anon = env.SUPABASE_ANON_KEY;
+
+  if (!url || PLACEHOLDERS.some((p) => p.test(url))) {
+    console.log('  --       not configured yet (see docs/SUPABASE_SETUP.md)');
+  } else {
+    try {
+      const res = await fetch(`${url}/rest/v1/`, { headers: { apikey: anon ?? '' } });
+      console.log(
+        res.ok || res.status === 404
+          ? '  OK       project reachable'
+          : `  FAIL     HTTP ${res.status}`,
+      );
+      if (!res.ok && res.status !== 404) failed = true;
+
+      // Confirms the schema migration was applied. profiles has RLS enabled and
+      // no session is attached, so an empty result is the correct outcome — the
+      // point is that the table exists rather than 404ing.
+      const table = await fetch(`${url}/rest/v1/profiles?select=id&limit=1`, {
+        headers: { apikey: anon ?? '', Authorization: `Bearer ${anon ?? ''}` },
+      });
+      if (table.status === 200) {
+        console.log('  OK       schema applied (profiles table exists)');
+      } else if (table.status === 404) {
+        console.log('  FAIL     schema NOT applied — run supabase/migrations/0001_initial_schema.sql');
+        failed = true;
+      } else {
+        console.log(`  WARN     profiles returned HTTP ${table.status}`);
+      }
+
+      // Which signing scheme the project uses decides how the backend verifies
+      // tokens: a shared HS256 secret, or asymmetric keys fetched from JWKS.
+      const jwks = await fetch(`${url}/auth/v1/.well-known/jwks.json`, {
+        headers: { apikey: anon ?? '' },
+      });
+      if (jwks.ok) {
+        const body = await jwks.json();
+        const keys = body?.keys ?? [];
+        if (keys.length > 0) {
+          const algs = [...new Set(keys.map((k) => k.alg ?? k.kty))].join(', ');
+          console.log(`  INFO     asymmetric JWT signing keys in use (${algs})`);
+        } else {
+          console.log('  INFO     legacy shared JWT secret in use (HS256)');
+        }
+      }
+    } catch {
+      console.log('  FAIL     could not reach the project');
+      failed = true;
+    }
+  }
+}
+
 console.log('\n' + '='.repeat(46));
 console.log(failed ? 'RESULT: not ready' : 'RESULT: ready');
 
