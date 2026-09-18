@@ -9,10 +9,14 @@
     "dev:web": "pnpm --filter @roleva/web dev",
     "build:web": "pnpm --filter @roleva/web build",
     "lint:web": "pnpm --filter @roleva/web lint",
-    "typecheck:web": "pnpm --filter @roleva/web typecheck"
+    "typecheck:web": "pnpm --filter @roleva/web typecheck",
+    "gen:types": "node scripts/gen-types.mjs"
   },
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@11.22.0"
+  "packageManager": "pnpm@11.22.0",
+  "devDependencies": {
+    "openapi-typescript": "^7.13.0"
+  }
 }

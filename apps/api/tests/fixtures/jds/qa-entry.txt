@@ -1,0 +1,25 @@
+QA Engineer I
+Beacon Software
+
+You will be the second QA engineer on a team of fourteen. Expect to spend your
+time roughly half on manual exploratory testing and half on automation.
+
+What you will do
+- Write and execute test plans for new features
+- Build and maintain automated end-to-end tests
+- File clear, reproducible bug reports
+- Work with developers to reproduce and diagnose production issues
+- Own release sign-off for your product area
+
+Required skills
+- Understanding of software testing fundamentals and test design techniques
+- Ability to write clear reproduction steps
+- Basic programming ability in Python, Java or JavaScript
+- Familiarity with SQL for verifying data
+- Experience with a bug tracking tool such as Jira
+
+Nice to have
+- Selenium, Cypress or Playwright
+- API testing with Postman or similar
+- Exposure to CI pipelines
+- ISTQB certification

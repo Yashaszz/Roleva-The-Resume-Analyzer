@@ -1,0 +1,24 @@
+Associate Software Engineer
+
+Marrow Labs is a small team building infrastructure for genomics research. We
+are looking for our fourth engineer.
+
+The person we hire will spend most of their time writing Python. Our backend is
+a FastAPI service talking to Postgres, deployed on AWS, and we care a great deal
+about correctness because our users are running analyses that take days. You
+should be comfortable reading code you did not write and asking why it exists
+before changing it. We expect you to write tests; we do not expect you to have
+written them at scale before.
+
+We are not looking for a specific number of years of experience. We are looking
+for someone who has built something real and can explain the decisions they made
+while building it. That could be a job, an internship, a research project or a
+side project that people actually use.
+
+You must be comfortable with Python and SQL. You must be able to work
+independently, because we are remote and asynchronous, and nobody will be
+checking on you hourly. Experience with AWS, Docker or Kubernetes is genuinely
+useful but we will teach it if you have not touched it.
+
+Familiarity with bioinformatics is a nice bonus and absolutely not a requirement.
+Most of our team came from ordinary web backgrounds.

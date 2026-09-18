@@ -58,3 +58,43 @@ jobs:
 
       - name: Lint
         run: pnpm lint:web
+
+  contracts:
+    name: Contracts in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: |
+          python -m venv apps/api/.venv
+          apps/api/.venv/bin/pip install -e "apps/api[dev]"
+          pnpm install --frozen-lockfile
+
+      # The committed TypeScript types must match the Pydantic models. Without
+      # this, a model change silently leaves the frontend typed against a shape
+      # the API no longer returns — which typechecks fine and fails at runtime.
+      - name: Regenerate types
+        run: pnpm gen:types
+
+      - name: Fail if the generated types are stale
+        run: |
+          if ! git diff --quiet -- apps/web/lib/api-types.ts packages/contracts/openapi.json; then
+            echo "::error::Generated contracts are out of date. Run 'pnpm gen:types' and commit the result."
+            git diff --stat -- apps/web/lib/api-types.ts packages/contracts/openapi.json
+            exit 1
+          fi

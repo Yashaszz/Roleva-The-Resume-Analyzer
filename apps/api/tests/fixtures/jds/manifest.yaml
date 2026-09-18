@@ -1,0 +1,185 @@
+# Job description fixtures — ground truth.
+#
+# Each file targets a specific behaviour the JD pipeline must get right. The
+# expectations below are hand-written, and they are what Gate 2 measures the
+# extractor against: "85% agreement with human judgment" means agreement with
+# this file.
+#
+# These are synthetic on purpose. Real postings vary in ways worth testing too,
+# so add real ones alongside these — but synthetic fixtures give stable ground
+# truth that does not change when a company edits its careers page.
+#
+# `must_include` lists requirements the extractor must find and assign the
+# stated priority. It is not exhaustive; extra requirements are fine.
+
+version: 1
+
+fixtures:
+  - file: sde-intern-classic.txt
+    tests: Conventional posting with an explicit Required/Preferred split — the easy case.
+    role_family: software_engineering
+    seniority: intern
+    must_include:
+      - { text: Python, priority: must }
+      - { text: Git, priority: must }
+      - { text: SQL, priority: must }
+      - { text: Django, priority: nice }
+      - { text: Docker, priority: nice }
+
+  - file: sde-entry-prose.txt
+    tests: >
+      No bullets and no headings — requirements are buried in prose. Also states
+      that years of experience are explicitly NOT required, which the extractor
+      must not invent a quantifier for.
+    role_family: software_engineering
+    seniority: entry
+    must_include:
+      - { text: Python, priority: must }
+      - { text: SQL, priority: must }
+      - { text: AWS, priority: nice }
+      - { text: bioinformatics, priority: nice }
+    notes: No quantified experience requirement should be extracted.
+
+  - file: sde-entry-boilerplate.txt
+    tests: >
+      Roughly half the text is company blurb, benefits, EEO statement and
+      application instructions. The cleaner must strip all of it — otherwise
+      "401(k)" and "dental" become skills, and keyword matching is polluted.
+    role_family: software_engineering
+    seniority: entry
+    must_include:
+      - { text: Java, priority: must }
+      - { text: Spring Boot, priority: must }
+      - { text: SQL, priority: must }
+      - { text: Kafka, priority: nice }
+      - { text: AWS, priority: nice }
+    must_not_include: ["401(k)", dental, vision, Parental leave, Equal Opportunity]
+
+  - file: data-analyst-entry.txt
+    tests: Tool-heavy posting where alternatives are listed ("Tableau or Power BI").
+    role_family: data_analytics
+    seniority: entry
+    must_include:
+      - { text: SQL, priority: must }
+      - { text: Excel, priority: must }
+      - { text: Python, priority: nice }
+      - { text: dbt, priority: nice }
+
+  - file: data-science-intern-years.txt
+    tests: >
+      Quantified requirements under a "Minimum" heading, plus a larger number
+      under "Desirable" — the extractor must not treat the bigger figure as the
+      binding requirement.
+    role_family: data_science
+    seniority: intern
+    must_include:
+      - { text: Python, priority: must, years: 1 }
+      - { text: pandas, priority: must }
+      - { text: scikit-learn, priority: must }
+      - { text: PyTorch, priority: nice }
+    notes: The 2+ years under Desirable must be priority=nice, not must.
+
+  - file: product-intern.txt
+    tests: Soft skills dominate; only one technical requirement. Guards against a technical-skills-only extractor.
+    role_family: product_management
+    seniority: intern
+    must_include:
+      - { text: written communication, priority: must }
+      - { text: SQL, priority: must }
+      - { text: Figma, priority: nice }
+
+  - file: ux-design-entry.txt
+    tests: Uses "Must have"/"Bonus" rather than "Required"/"Preferred" — cue rules must cover the synonyms.
+    role_family: design
+    seniority: entry
+    must_include:
+      - { text: Figma, priority: must }
+      - { text: portfolio, priority: must }
+      - { text: WCAG, priority: must }
+      - { text: HTML, priority: nice }
+
+  - file: frontend-entry.txt
+    tests: Dense framework and library names, including ones easily confused (React vs React Testing Library).
+    role_family: software_engineering
+    seniority: entry
+    must_include:
+      - { text: React, priority: must }
+      - { text: TypeScript, priority: must }
+      - { text: CSS, priority: must }
+      - { text: accessibility, priority: must }
+      - { text: Next.js, priority: nice }
+      - { text: Tailwind CSS, priority: nice }
+
+  - file: backend-entry-years.txt
+    tests: >
+      Requirements appear before responsibilities, and the Python requirement is
+      repeated at the end. Repetition should escalate priority, not create a
+      duplicate requirement.
+    role_family: software_engineering
+    seniority: entry
+    must_include:
+      - { text: Python, priority: must, years: 3 }
+      - { text: SQL, priority: must }
+      - { text: Kubernetes, priority: nice }
+    notes: Python appears three times; it must be deduplicated to one requirement.
+
+  - file: qa-entry.txt
+    tests: Mixed manual and automation requirements; a certification appears as a nice-to-have.
+    role_family: quality_assurance
+    seniority: entry
+    must_include:
+      - { text: SQL, priority: must }
+      - { text: Jira, priority: must }
+      - { text: Selenium, priority: nice }
+      - { text: ISTQB, priority: nice }
+
+  - file: devops-intern.txt
+    tests: Responsibilities written as projects rather than duties.
+    role_family: devops
+    seniority: intern
+    must_include:
+      - { text: Linux, priority: must }
+      - { text: Git, priority: must }
+      - { text: Docker, priority: nice }
+      - { text: Terraform, priority: nice }
+
+  - file: business-analyst-entry.txt
+    tests: Non-technical role using "Essential"/"Desirable" phrasing.
+    role_family: business_analysis
+    seniority: entry
+    must_include:
+      - { text: Excel, priority: must }
+      - { text: communication, priority: must }
+      - { text: SQL, priority: nice }
+
+  - file: ml-engineer-entry-mixed.txt
+    tests: >
+      Three priority tiers — "Must have", "Strongly preferred", "A plus" — which
+      should map onto must/strong/nice rather than collapsing into two.
+    role_family: machine_learning
+    seniority: entry
+    must_include:
+      - { text: Python, priority: must }
+      - { text: PyTorch, priority: must }
+      - { text: SQL, priority: must }
+      - { text: Docker, priority: strong }
+      - { text: Kubernetes, priority: nice }
+    notes: A PhD is explicitly not required and must not appear as a requirement.
+
+  # --- validation cases ---
+
+  - file: too-short-reject.txt
+    tests: Below the 200-character floor. Must be rejected before any LLM call.
+    expect_error: jd_too_short
+
+  - file: marginal-length-warn.txt
+    tests: >
+      Between 200 and 600 characters. Analysed, but the user is warned that a
+      thin posting produces a thin analysis.
+    role_family: software_engineering
+    seniority: entry
+    expect_warning: true
+    must_include:
+      - { text: React, priority: must }
+      - { text: JavaScript, priority: must }
+      - { text: TypeScript, priority: nice }

@@ -1,0 +1,26 @@
+Frontend Engineer — Entry Level
+Tessellate
+
+We are rebuilding our customer dashboard and need a frontend engineer to own
+large parts of it.
+
+Responsibilities
+- Build accessible, responsive interfaces in React and TypeScript
+- Translate Figma designs into production components
+- Write component tests
+- Improve performance: our dashboard loads too slowly and you will help fix it
+
+Requirements
+- Strong JavaScript fundamentals — closures, promises, the event loop
+- Proficiency with React, including hooks and state management
+- TypeScript required
+- Solid CSS: flexbox, grid, responsive layout
+- Understanding of web accessibility (semantic HTML, ARIA, keyboard navigation)
+- Experience consuming REST APIs
+
+Preferred
+- Next.js
+- Testing with Jest, Vitest or React Testing Library
+- Familiarity with Tailwind CSS
+- Interest in data visualisation, D3 or otherwise
+- Experience with Core Web Vitals and performance profiling

@@ -1,0 +1,33 @@
+Machine Learning Engineer (Junior)
+Sable AI
+
+We deploy models, we do not just train them. This role is closer to software
+engineering than to research.
+
+The job
+- Take models from notebooks into production services
+- Build data pipelines that feed training and inference
+- Monitor deployed models for drift and degradation
+- Write the tests and tooling that make the above repeatable
+
+Must have
+- Strong Python — this is the core requirement of the role
+- Understanding of machine learning fundamentals: training, validation,
+  overfitting, evaluation metrics
+- Experience with at least one deep learning framework (PyTorch preferred)
+- SQL
+- Git and collaborative development
+
+Strongly preferred
+- Experience deploying a model to production, in any capacity
+- Docker
+- Cloud platform experience, ideally AWS SageMaker or GCP Vertex AI
+- Familiarity with MLOps tooling such as MLflow or Weights & Biases
+
+A plus
+- Kubernetes
+- Experience with feature stores
+- Publications or competition results
+- Contributions to open source ML projects
+
+A research background is not required and a PhD is not expected.

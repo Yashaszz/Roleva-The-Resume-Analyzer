@@ -1,0 +1,24 @@
+Cloud Infrastructure Intern
+Ridgeline Technologies
+
+Join the platform team for six months. You will work on our deployment pipeline
+and internal tooling.
+
+Projects you might work on
+- Reducing our CI build time, currently 22 minutes
+- Adding monitoring and alerting to services that lack it
+- Automating environment provisioning
+
+Requirements
+- Pursuing a degree in Computer Science, IT or a related field
+- Comfortable on the Linux command line
+- Basic scripting in Bash or Python
+- Understanding of how HTTP and DNS work
+- Familiarity with Git
+
+Preferred qualifications
+- Exposure to Docker
+- Any experience with AWS, GCP or Azure
+- Interest in CI/CD — we use GitHub Actions
+- Familiarity with Terraform or Ansible
+- Understanding of monitoring tools such as Prometheus or Grafana

@@ -1,0 +1,25 @@
+Associate Product Manager Intern
+Lumen Health
+
+Lumen builds scheduling software for outpatient clinics. As an APM intern you
+will work on one problem area with a senior PM and ship at least one feature.
+
+You will
+- Interview clinic staff and synthesise what you hear into problem statements
+- Write product requirement documents and acceptance criteria
+- Work with engineering and design through delivery
+- Define and track success metrics for what you ship
+- Run competitive analysis
+
+Required
+- Pursuing a Bachelor's or Master's degree in any discipline
+- Excellent written communication — this role is mostly writing
+- Comfort with data: you must be able to pull your own numbers in SQL or a BI tool
+- Demonstrated ownership of a project from idea through delivery
+- Strong stakeholder management and collaboration skills
+
+Preferred
+- Previous internship in product, consulting, or a startup
+- Familiarity with healthcare workflows
+- Basic understanding of how software is built
+- Experience with Figma, Jira or Amplitude

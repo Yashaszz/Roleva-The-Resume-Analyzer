@@ -1,0 +1,1874 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Roleva API",
+    "description": "Evidence-based resume analysis.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "description": "Liveness probe.\n\nAlso the warm-up endpoint: the frontend pings this the moment a user lands\non the upload page, so Render's free-tier instance wakes up during the ~60s\nthe user spends picking a file and pasting a job description.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "summary": "Me",
+        "description": "Confirms a token is valid. Returns the user id only \u2014 the backend has no\nreason to echo an email address back to a client that already has it.",
+        "operationId": "me_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Me Me Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "AnalysisStatus": {
+        "enum": [
+          "pending",
+          "running",
+          "complete",
+          "partial",
+          "failed"
+        ],
+        "title": "AnalysisStatus",
+        "type": "string"
+      },
+      "AtsFinding": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_id": {
+            "$ref": "#/components/schemas/AtsRuleId"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/AtsSeverity"
+          },
+          "deduction": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Deduction",
+            "type": "number"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "fix": {
+            "title": "Fix",
+            "type": "string"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page"
+          },
+          "occurrences": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Occurrences",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "rule_id",
+          "severity",
+          "deduction",
+          "title",
+          "detail",
+          "fix"
+        ],
+        "title": "AtsFinding",
+        "type": "object"
+      },
+      "AtsReport": {
+        "additionalProperties": false,
+        "properties": {
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/AtsFinding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "hidden_text_detected": {
+            "default": false,
+            "title": "Hidden Text Detected",
+            "type": "boolean"
+          },
+          "checks_run": {
+            "default": 0,
+            "title": "Checks Run",
+            "type": "integer"
+          }
+        },
+        "title": "AtsReport",
+        "type": "object"
+      },
+      "AtsRuleId": {
+        "enum": [
+          "ats.multi_column",
+          "ats.text_in_table",
+          "ats.text_as_image",
+          "ats.content_in_header_footer",
+          "ats.no_standard_sections",
+          "ats.missing_experience",
+          "ats.missing_education",
+          "ats.missing_email",
+          "ats.missing_phone",
+          "ats.unparseable_dates",
+          "ats.exotic_fonts",
+          "ats.hidden_text",
+          "ats.informative_graphics",
+          "ats.excessive_length",
+          "ats.special_chars_in_headers",
+          "ats.unprofessional_filename"
+        ],
+        "title": "AtsRuleId",
+        "type": "string"
+      },
+      "AtsSeverity": {
+        "enum": [
+          "critical",
+          "major",
+          "minor"
+        ],
+        "title": "AtsSeverity",
+        "type": "string"
+      },
+      "Band": {
+        "enum": [
+          "strong",
+          "competitive",
+          "needs_work",
+          "significant_gaps",
+          "not_aligned"
+        ],
+        "title": "Band",
+        "type": "string"
+      },
+      "Bullet": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "Bullet",
+        "type": "object"
+      },
+      "BulletSuggestion": {
+        "additionalProperties": false,
+        "description": "A concrete improvement for one weak bullet.\n\nGrounding rule: the suggestion may not introduce facts (numbers, employers,\ntechnologies) absent from `original`. Violations are regenerated once, then\ndropped.",
+        "properties": {
+          "bullet_id": {
+            "title": "Bullet Id",
+            "type": "string"
+          },
+          "original": {
+            "title": "Original",
+            "type": "string"
+          },
+          "suggestion": {
+            "title": "Suggestion",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "section": {
+            "$ref": "#/components/schemas/SectionKind"
+          }
+        },
+        "required": [
+          "bullet_id",
+          "original",
+          "suggestion",
+          "section"
+        ],
+        "title": "BulletSuggestion",
+        "type": "object"
+      },
+      "ContactInfo": {
+        "additionalProperties": false,
+        "description": "Populated by deterministic extraction. Feeds the PII redactor \u2014 every\nvalue here is masked before any text is sent to an external LLM.",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Phone"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Location"
+          },
+          "links": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Links",
+            "type": "array"
+          }
+        },
+        "title": "ContactInfo",
+        "type": "object"
+      },
+      "CredentialItem": {
+        "additionalProperties": false,
+        "description": "Certifications, awards, publications \u2014 same shape, different section.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "issuer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Issuer"
+          },
+          "dates": {
+            "$ref": "#/components/schemas/DateRange"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "CredentialItem",
+        "type": "object"
+      },
+      "DateRange": {
+        "additionalProperties": false,
+        "description": "Employment/education dates. Always parsed deterministically in Python \u2014\nnever taken from an LLM, which is unreliable at date arithmetic.",
+        "properties": {
+          "start_year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1950,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start Year"
+          },
+          "start_month": {
+            "anyOf": [
+              {
+                "maximum": 12,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start Month"
+          },
+          "end_year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1950,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End Year"
+          },
+          "end_month": {
+            "anyOf": [
+              {
+                "maximum": 12,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End Month"
+          },
+          "is_current": {
+            "default": false,
+            "title": "Is Current",
+            "type": "boolean"
+          },
+          "raw": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Raw"
+          }
+        },
+        "title": "DateRange",
+        "type": "object"
+      },
+      "DetectedSection": {
+        "additionalProperties": false,
+        "description": "A heading found in the source document, with its text range.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SectionKind"
+          },
+          "heading_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Heading Text"
+          },
+          "order": {
+            "default": 0,
+            "title": "Order",
+            "type": "integer"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "heading_confidence": {
+            "default": 1.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Heading Confidence",
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "DetectedSection",
+        "type": "object"
+      },
+      "EducationItem": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "degree": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Degree"
+          },
+          "field_of_study": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Field Of Study"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Institution"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Location"
+          },
+          "dates": {
+            "$ref": "#/components/schemas/DateRange"
+          },
+          "gpa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Gpa"
+          },
+          "bullets": {
+            "items": {
+              "$ref": "#/components/schemas/Bullet"
+            },
+            "title": "Bullets",
+            "type": "array"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "EducationItem",
+        "type": "object"
+      },
+      "Evidence": {
+        "additionalProperties": false,
+        "description": "One piece of support for a requirement, anchored in the resume text.\n\nInvariant: `span.verify(resume_text)` must pass before this is shown to a\nuser. Unverifiable evidence is dropped, which makes hallucinated evidence\nstructurally impossible to display.",
+        "properties": {
+          "span": {
+            "$ref": "#/components/schemas/Span"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/SkillOrigin"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "similarity": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Similarity"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          }
+        },
+        "required": [
+          "span",
+          "origin",
+          "provenance"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "ExpectedBand": {
+        "additionalProperties": false,
+        "description": "Reference range for a role family + seniority. Curated, not measured \u2014\nalways labelled as a \"typical range\", never as a percentile.",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ScoreKind"
+          },
+          "low": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Low",
+            "type": "number"
+          },
+          "high": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "High",
+            "type": "number"
+          },
+          "position": {
+            "title": "Position",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "low",
+          "high",
+          "position"
+        ],
+        "title": "ExpectedBand",
+        "type": "object"
+      },
+      "ExperienceItem": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "organization": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Organization"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Location"
+          },
+          "dates": {
+            "$ref": "#/components/schemas/DateRange"
+          },
+          "bullets": {
+            "items": {
+              "$ref": "#/components/schemas/Bullet"
+            },
+            "title": "Bullets",
+            "type": "array"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "ExperienceItem",
+        "type": "object"
+      },
+      "JobTarget": {
+        "additionalProperties": false,
+        "description": "A parsed job description.",
+        "properties": {
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "company": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Company"
+          },
+          "role_family": {
+            "default": "general",
+            "title": "Role Family",
+            "type": "string"
+          },
+          "seniority": {
+            "$ref": "#/components/schemas/Seniority",
+            "default": "unknown"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/Requirement"
+            },
+            "title": "Requirements",
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "title": "JobTarget",
+        "type": "object"
+      },
+      "MatchReport": {
+        "additionalProperties": false,
+        "properties": {
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/RequirementMatch"
+            },
+            "title": "Matches",
+            "type": "array"
+          },
+          "unmatched_resume_skills": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unmatched Resume Skills",
+            "type": "array"
+          },
+          "llm_adjudicated_count": {
+            "default": 0,
+            "title": "Llm Adjudicated Count",
+            "type": "integer"
+          }
+        },
+        "title": "MatchReport",
+        "type": "object"
+      },
+      "MatchStatus": {
+        "enum": [
+          "matched",
+          "partial",
+          "missing"
+        ],
+        "title": "MatchStatus",
+        "type": "string"
+      },
+      "Percentile": {
+        "additionalProperties": false,
+        "description": "True cohort percentile. Only populated once `sample_size` >= 30; below\nthat the UI must show nothing rather than a fabricated statistic.",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ScoreKind"
+          },
+          "percentile": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Percentile",
+            "type": "number"
+          },
+          "sample_size": {
+            "minimum": 30,
+            "title": "Sample Size",
+            "type": "integer"
+          },
+          "role_family": {
+            "title": "Role Family",
+            "type": "string"
+          },
+          "seniority": {
+            "title": "Seniority",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "percentile",
+          "sample_size",
+          "role_family",
+          "seniority"
+        ],
+        "title": "Percentile",
+        "type": "object"
+      },
+      "Priority": {
+        "enum": [
+          "must",
+          "strong",
+          "nice"
+        ],
+        "title": "Priority",
+        "type": "string"
+      },
+      "ProjectItem": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "technologies": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Technologies",
+            "type": "array"
+          },
+          "dates": {
+            "$ref": "#/components/schemas/DateRange"
+          },
+          "bullets": {
+            "items": {
+              "$ref": "#/components/schemas/Bullet"
+            },
+            "title": "Bullets",
+            "type": "array"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Link"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "ProjectItem",
+        "type": "object"
+      },
+      "Provenance": {
+        "description": "How a claim was produced. Rendered in the UI so users can weigh it.",
+        "enum": [
+          "rule",
+          "computed",
+          "lexical",
+          "semantic",
+          "judged",
+          "extracted"
+        ],
+        "title": "Provenance",
+        "type": "string"
+      },
+      "Quantifier": {
+        "additionalProperties": false,
+        "description": "A numeric threshold attached to a requirement, e.g. \"3+ years\".",
+        "properties": {
+          "years": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Years"
+          },
+          "raw": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Raw"
+          }
+        },
+        "title": "Quantifier",
+        "type": "object"
+      },
+      "Recommendation": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "projected_gain": {
+            "default": 0.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Projected Gain",
+            "type": "number"
+          },
+          "related_requirement_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Requirement Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "detail",
+          "severity"
+        ],
+        "title": "Recommendation",
+        "type": "object"
+      },
+      "Requirement": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "canonical": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Canonical"
+          },
+          "category": {
+            "$ref": "#/components/schemas/RequirementCategory"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          },
+          "priority_source": {
+            "$ref": "#/components/schemas/Provenance",
+            "default": "extracted"
+          },
+          "quantifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Quantifier"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "mention_count": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Mention Count",
+            "type": "integer"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "text",
+          "category",
+          "priority"
+        ],
+        "title": "Requirement",
+        "type": "object"
+      },
+      "RequirementCategory": {
+        "enum": [
+          "hard_skill",
+          "tool",
+          "soft_skill",
+          "experience",
+          "education",
+          "certification",
+          "domain",
+          "responsibility"
+        ],
+        "title": "RequirementCategory",
+        "type": "string"
+      },
+      "RequirementMatch": {
+        "additionalProperties": false,
+        "description": "The resolved outcome for a single JD requirement.",
+        "properties": {
+          "requirement_id": {
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MatchStatus"
+          },
+          "strength": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Strength",
+            "type": "number"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "is_adjacent": {
+            "default": false,
+            "title": "Is Adjacent",
+            "type": "boolean"
+          },
+          "observed_months": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Observed Months"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Explanation"
+          }
+        },
+        "required": [
+          "requirement_id",
+          "status",
+          "strength"
+        ],
+        "title": "RequirementMatch",
+        "type": "object"
+      },
+      "ResumeDocument": {
+        "additionalProperties": false,
+        "description": "The structured resume. Analyzer reads it; the future builder will edit it.",
+        "properties": {
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/ContactInfo"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bullet"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "experience": {
+            "items": {
+              "$ref": "#/components/schemas/ExperienceItem"
+            },
+            "title": "Experience",
+            "type": "array"
+          },
+          "education": {
+            "items": {
+              "$ref": "#/components/schemas/EducationItem"
+            },
+            "title": "Education",
+            "type": "array"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectItem"
+            },
+            "title": "Projects",
+            "type": "array"
+          },
+          "skills": {
+            "items": {
+              "$ref": "#/components/schemas/SkillMention"
+            },
+            "title": "Skills",
+            "type": "array"
+          },
+          "certifications": {
+            "items": {
+              "$ref": "#/components/schemas/CredentialItem"
+            },
+            "title": "Certifications",
+            "type": "array"
+          },
+          "awards": {
+            "items": {
+              "$ref": "#/components/schemas/CredentialItem"
+            },
+            "title": "Awards",
+            "type": "array"
+          },
+          "publications": {
+            "items": {
+              "$ref": "#/components/schemas/CredentialItem"
+            },
+            "title": "Publications",
+            "type": "array"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/DetectedSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "page_count": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Page Count",
+            "type": "integer"
+          },
+          "parse_confidence": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Parse Confidence",
+            "type": "number"
+          },
+          "parse_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Parse Warnings",
+            "type": "array"
+          }
+        },
+        "title": "ResumeDocument",
+        "type": "object"
+      },
+      "Score": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ScoreKind"
+          },
+          "value": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Value",
+            "type": "number"
+          },
+          "band": {
+            "$ref": "#/components/schemas/Band"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreComponent"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "cap_applied": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cap Applied"
+          },
+          "uncapped_value": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Uncapped Value"
+          },
+          "confidence": {
+            "default": 1.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind",
+          "value",
+          "band"
+        ],
+        "title": "Score",
+        "type": "object"
+      },
+      "ScoreComponent": {
+        "additionalProperties": false,
+        "description": "One contributing factor, with its arithmetic exposed.",
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "contribution": {
+            "title": "Contribution",
+            "type": "number"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Weight"
+          },
+          "raw_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Raw Value"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Detail"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "contribution",
+          "provenance"
+        ],
+        "title": "ScoreComponent",
+        "type": "object"
+      },
+      "ScoreKind": {
+        "enum": [
+          "overall",
+          "job_match",
+          "ats",
+          "quality"
+        ],
+        "title": "ScoreKind",
+        "type": "string"
+      },
+      "ScoreReport": {
+        "additionalProperties": false,
+        "properties": {
+          "overall": {
+            "$ref": "#/components/schemas/Score"
+          },
+          "job_match": {
+            "$ref": "#/components/schemas/Score"
+          },
+          "ats": {
+            "$ref": "#/components/schemas/Score"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/Score"
+          },
+          "must_coverage": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Must Coverage",
+            "type": "number"
+          },
+          "overall_coverage": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Overall Coverage",
+            "type": "number"
+          },
+          "expected_bands": {
+            "items": {
+              "$ref": "#/components/schemas/ExpectedBand"
+            },
+            "title": "Expected Bands",
+            "type": "array"
+          },
+          "percentiles": {
+            "items": {
+              "$ref": "#/components/schemas/Percentile"
+            },
+            "title": "Percentiles",
+            "type": "array"
+          },
+          "rubric_version": {
+            "title": "Rubric Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "overall",
+          "job_match",
+          "ats",
+          "quality",
+          "must_coverage",
+          "overall_coverage",
+          "rubric_version"
+        ],
+        "title": "ScoreReport",
+        "type": "object"
+      },
+      "SectionFeedback": {
+        "additionalProperties": false,
+        "properties": {
+          "section": {
+            "$ref": "#/components/schemas/SectionKind"
+          },
+          "rating": {
+            "maximum": 5,
+            "minimum": 1,
+            "title": "Rating",
+            "type": "integer"
+          },
+          "strengths": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Strengths",
+            "type": "array"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          }
+        },
+        "required": [
+          "section",
+          "rating"
+        ],
+        "title": "SectionFeedback",
+        "type": "object"
+      },
+      "SectionKind": {
+        "description": "Canonical section types. Unrecognized headings map to OTHER.",
+        "enum": [
+          "contact",
+          "summary",
+          "experience",
+          "education",
+          "skills",
+          "projects",
+          "certifications",
+          "awards",
+          "publications",
+          "volunteer",
+          "languages",
+          "interests",
+          "other"
+        ],
+        "title": "SectionKind",
+        "type": "string"
+      },
+      "Seniority": {
+        "enum": [
+          "intern",
+          "entry",
+          "mid",
+          "senior",
+          "unknown"
+        ],
+        "title": "Seniority",
+        "type": "string"
+      },
+      "Severity": {
+        "enum": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "title": "Severity",
+        "type": "string"
+      },
+      "SkillMention": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "raw": {
+            "title": "Raw",
+            "type": "string"
+          },
+          "canonical": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Canonical"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/SkillOrigin",
+            "default": "other"
+          },
+          "span": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Span"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "raw"
+        ],
+        "title": "SkillMention",
+        "type": "object"
+      },
+      "SkillOrigin": {
+        "description": "Where a skill was found. Drives evidence strength during matching:\na skill demonstrated in a bullet is worth far more than one merely listed.",
+        "enum": [
+          "skills_list",
+          "experience_bullet",
+          "project_bullet",
+          "summary",
+          "education",
+          "certification",
+          "other"
+        ],
+        "title": "SkillOrigin",
+        "type": "string"
+      },
+      "SourceDoc": {
+        "enum": [
+          "resume",
+          "job_description"
+        ],
+        "title": "SourceDoc",
+        "type": "string"
+      },
+      "Span": {
+        "additionalProperties": false,
+        "description": "A character range in a normalized source document.",
+        "properties": {
+          "doc": {
+            "$ref": "#/components/schemas/SourceDoc"
+          },
+          "start": {
+            "minimum": 0,
+            "title": "Start",
+            "type": "integer"
+          },
+          "end": {
+            "minimum": 0,
+            "title": "End",
+            "type": "integer"
+          },
+          "text": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Page"
+          },
+          "section_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Section Id"
+          }
+        },
+        "required": [
+          "doc",
+          "start",
+          "end",
+          "text"
+        ],
+        "title": "Span",
+        "type": "object"
+      },
+      "Stage": {
+        "description": "Pipeline stages. Names are user-visible in the progress UI, so they\ndescribe work the user cares about, not internal function names.",
+        "enum": [
+          "validating",
+          "extracting",
+          "structuring",
+          "reading_job",
+          "matching",
+          "checking_ats",
+          "assessing_quality",
+          "scoring",
+          "writing_advice",
+          "done"
+        ],
+        "title": "Stage",
+        "type": "string"
+      },
+      "AnalysisReport": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisStatus"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "resume": {
+            "$ref": "#/components/schemas/ResumeDocument"
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobTarget"
+          },
+          "matches": {
+            "$ref": "#/components/schemas/MatchReport"
+          },
+          "ats": {
+            "$ref": "#/components/schemas/AtsReport"
+          },
+          "scores": {
+            "$ref": "#/components/schemas/ScoreReport"
+          },
+          "verdict": {
+            "default": "",
+            "title": "Verdict",
+            "type": "string"
+          },
+          "strengths": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Strengths",
+            "type": "array"
+          },
+          "weaknesses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weaknesses",
+            "type": "array"
+          },
+          "section_feedback": {
+            "items": {
+              "$ref": "#/components/schemas/SectionFeedback"
+            },
+            "title": "Section Feedback",
+            "type": "array"
+          },
+          "bullet_suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/BulletSuggestion"
+            },
+            "title": "Bullet Suggestions",
+            "type": "array"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
+          "rubric_version": {
+            "title": "Rubric Version",
+            "type": "string"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "degraded_stages": {
+            "items": {
+              "$ref": "#/components/schemas/Stage"
+            },
+            "title": "Degraded Stages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "resume",
+          "job",
+          "matches",
+          "ats",
+          "scores",
+          "rubric_version",
+          "prompt_version"
+        ],
+        "title": "AnalysisReport",
+        "type": "object"
+      },
+      "ProgressEvent": {
+        "additionalProperties": false,
+        "description": "One SSE frame. The progress screen is a designed experience, not a\nspinner, so events carry real stage names and optional partial results.",
+        "properties": {
+          "analysis_id": {
+            "title": "Analysis Id",
+            "type": "string"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/Stage"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "percent": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Percent",
+            "type": "integer"
+          },
+          "partial": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Partial"
+          }
+        },
+        "required": [
+          "analysis_id",
+          "stage",
+          "message",
+          "percent"
+        ],
+        "title": "ProgressEvent",
+        "type": "object"
+      }
+    }
+  }
+}

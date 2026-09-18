@@ -1,0 +1,25 @@
+Data Science Intern
+Corvid Analytics
+
+We build demand forecasting models for logistics companies. This internship is
+hands on: you will own a model from data preparation through evaluation.
+
+What you will do
+- Prepare and explore large time-series datasets
+- Train and evaluate forecasting models
+- Document experiments so results can be reproduced
+- Present your work to the team at the end of the internship
+
+Minimum requirements
+- Enrolled in a Master's or final-year Bachelor's programme in a quantitative field
+- At least 1 year of hands-on experience with Python for data work, through
+  coursework, research or projects
+- Working knowledge of pandas, NumPy and scikit-learn
+- Understanding of core statistics: distributions, hypothesis testing, regression
+- SQL proficiency
+
+Desirable
+- 2+ years of exposure to machine learning through research or projects
+- Experience with time-series methods such as ARIMA or Prophet
+- Familiarity with PyTorch or TensorFlow
+- Experience presenting technical work to non-technical audiences

@@ -1,0 +1,27 @@
+Junior Product Designer
+Anvil Studio | Remote (India)
+
+We are a ten-person product studio. You will work directly with clients on
+end-to-end product design, from research through shipped interface.
+
+Responsibilities
+- Conduct user research and usability testing
+- Produce wireframes, prototypes and high-fidelity interface designs
+- Contribute to and maintain design systems
+- Present and defend design decisions to clients
+- Work closely with engineers during implementation
+
+Must have
+- A portfolio demonstrating end-to-end product design work
+- Proficiency in Figma
+- Understanding of interaction design and information architecture
+- Ability to explain the reasoning behind design decisions
+- Familiarity with accessibility standards such as WCAG
+
+Bonus
+- Motion design skills
+- Ability to write HTML and CSS
+- Experience designing for complex data-heavy interfaces
+- Prior agency or studio experience
+
+Portfolio required. Applications without one will not be reviewed.

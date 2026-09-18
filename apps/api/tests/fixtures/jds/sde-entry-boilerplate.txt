@@ -1,0 +1,46 @@
+Software Engineer I — Payments Platform
+Northwind Financial Group
+
+ABOUT NORTHWIND
+Founded in 1998, Northwind Financial Group is a leading provider of payment
+infrastructure serving over 4,000 merchants across 12 countries. Our mission is
+to make commerce accessible to everyone, everywhere. We have been named one of
+the Best Places to Work for six consecutive years and are proud of our
+collaborative, fast-paced, results-oriented culture.
+
+WHAT YOU WILL DO
+- Develop and maintain microservices in Java using Spring Boot
+- Integrate with third-party payment providers over REST and webhooks
+- Write automated tests and participate in continuous deployment
+- Collaborate with product managers and designers in an Agile environment
+
+WHAT YOU NEED
+- Bachelor's degree in Computer Science, Engineering or equivalent experience
+- 0-2 years of professional software development experience
+- Proficiency in Java; familiarity with Spring Boot is required
+- Solid understanding of relational databases and SQL
+- Experience with Git
+
+NICE TO HAVE
+- Exposure to Kafka or other message queues
+- Knowledge of payment systems, PCI DSS or financial regulations
+- Experience with AWS
+
+BENEFITS
+Competitive salary. Comprehensive medical, dental and vision coverage effective
+day one. 401(k) with 5% company match. Unlimited paid time off. Annual learning
+stipend of $2,000. Hybrid working with three days in office. Free lunch on
+Wednesdays. Wellness reimbursement. Parental leave of 16 weeks.
+
+EQUAL OPPORTUNITY
+Northwind Financial Group is an Equal Opportunity Employer. All qualified
+applicants will receive consideration for employment without regard to race,
+colour, religion, sex, sexual orientation, gender identity, national origin,
+disability, protected veteran status, or any other characteristic protected by
+law. We are committed to providing reasonable accommodations to applicants with
+disabilities. If you require accommodation, please contact our recruiting team.
+
+HOW TO APPLY
+Submit your resume through our careers portal. Applications sent by email will
+not be considered. Due to the volume of applications we are unable to respond
+to every applicant individually.

@@ -1,0 +1,25 @@
+Backend Engineer
+Fernwood Logistics | Chennai
+
+Requirements
+- 2+ years of professional backend development experience
+- 3+ years of experience with Python required
+- Strong SQL and relational database design
+- Experience building and consuming REST APIs
+- Experience with at least one cloud provider (AWS, GCP or Azure)
+- Bachelor's degree in Computer Science or equivalent practical experience
+
+Responsibilities
+- Design and build services that process shipment events at scale
+- Own services in production including on-call rotation
+- Improve database query performance
+- Mentor interns and junior engineers
+
+Preferred
+- Experience with Kafka or RabbitMQ
+- Kubernetes
+- Infrastructure as code, especially Terraform
+- Prior experience in logistics or supply chain
+
+This role requires 3+ years of Python. Candidates without demonstrable Python
+experience will not be considered.

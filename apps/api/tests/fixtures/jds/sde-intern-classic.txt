@@ -1,0 +1,28 @@
+Software Engineering Intern — Summer 2026
+Kestrel Systems | Bengaluru, India
+
+About the role
+You will join our platform team building internal developer tooling used by
+every engineer at Kestrel. You will own a small project end to end, with a
+mentor, and ship it to production before your internship ends.
+
+Responsibilities
+- Build and maintain REST APIs in Python
+- Write unit and integration tests for the code you ship
+- Participate in code review with senior engineers
+- Debug production issues alongside the on-call engineer
+
+Required qualifications
+- Currently pursuing a Bachelor's degree in Computer Science or a related field
+- Strong programming fundamentals in Python or Java
+- Working knowledge of Git and version control workflows
+- Understanding of data structures and algorithms
+- Familiarity with SQL and relational databases
+
+Preferred qualifications
+- Experience with Django or Flask
+- Exposure to Docker and containerised development
+- Prior internship or substantial personal projects
+- Contributions to open source
+
+We review applications on a rolling basis.

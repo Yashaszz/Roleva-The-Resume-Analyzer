@@ -1,0 +1,26 @@
+Data Analyst (Entry Level)
+Halcyon Retail Group | Hybrid — Pune
+
+The Analytics team turns transaction and inventory data into decisions about
+what we stock and where. You will sit with the merchandising team and answer
+their questions with data.
+
+Key responsibilities
+- Build and maintain dashboards in Tableau or Power BI
+- Write SQL queries against our Snowflake warehouse
+- Produce weekly reporting on sales performance and stock movement
+- Clean and validate data from point-of-sale and supplier systems
+- Present findings to non-technical stakeholders
+
+Requirements
+- Bachelor's degree in Statistics, Economics, Mathematics, Business or similar
+- Strong SQL — you must be able to write joins, window functions and CTEs
+- Advanced Excel including pivot tables and lookup functions
+- Demonstrated ability to communicate findings clearly in writing
+- Attention to detail
+
+Preferred
+- Python for data analysis, particularly pandas
+- Experience with a BI tool such as Tableau, Power BI or Looker
+- Exposure to dbt or another transformation framework
+- Retail or e-commerce domain knowledge

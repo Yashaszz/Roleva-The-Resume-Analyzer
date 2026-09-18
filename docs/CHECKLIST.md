@@ -16,7 +16,7 @@
 - [x] Repo scaffolded, domain models written, DB schema written
 - [ ] **← YOU ARE HERE. Blocked on: Python 3.12 install + Gemini/Supabase keys.**
 
-**Progress: 26 / 216 tasks (~12%) — full stack wired: Next.js → BFF → FastAPI.**
+**Progress: 28 / 216 tasks (~13%) — contracts generated, JD corpus in place.**
 
 ---
 
@@ -25,7 +25,7 @@
 | Phase | Name | Tasks | Done | Status |
 |---|---|---|---|---|
 | -1 | Accounts & Prerequisites | 14 | 6 | Nearly done |
-| 0 | Foundation | 23 | 14 | In progress |
+| 0 | Foundation | 23 | 16 | In progress |
 | 1 | Parsing Pipeline | 20 | 0 | Not started |
 | 2 | JD & Matching | 18 | 0 | Not started |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
@@ -37,7 +37,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **216** | **26** | **12%** |
+| **TOTAL** | | **216** | **28** | **13%** |
 
 ---
 
@@ -92,7 +92,7 @@ The contract layer. Get this right or everything downstream churns.
 ## The contract
 - [x] 0.15 **`ResumeDocument` schema — builder-ready, versioned**
 - [x] 0.16 `Requirement`, `Evidence`, `AtsFinding`, `ScoreReport`, `AnalysisReport` schemas
-- [ ] 0.17 OpenAPI → TypeScript type generation working
+- [x] 0.17 OpenAPI → TypeScript type generation working
 
 ## LLM & privacy layer
 - [x] 0.18 LLM provider adapter interface + Gemini implementation
@@ -102,7 +102,7 @@ The contract layer. Get this right or everything downstream churns.
 
 ## Test corpus (do not skip)
 - [ ] 0.22 40+ anonymized resumes collected (Word, Canva, LaTeX, Google Docs, 1-col, 2-col)
-- [ ] 0.23 15+ job descriptions collected (SDE, data, product, design; intern + entry)
+- [x] 0.23 15+ job descriptions collected (SDE, data, product, design; intern + entry)
 
 ### GATE 0
 - [ ] CI green

@@ -1,0 +1,9 @@
+Junior Developer — Startup
+
+Small team, fast pace, lots of ownership. You will work on our web application
+using React on the frontend and Node.js on the backend.
+
+Requirements: JavaScript, React, some backend experience, Git. Nice to have:
+TypeScript, AWS, SQL.
+
+Competitive salary and equity. Remote friendly.
