@@ -85,9 +85,9 @@ The contract layer. Get this right or everything downstream churns.
 
 ## Skeletons
 - [x] 0.11 FastAPI app boots, `/health` returns 200
-- [ ] 0.12 JWT verification middleware (validates Supabase token)
+- [x] 0.12 JWT verification middleware (validates Supabase token)
 - [ ] 0.13 Next.js app boots, Tailwind v4 + `tokens.css` in place
-- [ ] 0.14 Structured logging with **no content logged**
+- [x] 0.14 Structured logging with **no content logged**
 
 ## The contract
 - [x] 0.15 **`ResumeDocument` schema — builder-ready, versioned**
