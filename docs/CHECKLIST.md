@@ -16,7 +16,7 @@
 - [x] Repo scaffolded, domain models written, DB schema written
 - [ ] **← YOU ARE HERE. Blocked on: Python 3.12 install + Gemini/Supabase keys.**
 
-**Progress: 28 / 216 tasks (~13%) — contracts generated, JD corpus in place.**
+**Progress: 29 / 217 tasks (~13%) — both test corpora in place; Phase 1 unblocked.**
 
 ---
 
@@ -25,7 +25,7 @@
 | Phase | Name | Tasks | Done | Status |
 |---|---|---|---|---|
 | -1 | Accounts & Prerequisites | 14 | 6 | Nearly done |
-| 0 | Foundation | 23 | 16 | In progress |
+| 0 | Foundation | 24 | 17 | In progress |
 | 1 | Parsing Pipeline | 20 | 0 | Not started |
 | 2 | JD & Matching | 18 | 0 | Not started |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
@@ -37,7 +37,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **216** | **28** | **13%** |
+| **TOTAL** | | **217** | **29** | **13%** |
 
 ---
 
@@ -101,7 +101,8 @@ The contract layer. Get this right or everything downstream churns.
 - [x] 0.21 CI: lint + typecheck + pytest + vitest on every push
 
 ## Test corpus (do not skip)
-- [ ] 0.22 40+ anonymized resumes collected (Word, Canva, LaTeX, Google Docs, 1-col, 2-col)
+- [x] 0.22a 19 SYNTHETIC resumes generated — covers structure, adversarial and invalid cases
+- [ ] 0.22b 20+ REAL resumes collected (Word, Canva, LaTeX, Google Docs) — covers producer quirks
 - [x] 0.23 15+ job descriptions collected (SDE, data, product, design; intern + entry)
 
 ### GATE 0
@@ -138,10 +139,12 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [ ] 1.20 `parse_confidence` scoring + degradation behavior
 
 ### GATE 1
-- [ ] Full corpus runs without crashing
-- [ ] **≥90% of corpus parses at confidence ≥0.7** (manually verified)
-- [ ] Golden snapshots committed for all corpus resumes
+- [ ] Synthetic corpus: **100%** behaves as its manifest specifies (regression suite)
+- [ ] Real corpus: **≥90% parse at confidence ≥0.7**, manually verified
+- [ ] Golden snapshots committed for both corpora
 - [ ] Two-column resumes parse in correct reading order
+- [ ] NOTE: synthetic alone does NOT pass this gate — it grades the parser
+      against documents its own author generated
 
 ---
 

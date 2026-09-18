@@ -1,0 +1,172 @@
+# Resume fixture corpus — ground truth.
+#
+# The PDFs themselves are NOT committed. They are produced by
+# ../generate_resumes.py, which is committed; the test suite regenerates them on
+# demand. That keeps several megabytes of binaries out of the repository and
+# removes any question about whether a checked-in resume contains real data.
+#
+# SCOPE — read this before trusting Gate 1.
+#
+# These are synthetic, and they cover *structure*: column layouts, table
+# layouts, heading styles, bullet glyphs, date formats, plus adversarial and
+# invalid cases that are hard to find in the wild and easy to construct
+# correctly.
+#
+# They do NOT cover *producer quirks*. Canva fragments text into many short
+# runs, LaTeX kerning splits words mid-token, Word embeds field codes, Google
+# Docs emits unusual spacing. Those are what break parsers in production, and
+# nothing here imitates them convincingly.
+#
+# So Gate 1 is split:
+#   - synthetic corpus  -> regression suite, must stay at 100%
+#   - real corpus       -> validation, >=90% at confidence >=0.7
+# Gate 1 is not passed on the synthetic corpus alone. Grading the parser against
+# documents the parser's author generated proves very little.
+
+version: 1
+
+corpus: synthetic
+generator: ../generate_resumes.py
+real_resumes_required_for_gate_1: 20
+
+fixtures:
+  # ---------------------------------------------------------------- valid ---
+  - file: single-column-classic.pdf
+    tests: One column, standard headings, conventional order. The baseline.
+    expect: parse_ok
+    min_confidence: 0.85
+    sections: [contact, experience, projects, education, skills]
+    must_extract: [Django, React, scikit-learn, "40,000 requests"]
+
+  - file: two-column-sidebar.pdf
+    tests: >
+      Skills and education in a narrow left sidebar. The single most common
+      parsing failure: sorting blocks top-to-bottom interleaves the columns and
+      produces nonsense. Reading order must group each column.
+    expect: parse_ok
+    min_confidence: 0.70
+    sections: [contact, skills, education, experience, projects]
+    notes: Sidebar content must not be interleaved with the main column.
+    ats_findings: [ats.multi_column]
+
+  - file: table-layout.pdf
+    tests: Experience inside a table — common in template builders, and an ATS hazard.
+    expect: parse_ok
+    min_confidence: 0.60
+    ats_findings: [ats.text_in_table]
+
+  - file: contact-in-header-footer.pdf
+    tests: Contact details drawn outside the text flow, where many ATS parsers never look.
+    expect: parse_ok
+    min_confidence: 0.70
+    ats_findings: [ats.content_in_header_footer]
+
+  - file: creative-headings.pdf
+    tests: >
+      "Where I've Worked", "Things I've Built". The header lexicon must not be
+      the only signal — font size and weight have to carry the detection.
+    expect: parse_ok
+    min_confidence: 0.55
+    sections: [contact, experience, projects, education, skills]
+    ats_findings: [ats.no_standard_sections]
+
+  - file: spaced-caps-headings.pdf
+    tests: 'Letter-spaced headings ("E X P E R I E N C E") that extract with the spacing baked in.'
+    expect: parse_ok
+    min_confidence: 0.70
+    notes: The normaliser must repair spaced-out headings before lexicon matching.
+
+  - file: bullet-glyph-variety.pdf
+    tests: Five bullet glyphs in one document, all of which must normalise to one marker.
+    expect: parse_ok
+    min_confidence: 0.70
+    expect_bullets: 5
+
+  - file: serif-with-ligatures.pdf
+    tests: >
+      Serif face producing fi/fl ligatures, which extract as single codepoints.
+      Unnormalised, "Profiled" and "Identified" fail every keyword match.
+    expect: parse_ok
+    min_confidence: 0.80
+    must_extract: [Profiled, Refined, Identified, classification]
+
+  - file: date-format-variety.pdf
+    tests: >
+      Seven date formats in one document. Durations are computed from these, so
+      silently dropping one produces a wrong years-of-experience figure.
+    expect: parse_ok
+    min_confidence: 0.70
+    expect_parsed_dates: 7
+
+  - file: projects-only-fresher.pdf
+    tests: >
+      No employment history at all. Absence of an experience section is not a
+      parse failure, and evidence strength must come from project bullets.
+    expect: parse_ok
+    min_confidence: 0.80
+    sections: [contact, projects, education, skills]
+
+  - file: sparse-minimal.pdf
+    tests: >
+      Around 145 characters on the page. Must parse cleanly and score badly —
+      those are different outcomes. This fixture is why scanned detection cannot
+      be a text-density threshold alone; at 200 chars/page it was wrongly
+      rejected as a scan.
+    expect: parse_ok
+    min_confidence: 0.55
+    notes: Regression guard for the scanned-detection rule.
+
+  - file: two-pages-dense.pdf
+    tests: Two pages with a repeated header, which must be stripped rather than parsed as a second contact block.
+    expect: parse_ok
+    min_confidence: 0.80
+    expect_pages: 2
+    notes: The page header must not appear twice in the extracted text.
+
+  # ---------------------------------------------------------- adversarial ---
+  - file: hidden-white-text.pdf
+    tests: >
+      Keyword stuffing in white-on-white text — a real technique for gaming
+      keyword filters. Detected by span colour, stripped before any LLM call,
+      and reported to the user rather than silently benefiting them.
+    expect: parse_ok
+    min_confidence: 0.70
+    ats_findings: [ats.hidden_text]
+    must_not_reach_llm: [Kubernetes, Terraform, Kafka, Scala, Rust]
+
+  - file: injection-attempt.pdf
+    tests: >
+      Instructions aimed at the model, hidden in tiny white text. Scores are
+      computed in Python so there is no number to move, but it must still be
+      detected and surfaced.
+    expect: parse_ok
+    min_confidence: 0.70
+    ats_findings: [ats.hidden_text]
+    expect_injection_markers: true
+
+  # -------------------------------------------------------------- invalid ---
+  - file: scanned-image.pdf
+    tests: >
+      A rasterised page: visually a resume, no extractable text. Must be
+      rejected with a message that teaches the fix, not analysed into a
+      confidently wrong report.
+    expect_error: pdf_scanned
+    properties: { text_chars: 0, page_images: 1 }
+
+  - file: encrypted.pdf
+    tests: Password-protected.
+    expect_error: pdf_encrypted
+
+  - file: empty-pages.pdf
+    tests: Structurally valid PDF with no content at all.
+    expect_error: pdf_empty
+    properties: { text_chars: 0, page_images: 0 }
+
+  - file: too-many-pages.pdf
+    tests: Twelve pages, over the ten-page cap.
+    expect_error: too_many_pages
+    properties: { pages: 12 }
+
+  - file: not-really-a-pdf.pdf
+    tests: A .pdf extension over plain text — the magic-byte check.
+    expect_error: not_a_pdf

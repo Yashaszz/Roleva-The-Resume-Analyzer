@@ -55,7 +55,11 @@ class Settings(BaseSettings):
     max_pages: int = 10
     min_jd_chars: int = 200
     warn_jd_chars: int = 600
-    min_chars_per_page: int = 200  # below this, treat the PDF as scanned
+    # Scanned-PDF detection needs two signals, not one. A sparse student resume
+    # can legitimately hold under 150 characters on a page, so a text-density
+    # threshold alone rejects real documents. The rule is: near-zero text AND a
+    # page-covering image. This value is only the first half of that test.
+    min_chars_per_page: int = 25
 
     # --- observability ---
     sentry_dsn: str = ""
