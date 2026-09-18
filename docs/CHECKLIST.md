@@ -16,7 +16,7 @@
 - [x] Repo scaffolded, domain models written, DB schema written
 - [ ] **← YOU ARE HERE. Blocked on: Python 3.12 install + Gemini/Supabase keys.**
 
-**Progress: 23 / 216 tasks (~11%) — LLM + privacy layer working against live Gemini.**
+**Progress: 26 / 216 tasks (~12%) — full stack wired: Next.js → BFF → FastAPI.**
 
 ---
 
@@ -25,7 +25,7 @@
 | Phase | Name | Tasks | Done | Status |
 |---|---|---|---|---|
 | -1 | Accounts & Prerequisites | 14 | 6 | Nearly done |
-| 0 | Foundation | 23 | 11 | In progress |
+| 0 | Foundation | 23 | 14 | In progress |
 | 1 | Parsing Pipeline | 20 | 0 | Not started |
 | 2 | JD & Matching | 18 | 0 | Not started |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
@@ -37,7 +37,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **216** | **23** | **11%** |
+| **TOTAL** | | **216** | **26** | **12%** |
 
 ---
 
@@ -86,7 +86,7 @@ The contract layer. Get this right or everything downstream churns.
 ## Skeletons
 - [x] 0.11 FastAPI app boots, `/health` returns 200
 - [x] 0.12 JWT verification middleware (validates Supabase token)
-- [ ] 0.13 Next.js app boots, Tailwind v4 + `tokens.css` in place
+- [x] 0.13 Next.js app boots, Tailwind v4 + `tokens.css` in place
 - [x] 0.14 Structured logging with **no content logged**
 
 ## The contract

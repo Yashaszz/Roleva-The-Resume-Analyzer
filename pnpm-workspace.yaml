@@ -1,3 +1,7 @@
 packages:
   - "apps/web"
   - "packages/*"
+
+# Native binary used by the ESLint import resolver; needs its install script.
+allowBuilds:
+  unrs-resolver: true

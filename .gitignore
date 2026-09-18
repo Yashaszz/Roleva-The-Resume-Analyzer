@@ -50,3 +50,6 @@ apps/api/tests/fixtures/resumes/*.pdf
 
 # Generated
 packages/contracts/generated/
+
+# TypeScript incremental build cache
+*.tsbuildinfo
