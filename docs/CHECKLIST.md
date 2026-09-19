@@ -18,9 +18,9 @@
 - [x] **PHASE 1 CODE COMPLETE** — all 20 tasks; Gate 1 awaits real resumes
 - [x] **PHASE 2 CODE COMPLETE** — all 18 tasks; Gate 2 awaits the 20-pair calibration set
 - [x] **PHASE 3 CODE COMPLETE** — all 19 tasks; Gate 3 awaits the 20-pair calibration set
-- [ ] **← YOU ARE HERE. Phase 4: the advice engine.**
+- [ ] **← YOU ARE HERE. Phase 4: deterministic half done; the grounded LLM writer is left (4.2–4.4).**
 
-**Progress: 90 / 217 tasks (~41%) — Phase 3 code complete. 755 tests green.**
+**Progress: 96 / 217 tasks (~44%) — projected gains are measured, not estimated. 794 tests green.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -36,7 +36,7 @@
 | 1 | Parsing Pipeline | 20 | 20 | **CODE DONE** (Gate 1 needs real resumes) |
 | 2 | JD & Matching | 18 | 18 | **CODE DONE** (Gate 2 needs calibration set) |
 | 3 | Scoring & ATS | 19 | 19 | **CODE DONE** (Gate 3 needs calibration set) |
-| 4 | Advice Engine | 9 | 0 | Not started |
+| 4 | Advice Engine | 9 | 6 | In progress |
 | 5 | API & Orchestration | 16 | 0 | Not started |
 | 6 | Design Exploration | 12 | 0 | Not started |
 | 7 | Frontend Build | 32 | 0 | Not started |
@@ -44,7 +44,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **90** | **41%** |
+| **TOTAL** | | **217** | **96** | **44%** |
 
 ---
 
@@ -215,15 +215,15 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 # PHASE 4: ADVICE ENGINE
 
-- [ ] 4.1 Weak-bullet identification (deterministic selection)
+- [x] 4.1 Weak-bullet identification (deterministic selection)
 - [ ] 4.2 Merged advice LLM call (suggestions + recommendations + summary)
 - [ ] 4.3 **Grounding validator** — reject rewrites introducing new facts
 - [ ] 4.4 Regenerate-once-then-drop policy for ungrounded output
-- [ ] 4.5 Recommendation generation from gaps + ATS findings
-- [ ] 4.6 **Impact ranking** — recompute score delta, show projected gain
-- [ ] 4.7 Deduplication
-- [ ] 4.8 Hard cap at 5–7 recommendations
-- [ ] 4.9 Summary paragraph built from computed facts only
+- [x] 4.5 Recommendation generation from gaps + ATS findings
+- [x] 4.6 **Impact ranking** — recompute score delta, show projected gain
+- [x] 4.7 Deduplication
+- [x] 4.8 Hard cap at 5–7 recommendations
+- [x] 4.9 Summary paragraph built from computed facts only
 
 ### GATE 4
 - [ ] Spot-check 10 analyses: every suggestion is specific to that resume, not generic
