@@ -44,6 +44,10 @@ user another user's resume, even if the API has a bug.
 
 You should see `Success. No rows returned`.
 
+> The script is safe to re-run. If a previous attempt failed partway through
+> and left some tables behind, just run it again — it fills in whatever is
+> missing rather than erroring on what already exists.
+
 ### Confirm it worked
 
 Open **Table Editor** in the sidebar. You should see nine tables:
@@ -168,7 +172,7 @@ Live Supabase check
 
 | If you see | Fix |
 |---|---|
-| `schema NOT applied` | Step 2 did not run. Re-run the SQL. |
+| `schema NOT applied` | Re-run the SQL from step 2 — it is safe to run again. If the tables do exist in the Table Editor, PostgREST's cache is stale: run `notify pgrst, 'reload schema';` on its own and wait ten seconds. |
 | `could not reach the project` | Check `SUPABASE_URL` for a typo or trailing slash. |
 | `HTTP 401` | `SUPABASE_ANON_KEY` is wrong — recopy it. |
 | `asymmetric JWT signing keys in use` | Expected on new projects. Tell me and I will switch the backend to JWKS verification. |

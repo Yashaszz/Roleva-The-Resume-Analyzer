@@ -5,6 +5,11 @@
 -- extracted from it is persisted, and only under the owning user's row.
 -- Row Level Security is enabled on every user-owned table so that even a bug
 -- in the API cannot leak one user's resume to another.
+--
+-- This script is IDEMPOTENT: running it twice is safe, and running it after a
+-- partial failure fills in whatever is missing. A migration that only works on
+-- a pristine database is a migration that strands you the first time anything
+-- goes wrong halfway through.
 -- ============================================================================
 
 create extension if not exists "pgcrypto";
@@ -12,7 +17,7 @@ create extension if not exists "pgcrypto";
 -- ---------------------------------------------------------------------------
 -- profiles — 1:1 with auth.users
 -- ---------------------------------------------------------------------------
-create table public.profiles (
+create table if not exists public.profiles (
   id                  uuid primary key references auth.users (id) on delete cascade,
   display_name        text,
   daily_quota_used    integer     not null default 0,
@@ -30,11 +35,13 @@ security definer set search_path = public
 as $$
 begin
   insert into public.profiles (id, display_name)
-  values (new.id, new.raw_user_meta_data ->> 'full_name');
+  values (new.id, new.raw_user_meta_data ->> 'full_name')
+  on conflict (id) do nothing;
   return new;
 end;
 $$;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
@@ -42,7 +49,7 @@ create trigger on_auth_user_created
 -- ---------------------------------------------------------------------------
 -- resumes — structured document only, never the source file
 -- ---------------------------------------------------------------------------
-create table public.resumes (
+create table if not exists public.resumes (
   id                uuid primary key default gen_random_uuid(),
   user_id           uuid        not null references auth.users (id) on delete cascade,
   label             text,
@@ -54,13 +61,13 @@ create table public.resumes (
   created_at        timestamptz not null default now()
 );
 
-create index resumes_user_idx      on public.resumes (user_id, created_at desc);
-create index resumes_file_hash_idx on public.resumes (user_id, file_hash);
+create index if not exists resumes_user_idx      on public.resumes (user_id, created_at desc);
+create index if not exists resumes_file_hash_idx on public.resumes (user_id, file_hash);
 
 -- ---------------------------------------------------------------------------
 -- job_targets — parsed job descriptions (requirement extraction is cached)
 -- ---------------------------------------------------------------------------
-create table public.job_targets (
+create table if not exists public.job_targets (
   id             uuid primary key default gen_random_uuid(),
   user_id        uuid        not null references auth.users (id) on delete cascade,
   title          text,
@@ -73,13 +80,13 @@ create table public.job_targets (
   created_at     timestamptz not null default now()
 );
 
-create index job_targets_user_idx on public.job_targets (user_id, created_at desc);
-create index job_targets_hash_idx on public.job_targets (jd_hash);
+create index if not exists job_targets_user_idx on public.job_targets (user_id, created_at desc);
+create index if not exists job_targets_hash_idx on public.job_targets (jd_hash);
 
 -- ---------------------------------------------------------------------------
 -- analyses — the core record
 -- ---------------------------------------------------------------------------
-create table public.analyses (
+create table if not exists public.analyses (
   id              uuid primary key default gen_random_uuid(),
   user_id         uuid        not null references auth.users (id) on delete cascade,
   resume_id       uuid        not null references public.resumes (id)     on delete cascade,
@@ -95,12 +102,12 @@ create table public.analyses (
   completed_at    timestamptz
 );
 
-create index analyses_user_idx on public.analyses (user_id, created_at desc);
+create index if not exists analyses_user_idx on public.analyses (user_id, created_at desc);
 
 -- ---------------------------------------------------------------------------
 -- share_links — revocable, expiring, redacted by default
 -- ---------------------------------------------------------------------------
-create table public.share_links (
+create table if not exists public.share_links (
   id              uuid primary key default gen_random_uuid(),
   analysis_id     uuid        not null references public.analyses (id) on delete cascade,
   user_id         uuid        not null references auth.users (id)      on delete cascade,
@@ -113,31 +120,31 @@ create table public.share_links (
   created_at      timestamptz not null default now()
 );
 
-create index share_links_token_idx on public.share_links (token);
-create index share_links_user_idx  on public.share_links (user_id, created_at desc);
+create index if not exists share_links_token_idx on public.share_links (token);
+create index if not exists share_links_user_idx  on public.share_links (user_id, created_at desc);
 
 -- ---------------------------------------------------------------------------
 -- score_samples — deliberately has NO user_id, so it cannot be traced back.
 -- Powers cohort percentiles once a role family reaches 30 samples.
 -- ---------------------------------------------------------------------------
-create table public.score_samples (
-  id           bigserial primary key,
-  role_family  text        not null,
-  seniority    text        not null,
-  overall      real        not null,
-  job_match    real        not null,
-  ats          real        not null,
-  quality      real        not null,
-  must_coverage real       not null,
-  created_at   timestamptz not null default now()
+create table if not exists public.score_samples (
+  id            bigserial primary key,
+  role_family   text        not null,
+  seniority     text        not null,
+  overall       real        not null,
+  job_match     real        not null,
+  ats           real        not null,
+  quality       real        not null,
+  must_coverage real        not null,
+  created_at    timestamptz not null default now()
 );
 
-create index score_samples_cohort_idx on public.score_samples (role_family, seniority);
+create index if not exists score_samples_cohort_idx on public.score_samples (role_family, seniority);
 
 -- ---------------------------------------------------------------------------
 -- cohort_stats — aggregated percentiles, refreshed periodically
 -- ---------------------------------------------------------------------------
-create table public.cohort_stats (
+create table if not exists public.cohort_stats (
   role_family  text        not null,
   seniority    text        not null,
   metric       text        not null,
@@ -150,7 +157,7 @@ create table public.cohort_stats (
 -- ---------------------------------------------------------------------------
 -- rate_limits — replaces Redis at this scale
 -- ---------------------------------------------------------------------------
-create table public.rate_limits (
+create table if not exists public.rate_limits (
   key          text        not null,
   window_start timestamptz not null,
   count        integer     not null default 0,
@@ -160,7 +167,7 @@ create table public.rate_limits (
 -- ---------------------------------------------------------------------------
 -- llm_usage — free-tier budget guard
 -- ---------------------------------------------------------------------------
-create table public.llm_usage (
+create table if not exists public.llm_usage (
   day             date    not null,
   model           text    not null,
   request_count   integer not null default 0,
@@ -183,21 +190,32 @@ alter table public.cohort_stats  enable row level security;
 alter table public.rate_limits   enable row level security;
 alter table public.llm_usage     enable row level security;
 
+drop policy if exists "own profile" on public.profiles;
 create policy "own profile" on public.profiles
   for all using (auth.uid() = id) with check (auth.uid() = id);
 
+drop policy if exists "own resumes" on public.resumes;
 create policy "own resumes" on public.resumes
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "own job targets" on public.job_targets;
 create policy "own job targets" on public.job_targets
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "own analyses" on public.analyses;
 create policy "own analyses" on public.analyses
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "own share links" on public.share_links;
 create policy "own share links" on public.share_links
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Anyone may read cohort statistics; they contain no personal data.
+drop policy if exists "cohort stats are public" on public.cohort_stats;
 create policy "cohort stats are public" on public.cohort_stats
   for select using (true);
+
+-- PostgREST caches the schema, so a freshly created table 404s over the REST
+-- API until the cache is refreshed. Without this the tables exist but appear
+-- missing to any client.
+notify pgrst, 'reload schema';
