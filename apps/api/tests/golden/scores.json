@@ -1,0 +1,50 @@
+{
+  "listed_not_demonstrated": {
+    "ats": 100.0,
+    "job_match": 50.0,
+    "must_coverage": 0.5,
+    "overall": 70.0,
+    "quality": 78.6,
+    "rubric_version": "1.0.0"
+  },
+  "missing_must_haves": {
+    "ats": 100.0,
+    "job_match": 55.0,
+    "must_coverage": 0.0,
+    "overall": 55.0,
+    "quality": 87.6,
+    "rubric_version": "1.0.0"
+  },
+  "no_judgement": {
+    "ats": 100.0,
+    "job_match": 100.0,
+    "must_coverage": 1.0,
+    "overall": 98.6,
+    "quality": 96.0,
+    "rubric_version": "1.0.0"
+  },
+  "poor_formatting": {
+    "ats": 63.0,
+    "job_match": 100.0,
+    "must_coverage": 1.0,
+    "overall": 88.3,
+    "quality": 87.6,
+    "rubric_version": "1.0.0"
+  },
+  "strong_candidate": {
+    "ats": 100.0,
+    "job_match": 100.0,
+    "must_coverage": 1.0,
+    "overall": 96.0,
+    "quality": 88.6,
+    "rubric_version": "1.0.0"
+  },
+  "weak_writing": {
+    "ats": 100.0,
+    "job_match": 100.0,
+    "must_coverage": 1.0,
+    "overall": 69.1,
+    "quality": 11.6,
+    "rubric_version": "1.0.0"
+  }
+}

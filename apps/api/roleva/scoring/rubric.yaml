@@ -1,0 +1,160 @@
+# Roleva scoring rubric.
+#
+# This file is the score. Every number Roleva reports is computed from these
+# weights by a pure function, and this file is published to users — a score
+# somebody cannot inspect is a score they have no reason to trust.
+#
+# Changing anything here changes every score. The version is stamped into each
+# report so an old result can still be explained, and the golden tests fail on
+# any drift, which forces a rubric change to show its score deltas in the diff.
+
+version: "1.0.0"
+
+# ---------------------------------------------------------------------------
+# Overall score
+# ---------------------------------------------------------------------------
+# Job match dominates because the user came here about one specific job.
+# Quality is worth less but transfers to every application they make.
+# ATS is hygiene: necessary, not sufficient, and cheap to fix.
+overall_weights:
+  job_match: 0.45
+  quality: 0.35
+  ats: 0.20
+
+# ---------------------------------------------------------------------------
+# Job match
+# ---------------------------------------------------------------------------
+priority_weights:
+  must: 3.0
+  strong: 2.0
+  nice: 1.0
+
+# Without this gate, a candidate matching twelve nice-to-haves and zero
+# must-haves scores around 70 and is told they are competitive. That is not a
+# harmless inaccuracy; it is advice that would waste someone's time.
+must_have_gate:
+  - below_coverage: 0.50
+    cap: 55
+  - below_coverage: 0.70
+    cap: 72
+
+# ---------------------------------------------------------------------------
+# Quality
+# ---------------------------------------------------------------------------
+# Roughly sixty per cent counted, forty per cent judged. The counted portion
+# cannot drift between runs, which keeps most of the score stable even where
+# the rubric judgement moves.
+quality_split:
+  metrics: 0.60
+  rubric: 0.40
+
+# Relative importance within the counted portion.
+metric_weights:
+  quantification: 0.25
+  action_verbs: 0.20
+  weak_phrases: 0.20
+  bullet_length: 0.12
+  passive_voice: 0.10
+  first_person: 0.07
+  opener_variety: 0.06
+
+# Relative importance within the judged portion. Impact is weighted highest
+# because it is the difference between describing duties and showing results.
+rubric_weights:
+  impact: 0.30
+  clarity: 0.25
+  specificity: 0.25
+  professionalism: 0.10
+  relevance: 0.10
+
+# ---------------------------------------------------------------------------
+# ATS
+# ---------------------------------------------------------------------------
+# Starts at 100; findings deduct. Deductions live with the checks themselves in
+# roleva/ats/rules.py, where the reasoning for each sits beside the detection.
+ats:
+  starting_score: 100
+  floor: 0
+
+# ---------------------------------------------------------------------------
+# Bands
+# ---------------------------------------------------------------------------
+# What a number means in words. Published so "68" is never just a number.
+bands:
+  - min: 85
+    key: strong
+    label: Strong candidate
+    meaning: Apply now. Minor polish only.
+  - min: 70
+    key: competitive
+    label: Competitive
+    meaning: A few targeted fixes would materially improve your odds.
+  - min: 55
+    key: needs_work
+    label: Needs work
+    meaning: Real gaps. Worth addressing before you apply.
+  - min: 40
+    key: significant_gaps
+    label: Significant gaps
+    meaning: Substantial revision needed, or a different target role.
+  - min: 0
+    key: not_aligned
+    label: Not aligned
+    meaning: This resume does not fit this role as written.
+
+# ---------------------------------------------------------------------------
+# Expected ranges
+# ---------------------------------------------------------------------------
+# Curated reference ranges, NOT measured percentiles. Roleva has no cohort data
+# until real users generate it, and inventing "top 20%" would be dishonest.
+# These are always shown as "typical range", never as a percentile.
+#
+# Real percentiles appear only once a role family reaches 30 samples, from
+# score_samples — which carries no user id by design.
+expected_bands:
+  software_engineering:
+    intern: { job_match: [55, 70], quality: [60, 75], ats: [75, 90] }
+    entry: { job_match: [60, 75], quality: [65, 80], ats: [80, 92] }
+  frontend_engineering:
+    intern: { job_match: [55, 70], quality: [60, 75], ats: [75, 90] }
+    entry: { job_match: [60, 75], quality: [65, 80], ats: [80, 92] }
+  backend_engineering:
+    intern: { job_match: [55, 70], quality: [60, 75], ats: [75, 90] }
+    entry: { job_match: [60, 75], quality: [65, 80], ats: [80, 92] }
+  data_analytics:
+    intern: { job_match: [52, 68], quality: [60, 76], ats: [78, 90] }
+    entry: { job_match: [58, 73], quality: [65, 80], ats: [80, 92] }
+  data_science:
+    intern: { job_match: [50, 66], quality: [60, 76], ats: [78, 90] }
+    entry: { job_match: [55, 72], quality: [65, 80], ats: [80, 92] }
+  machine_learning:
+    intern: { job_match: [48, 65], quality: [60, 76], ats: [78, 90] }
+    entry: { job_match: [54, 70], quality: [65, 80], ats: [80, 92] }
+  devops:
+    intern: { job_match: [50, 68], quality: [58, 74], ats: [78, 90] }
+    entry: { job_match: [56, 72], quality: [63, 78], ats: [80, 92] }
+  quality_assurance:
+    intern: { job_match: [55, 72], quality: [58, 74], ats: [78, 90] }
+    entry: { job_match: [60, 76], quality: [63, 78], ats: [80, 92] }
+  product_management:
+    intern: { job_match: [50, 68], quality: [65, 80], ats: [80, 92] }
+    entry: { job_match: [55, 70], quality: [68, 82], ats: [82, 94] }
+  design:
+    intern: { job_match: [50, 66], quality: [58, 74], ats: [68, 86] }
+    entry: { job_match: [55, 70], quality: [62, 78], ats: [70, 88] }
+  business_analysis:
+    intern: { job_match: [52, 68], quality: [64, 78], ats: [80, 92] }
+    entry: { job_match: [58, 73], quality: [68, 82], ats: [82, 94] }
+  marketing:
+    intern: { job_match: [50, 68], quality: [62, 78], ats: [78, 90] }
+    entry: { job_match: [55, 72], quality: [66, 80], ats: [80, 92] }
+  general:
+    intern: { job_match: [50, 70], quality: [60, 78], ats: [75, 90] }
+    entry: { job_match: [55, 72], quality: [63, 80], ats: [78, 92] }
+    mid: { job_match: [58, 75], quality: [66, 82], ats: [80, 92] }
+    senior: { job_match: [60, 78], quality: [70, 85], ats: [80, 92] }
+    unknown: { job_match: [55, 72], quality: [63, 80], ats: [78, 92] }
+
+# Percentiles are hidden below this many samples in a cohort. Showing a
+# percentile drawn from eleven people would be a statistic in appearance only.
+percentile_minimum_sample: 30
