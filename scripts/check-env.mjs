@@ -70,6 +70,26 @@ const PLAIN = [
 /** Values copied from .env.example that were never replaced. */
 const PLACEHOLDERS = [/^your-/i, /your-project-ref/i, /^$/];
 
+/**
+ * Read the role out of a Supabase API key.
+ *
+ * These are JWTs whose payload is base64, not encrypted — the role is public
+ * information, and reading it costs nothing. The dashboard shows several very
+ * similar-looking `ey...` strings, so checking which is which catches the easy
+ * mistake of pasting one into the wrong variable.
+ */
+function supabaseKeyRole(value) {
+  if (!value) return null;
+  const parts = value.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+    return payload.iss === 'supabase' ? (payload.role ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
 const fileEnv = loadEnv(ENV_PATH);
 if (fileEnv === null) {
   console.error('FAIL  .env not found. Run:  cp .env.example .env');
@@ -99,6 +119,30 @@ for (const key of OPTIONAL_SECRETS) {
   const value = env[key] ?? '';
   const missing = PLACEHOLDERS.some((p) => p.test(value));
   console.log(missing ? `  --       ${key}  not set yet` : `  OK       ${key}  ${fingerprint(value)}`);
+}
+
+// Catch keys pasted into the wrong variable. The dashboard shows anon,
+// service_role and (on legacy projects) a JWT secret within a few lines of each
+// other, and two of the three are near-identical `ey...` strings.
+const roleChecks = [
+  ['SUPABASE_ANON_KEY', 'anon'],
+  ['SUPABASE_SERVICE_ROLE_KEY', 'service_role'],
+];
+for (const [key, expected] of roleChecks) {
+  const role = supabaseKeyRole(env[key]);
+  if (role && role !== expected) {
+    console.log(`\n  FAIL     ${key} holds the "${role}" key, not "${expected}"`);
+    failed = true;
+  }
+}
+const secretRole = supabaseKeyRole(env.SUPABASE_JWT_SECRET);
+if (secretRole) {
+  console.log(
+    `\n  FAIL     SUPABASE_JWT_SECRET holds the "${secretRole}" API key.\n` +
+      '           That variable is for the legacy HS256 signing secret, which is\n' +
+      `           not an API key. Move this value to SUPABASE_${secretRole.toUpperCase()}_KEY.`,
+  );
+  failed = true;
 }
 
 console.log('\nNon-secret settings');
