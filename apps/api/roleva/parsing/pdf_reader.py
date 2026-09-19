@@ -21,6 +21,8 @@ from dataclasses import dataclass, field
 
 import pymupdf
 
+from roleva.parsing import _pymupdf as mu
+
 #: PyMuPDF span flag bits.
 _FLAG_ITALIC = 1 << 1
 _FLAG_BOLD = 1 << 4
@@ -140,7 +142,7 @@ class ExtractedDocument:
 
 def _raw_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
     lines: list[Line] = []
-    for block in page.get_text("dict")["blocks"]:
+    for block in mu.text_dict(page)["blocks"]:
         if block.get("type") != 0:  # skip images
             continue
         for raw in block.get("lines", []):
@@ -259,7 +261,7 @@ def extract(doc: pymupdf.Document) -> ExtractedDocument:
     per_page: dict[int, list[Line]] = {}
     multi_column: list[int] = []
 
-    for index, page in enumerate(doc, start=1):
+    for index, page in enumerate(mu.pages(doc), start=1):
         lines = _raw_lines(page, index)
         gutters = detect_columns(lines, page.rect.width)
         if gutters:

@@ -54,8 +54,15 @@ warn_unreachable = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["fitz.*", "supabase.*", "google.genai.*"]
+module = ["fitz.*", "pymupdf.*", "supabase.*", "google.genai.*"]
 ignore_missing_imports = true
+
+# PyMuPDF ships incomplete type information. Rather than scattering ignores
+# through the parsing code, one shim module absorbs the untyped surface and
+# presents a typed API to everything else.
+[[tool.mypy.overrides]]
+module = ["roleva.parsing._pymupdf"]
+disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -18,10 +18,9 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 
-import pymupdf
-
 from roleva.api.errors import ErrorCode, RolevaError
 from roleva.config import Settings
+from roleva.parsing import _pymupdf as mu
 
 #: Every PDF begins with this. Checked against the bytes rather than the
 #: filename, which anyone can rename.
@@ -102,26 +101,26 @@ def english_ratio(text: str) -> float:
     return sum(1 for word in words if word in _ENGLISH_MARKERS) / len(words)
 
 
-def _page_has_covering_image(page: pymupdf.Page) -> bool:
-    page_area = abs(page.rect.get_area())
+def _page_has_covering_image(page: mu.Page) -> bool:
+    page_area = mu.area(page.rect)
     if page_area <= 0:
         return False
-    for block in page.get_text("dict")["blocks"]:
+    for block in mu.text_dict(page)["blocks"]:
         if block.get("type") != 1:  # 1 = image
             continue
-        bbox = pymupdf.Rect(block["bbox"])
-        if abs(bbox.get_area()) / page_area >= _PAGE_COVER_RATIO:
+        if mu.area(mu.rect(block["bbox"])) / page_area >= _PAGE_COVER_RATIO:
             return True
     return False
 
 
-def measure(doc: pymupdf.Document) -> PdfStats:
-    text = "".join(page.get_text() for page in doc)
+def measure(doc: mu.Document) -> PdfStats:
+    all_pages = mu.pages(doc)
+    text = "".join(mu.plain_text(page) for page in all_pages)
     return PdfStats(
         page_count=doc.page_count,
         text_chars=len(text.strip()),
-        image_count=sum(len(page.get_images()) for page in doc),
-        has_page_covering_image=any(_page_has_covering_image(page) for page in doc),
+        image_count=sum(mu.image_count(page) for page in all_pages),
+        has_page_covering_image=any(_page_has_covering_image(page) for page in all_pages),
         english_ratio=english_ratio(text),
     )
 
@@ -135,7 +134,7 @@ def _check_bytes(data: bytes, settings: Settings) -> None:
         raise RolevaError(ErrorCode.NOT_A_PDF)
 
 
-def _check_document(doc: pymupdf.Document, settings: Settings) -> PdfStats:
+def _check_document(doc: mu.Document, settings: Settings) -> PdfStats:
     if doc.needs_pass:
         raise RolevaError(ErrorCode.PDF_ENCRYPTED)
     if doc.page_count == 0:
@@ -164,7 +163,7 @@ def _check_document(doc: pymupdf.Document, settings: Settings) -> PdfStats:
 
 
 @contextmanager
-def open_validated(data: bytes, settings: Settings) -> Iterator[tuple[pymupdf.Document, PdfStats]]:
+def open_validated(data: bytes, settings: Settings) -> Iterator[tuple[mu.Document, PdfStats]]:
     """Open an uploaded PDF, or raise a RolevaError explaining why not.
 
     The document is closed on exit whatever happens. Nothing is written to disk:
@@ -173,15 +172,15 @@ def open_validated(data: bytes, settings: Settings) -> Iterator[tuple[pymupdf.Do
     _check_bytes(data, settings)
 
     try:
-        doc = pymupdf.open(stream=data, filetype="pdf")
-    except Exception as exc:  # noqa: BLE001 — any failure here means unreadable
+        doc = mu.open_stream(data)
+    except Exception as exc:  # any failure to open means the file is unreadable
         raise RolevaError(ErrorCode.PDF_CORRUPT) from exc
 
     try:
         stats = _check_document(doc, settings)
         yield doc, stats
     finally:
-        doc.close()
+        mu.close(doc)
 
 
 def filename_is_professional(filename: str | None) -> bool:
