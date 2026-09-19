@@ -15,9 +15,10 @@
 - [x] Roadmap defined
 - [x] Repo scaffolded, domain models written, DB schema written
 - [x] **PHASE 0 COMPLETE** — Gate 0 passed
-- [ ] **← YOU ARE HERE. Next: Phase 1, the parsing pipeline.**
+- [x] **PHASE 1 CODE COMPLETE** — all 20 tasks; Gate 1 awaits real resumes
+- [ ] **← YOU ARE HERE. Next: Phase 2, JD extraction and matching.**
 
-**Progress: 33 / 217 tasks (~15%) — Phase 0 complete, Gate 0 passed. 160 tests green.**
+**Progress: 53 / 217 tasks (~24%) — Phase 1 code complete. 416 tests green.**
 
 ---
 
@@ -27,7 +28,7 @@
 |---|---|---|---|---|
 | -1 | Accounts & Prerequisites | 14 | 11 | **DONE** |
 | 0 | Foundation | 24 | 23 | **DONE** |
-| 1 | Parsing Pipeline | 20 | 0 | Not started |
+| 1 | Parsing Pipeline | 20 | 20 | **CODE DONE** (Gate 1 needs real resumes) |
 | 2 | JD & Matching | 18 | 0 | Not started |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
 | 4 | Advice Engine | 9 | 0 | Not started |
@@ -38,7 +39,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **33** | **15%** |
+| **TOTAL** | | **217** | **53** | **24%** |
 
 ---
 
@@ -133,17 +134,17 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 1.13 Multi-signal heading scorer (font, caps, bold, length, gap)
 - [x] 1.14 Sectionizer producing sections with spans
 - [x] 1.15 Contact-block extraction (feeds the PII redactor)
-- [ ] 1.16 Resume structuring LLM call (redacted input, flat Gemini-safe schema)
-- [ ] 1.17 Pydantic validation + one repair retry + deterministic fallback
-- [ ] 1.18 **Span verification — drop any item not found verbatim in the text**
-- [ ] 1.19 Deterministic date parsing + durations + gap computation
-- [ ] 1.20 `parse_confidence` scoring + degradation behavior
+- [x] 1.16 Resume structuring LLM call (redacted input, flat Gemini-safe schema)
+- [x] 1.17 Pydantic validation + one repair retry + deterministic fallback
+- [x] 1.18 **Span verification — drop any item not found verbatim in the text**
+- [x] 1.19 Deterministic date parsing + durations + gap computation
+- [x] 1.20 `parse_confidence` scoring + degradation behavior
 
 ### GATE 1
-- [ ] Synthetic corpus: **100%** behaves as its manifest specifies (regression suite)
+- [x] Synthetic corpus: **100%** behaves as its manifest specifies (regression suite)
 - [ ] Real corpus: **≥90% parse at confidence ≥0.7**, manually verified
 - [ ] Golden snapshots committed for both corpora
-- [ ] Two-column resumes parse in correct reading order
+- [x] Two-column resumes parse in correct reading order
 - [ ] NOTE: synthetic alone does NOT pass this gate — it grades the parser
       against documents its own author generated
 

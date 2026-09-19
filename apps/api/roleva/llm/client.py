@@ -157,9 +157,13 @@ class LlmClient:
         self.bucket = bucket or TokenBucket(settings.llm_max_rpm)
         self.transient_retries = transient_retries
         self.backoff_base_seconds = backoff_base_seconds
+        #: Which model actually produced the last response. Recorded because
+        #: a failover changes it, and a report has to say what generated it.
+        self.last_model_used: str = settings.gemini_model_main
         self._models = [
             settings.gemini_model_main,
             settings.gemini_model_light,
+            settings.gemini_model_fallback,
             settings.gemini_embed_model,
         ]
 
@@ -232,12 +236,54 @@ class LlmClient:
         schema: dict[str, Any] | None,
         label: str,
     ) -> str:
-        """One logical call, retried through transient vendor failures.
+        """One logical call, retried and then failed over to another model.
 
-        Separate from the schema retry above: a 503 means the request never
-        reached the model, so it does not count against the per-analysis call
-        budget — though it is still recorded against the daily quota, because
-        the vendor counts it.
+        Free-tier capacity is shared, and a popular model can return 503 for
+        minutes at a time — long enough that retrying the same model is futile.
+        Rather than fail the whole analysis on someone else's traffic spike,
+        each model gets its retry budget and then the next one is tried.
+
+        Falling back changes which model produced the output, which matters for
+        reproducibility, so the model actually used is recorded on the client
+        for the report to stamp.
+        """
+        candidates = [model_name]
+        fallback = self.settings.gemini_model_fallback
+        if fallback and fallback != model_name:
+            candidates.append(fallback)
+
+        last_error: LlmError | None = None
+        for index, candidate in enumerate(candidates):
+            try:
+                raw = await self._attempt_model(
+                    prompt=prompt, model_name=candidate, schema=schema, label=label
+                )
+            except TransientLlmError as exc:
+                last_error = exc
+                if index + 1 < len(candidates):
+                    logger.warning(
+                        "llm.failover",
+                        extra={"label": label, "from": candidate, "to": candidates[index + 1]},
+                    )
+                continue
+            self.last_model_used = candidate
+            return raw
+
+        raise last_error or LlmError(f"{label}: no model available")
+
+    async def _attempt_model(
+        self,
+        *,
+        prompt: str,
+        model_name: str,
+        schema: dict[str, Any] | None,
+        label: str,
+    ) -> str:
+        """Retry one model through transient failures.
+
+        A 503 means the request never reached the model, so it does not count
+        against the per-analysis call budget — though it is still recorded
+        against the daily quota, because the vendor counts it.
         """
         last: TransientLlmError | None = None
 

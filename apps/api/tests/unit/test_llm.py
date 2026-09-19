@@ -194,14 +194,16 @@ class TestTransientFailures:
         assert result.count == 2
         assert len(provider.prompts) == 2
 
-    async def test_it_gives_up_after_the_retry_budget(self) -> None:
+    async def test_the_retry_budget_applies_per_model(self) -> None:
+        """Three attempts on the primary, then three on the fallback, then it
+        gives up — rather than hammering one unavailable model six times."""
         client, provider = make_client(
-            [TransientLlmError("busy", status=503) for _ in range(3)],
+            [TransientLlmError("busy", status=503) for _ in range(6)],
             transient_retries=2,
         )
         with pytest.raises(TransientLlmError):
             await client.structured(prompt="hi", output_model=Shape)
-        assert len(provider.prompts) == 3  # initial attempt plus two retries
+        assert len(provider.prompts) == 6
 
     async def test_rate_limiting_from_the_vendor_is_retried(self) -> None:
         client, _ = make_client(
@@ -287,3 +289,44 @@ class TestBudgetIntegration:
         client, provider = make_client([])
         assert await client.embed([]) == []
         assert provider.embed_calls == 0
+
+
+class TestModelFailover:
+    """A popular free-tier model can 503 for minutes, long enough that retrying
+    the same one is futile. An analysis should survive someone else's traffic
+    spike rather than fail on it."""
+
+    async def test_a_persistently_busy_model_fails_over(self) -> None:
+        # Three 503s exhaust the primary's retries; the fallback then answers.
+        client, provider = make_client(
+            [
+                TransientLlmError("busy", status=503),
+                TransientLlmError("busy", status=503),
+                TransientLlmError("busy", status=503),
+                '{"name": "ok", "count": 1}',
+            ]
+        )
+        result, _ = await client.structured(prompt="hi", output_model=Shape)
+        assert result.name == "ok"
+        assert len(provider.prompts) == 4
+
+    async def test_the_model_actually_used_is_recorded(self) -> None:
+        """A failover changes which model produced the output, and a report has
+        to be able to say so."""
+        client, _ = make_client(
+            [TransientLlmError("busy", status=503) for _ in range(3)]
+            + ['{"name": "ok", "count": 1}']
+        )
+        await client.structured(prompt="hi", output_model=Shape)
+        assert client.last_model_used == client.settings.gemini_model_fallback
+
+    async def test_no_failover_when_the_primary_works(self) -> None:
+        client, provider = make_client(['{"name": "ok", "count": 1}'])
+        await client.structured(prompt="hi", output_model=Shape)
+        assert client.last_model_used == client.settings.gemini_model_main
+        assert len(provider.prompts) == 1
+
+    async def test_every_model_failing_raises(self) -> None:
+        client, _ = make_client([TransientLlmError("busy", status=503) for _ in range(6)])
+        with pytest.raises(TransientLlmError):
+            await client.structured(prompt="hi", output_model=Shape)

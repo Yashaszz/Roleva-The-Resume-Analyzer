@@ -43,6 +43,10 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_model_main: str = "gemini-3.6-flash"
     gemini_model_light: str = "gemini-3.5-flash-lite"
+    # Free-tier capacity is shared, and a popular model can be unavailable for
+    # minutes at a time. A second model of comparable capability keeps an
+    # analysis working rather than failing on someone else's traffic spike.
+    gemini_model_fallback: str = "gemini-3.5-flash"
     gemini_embed_model: str = "gemini-embedding-2"
 
     # --- free-tier guardrails ---
