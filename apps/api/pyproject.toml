@@ -54,6 +54,8 @@ target-version = "py312"
 "roleva/parsing/spans.py" = ["RUF001"]
 "roleva/quality/metrics.py" = ["RUF001", "SIM905"]
 "roleva/quality/proofread.py" = ["RUF001"]
+# A block of words reads better than a sixty-element list literal.
+"roleva/advice/grounding.py" = ["RUF001", "SIM905"]
 "roleva/ats/rules.py" = ["RUF001", "RUF002"]
 "tests/**" = ["RUF001"]
 

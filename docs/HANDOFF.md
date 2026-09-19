@@ -80,7 +80,8 @@ apps/api/roleva/
   llm/           client(failover+repair retry) sanitize(PII+injection) budget
   api/           auth(ES256+HS256) errors
   storage/       samples(anonymous cohort rows, no user_id)
-  advice/  orchestration/                    ← empty, next up
+  advice/        selection impact recommendations summary grounding writer
+  orchestration/                             ← empty, next up
 apps/api/tests/unit/     22 test modules
 apps/api/tests/golden/scores.json        6 pinned scenarios
 ```
@@ -92,7 +93,7 @@ Never print its values. Verify with `node scripts/check-env.mjs`.
 
 ## 6. Where the work stands
 
-**755 tests passing · ruff clean · mypy clean · 90/217 checklist tasks (41%)**
+**826 tests passing · ruff clean · mypy clean · 99/217 checklist tasks (46%)**
 
 | Phase | Status |
 |---|---|
@@ -100,28 +101,30 @@ Never print its values. Verify with `node scripts/check-env.mjs`.
 | 1 Parsing | complete (Gate 1 blocked on real PDFs) |
 | 2 JD + matching | complete |
 | 3 Scoring & ATS | complete (Gate 3 blocked on the calibration set) |
-| 4 Advice engine | **next** |
-| 5 API & orchestration | not started |
+| 4 Advice engine | complete (Gate 4 needs a live 10-analysis spot check) |
+| 5 API & orchestration | **next** |
 | 6–11 | design exploration, frontend, sharing, hardening, deploy, launch |
 
 ### Immediate next tasks
 
-Phase 4, the advice engine. The shape is already decided by the principles above:
+Phase 5, API and orchestration. The pieces all exist; nothing is wired together
+yet. There is no pipeline, no endpoint and no persistence — `orchestration/` is
+still an empty package.
 
-- **4.1 weak-bullet selection is deterministic** — the metrics already name their
-  offenders, so the choice of what to rewrite never involves a model.
-- **4.2 one merged advice call** — suggestions, recommendations and summary in a
-  single request, because the free tier limits requests.
-- **4.3 the grounding validator is the load-bearing piece** — a rewrite may not
-  introduce a number, employer or technology absent from the original. One
-  regeneration, then the suggestion is dropped rather than shown.
-- **4.6 projected gain is recomputed by the scoring engine**, never estimated by
-  the model. This is the same rule as everywhere else: the model writes prose,
-  the code produces numbers.
+Order that avoids rework:
 
-Gate 3's last criterion — *no number anywhere originates from an LLM* — is
-deliberately left unticked until Phase 4 is done, because `projected_gain` is the
-last place that rule could still be broken.
+1. **5.1 the orchestrator first**, with per-stage isolation. Every stage can
+   fail independently and the report must degrade rather than disappear.
+2. **5.8 persistence** — structured data only. The raw PDF is never stored;
+   that was an explicit user decision.
+3. **5.3/5.4 SSE** after the pipeline works synchronously. Progress events are
+   a designed experience, not a spinner.
+4. **5.13/5.14 warm-up** — Render's free tier sleeps, so the first analysis of
+   the day would otherwise take 50 seconds.
+
+Gate 3's last criterion — *no number anywhere originates from an LLM* — can now
+be ticked on review: `projected_gain` was the final risk and it is computed by
+re-running the scoring engine.
 
 ---
 
@@ -148,6 +151,10 @@ last place that rule could still be broken.
 - Fuzzy threshold: typos score 82–95, distinct-skill collisions 40–77. 82 is the seam. Guard against two *known-distinct* skills matching.
 - Longest-match-wins on requirement tiers, or `"Preferred qualifications"` becomes a MUST.
 - PyMuPDF's `text` table strategy invents tables. Only trust vector-line detection.
+- `taxonomy.find_in_text` returns offsets into the **normalised** text, not the
+  text you passed in. Slicing the original with them yields garbage like
+  `' Kubernete'`. Use the canonical name, or read back out of the same
+  normalised string.
 - A resume proofreader must be closed-set. A dictionary flags the candidate's own
   surname; `Excel at communication` is not a spreadsheet. Every term on the casing
   list needs its lowercase form checked against ordinary English first.
