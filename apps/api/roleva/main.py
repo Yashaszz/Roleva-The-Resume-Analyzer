@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 
 from roleva.api.auth import CurrentUser
 from roleva.api.errors import RolevaError
+from roleva.api.routes import router
 from roleva.config import get_settings
 from roleva.telemetry.logging import configure, get_logger
 
@@ -67,6 +68,9 @@ async def roleva_error_handler(_: Request, exc: RolevaError) -> JSONResponse:
     http_exc = exc.to_http()
     logger.warning("request.rejected", code=exc.code.value, status=http_exc.status_code)
     return JSONResponse(status_code=http_exc.status_code, content=http_exc.detail)
+
+
+app.include_router(router)
 
 
 @app.get("/health")
