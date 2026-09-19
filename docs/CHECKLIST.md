@@ -126,13 +126,13 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 1.6  Absolute character offset tracking (span foundation)
 - [x] 1.7  Column detection via x-coordinate clustering
 - [x] 1.8  Reading-order reconstruction
-- [ ] 1.9  Normalizer: unicode, ligatures, bullets, de-hyphenation
-- [ ] 1.10 **Offset-preserving** normalization map
+- [x] 1.9  Normalizer: unicode, ligatures, bullets, de-hyphenation
+- [x] 1.10 **Offset-preserving** normalization map
 - [x] 1.11 Repeated header/footer stripping
-- [ ] 1.12 Section-header lexicon (~120 variants)
-- [ ] 1.13 Multi-signal heading scorer (font, caps, bold, length, gap)
-- [ ] 1.14 Sectionizer producing sections with spans
-- [ ] 1.15 Contact-block extraction (feeds the PII redactor)
+- [x] 1.12 Section-header lexicon (~120 variants)
+- [x] 1.13 Multi-signal heading scorer (font, caps, bold, length, gap)
+- [x] 1.14 Sectionizer producing sections with spans
+- [x] 1.15 Contact-block extraction (feeds the PII redactor)
 - [ ] 1.16 Resume structuring LLM call (redacted input, flat Gemini-safe schema)
 - [ ] 1.17 Pydantic validation + one repair retry + deterministic fallback
 - [ ] 1.18 **Span verification — drop any item not found verbatim in the text**

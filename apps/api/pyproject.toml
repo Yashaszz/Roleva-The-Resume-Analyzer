@@ -43,6 +43,15 @@ include = ["roleva*"]
 line-length = 100
 target-version = "py312"
 
+[tool.ruff.lint.per-file-ignores]
+# RUF001 flags Unicode characters that resemble ASCII. These modules exist
+# precisely to recognise and normalise those characters, so the glyphs are the
+# subject matter rather than a typo, and the tests assert on them directly.
+"roleva/parsing/normalizer.py" = ["RUF001"]
+"roleva/parsing/sectionizer.py" = ["RUF001"]
+"roleva/parsing/contact.py" = ["RUF001"]
+"tests/**" = ["RUF001"]
+
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 ignore = ["E501"]

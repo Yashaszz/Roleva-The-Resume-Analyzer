@@ -171,7 +171,7 @@ class TestStructuralCases:
 
     def test_the_bullet_fixture_uses_several_distinct_glyphs(self, synthetic_resumes: Path) -> None:
         text = text_of(synthetic_resumes / "bullet-glyph-variety.pdf")
-        glyphs = {glyph for glyph in "•▪–◦*" if glyph in text}  # noqa: RUF001
+        glyphs = {glyph for glyph in "•▪–◦*" if glyph in text}
         assert len(glyphs) >= 4
 
     def test_the_two_column_fixture_has_text_in_two_x_bands(self, synthetic_resumes: Path) -> None:
