@@ -16,9 +16,9 @@
 - [x] Repo scaffolded, domain models written, DB schema written
 - [x] **PHASE 0 COMPLETE** — Gate 0 passed
 - [x] **PHASE 1 CODE COMPLETE** — all 20 tasks; Gate 1 awaits real resumes
-- [ ] **← YOU ARE HERE. Phase 2: cleaning, cues and taxonomy done; matching cascade next.**
+- [ ] **← YOU ARE HERE. Phase 2: cascade done; embeddings + adjudication remain (2.12-2.14).**
 
-**Progress: 59 / 217 tasks (~27%) — Phase 2 deterministic layer done. 506 tests green.**
+**Progress: 68 / 217 tasks (~31%) — matching cascade working. 545 tests green.**
 
 ---
 
@@ -29,7 +29,7 @@
 | -1 | Accounts & Prerequisites | 14 | 11 | **DONE** |
 | 0 | Foundation | 24 | 23 | **DONE** |
 | 1 | Parsing Pipeline | 20 | 20 | **CODE DONE** (Gate 1 needs real resumes) |
-| 2 | JD & Matching | 18 | 6 | In progress |
+| 2 | JD & Matching | 18 | 15 | In progress |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
 | 4 | Advice Engine | 9 | 0 | Not started |
 | 5 | API & Orchestration | 16 | 0 | Not started |
@@ -39,7 +39,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **59** | **27%** |
+| **TOTAL** | | **217** | **68** | **31%** |
 
 ---
 
@@ -154,22 +154,22 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 - [x] 2.1  JD length validation (<200 reject, <600 warn)
 - [x] 2.2  JD cleaner (strip EEO, benefits, salary, "about us")
-- [ ] 2.3  Requirement extraction LLM call
-- [ ] 2.4  Role-family + seniority classification (same call, no extra request)
+- [x] 2.3  Requirement extraction LLM call
+- [x] 2.4  Role-family + seniority classification (same call, no extra request)
 - [x] 2.5  Deterministic priority cue rules (must / strong / nice override layer)
 - [x] 2.6  Quantifier regex ("3+ years")
 - [x] 2.7  Skill taxonomy seeded (~800 canonical entries + aliases)
 - [x] 2.8  Alias resolver
-- [ ] 2.9  Requirement deduplication
-- [ ] 2.10 Tier 1: canonical/exact matching
-- [ ] 2.11 Tier 2: fuzzy matching (rapidfuzz, ≥88)
+- [x] 2.9  Requirement deduplication
+- [x] 2.10 Tier 1: canonical/exact matching
+- [x] 2.11 Tier 2: fuzzy matching (rapidfuzz, ≥88)
 - [ ] 2.12 Batched embedding call + content-hash cache
 - [ ] 2.13 Tier 3: cosine banding (≥0.82 accept, 0.62–0.82 ambiguous, <0.62 reject)
 - [ ] 2.14 Tier 4: **single batched adjudication call** for all ambiguous items
-- [ ] 2.15 **Evidence strength by location** (bullet 1.0 / project 0.85 / skills-only 0.5 / adjacent 0.4)
-- [ ] 2.16 Years-of-experience resolution from parsed dates
-- [ ] 2.17 Evidence span verification
-- [ ] 2.18 Unmatched-resume-content detection (what you have that the JD doesn't want)
+- [x] 2.15 **Evidence strength by location** (bullet 1.0 / project 0.85 / skills-only 0.5 / adjacent 0.4)
+- [x] 2.16 Years-of-experience resolution from parsed dates
+- [x] 2.17 Evidence span verification
+- [x] 2.18 Unmatched-resume-content detection (what you have that the JD doesn't want)
 
 ### GATE 2
 - [ ] **≥85% agreement with your manual judgment** on the 20-pair calibration set

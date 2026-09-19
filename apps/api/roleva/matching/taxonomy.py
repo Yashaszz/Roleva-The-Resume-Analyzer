@@ -258,9 +258,16 @@ ADJACENT: dict[str, tuple[str, ...]] = {
     "Adobe XD": ("Figma", "Sketch"),
 }
 
-#: Fuzzy matches at or above this are accepted as the same skill. High enough
-#: that "Java" and "JavaScript" stay distinct, which a looser threshold breaks.
-FUZZY_THRESHOLD = 88
+#: Fuzzy matches at or above this are accepted as the same skill.
+#:
+#: Chosen from measurement rather than instinct. Genuine typos score 82-95
+#: ("pyhton"/"python" 83, "Kubernets"/"kubernetes" 84, "postgre"/"postgresql"
+#: 82), while the collisions worth avoiding score far lower ("java"/"javascript"
+#: 57, "flask"/"slack" 60, "scala"/"scalable" 77). 82 sits in the gap.
+#:
+#: Badly mangled words below it are missed on purpose: a false match tells
+#: someone they have a skill they do not, which is worse than missing one.
+FUZZY_THRESHOLD = 82
 
 _PUNCT = re.compile(r"[^\w\s+#.]")
 _SPACES = re.compile(r"\s+")
