@@ -118,17 +118,17 @@ The contract layer. Get this right or everything downstream churns.
 
 Highest-risk subsystem. Everything downstream inherits its errors.
 
-- [ ] 1.1  Upload validation: MIME + magic bytes
-- [ ] 1.2  Upload validation: size (8MB), pages (10), encryption, corruption
-- [ ] 1.3  Scanned-PDF detection (text density) + helpful rejection message
-- [ ] 1.4  English-language detection
-- [ ] 1.5  PyMuPDF extraction: blocks, bboxes, fonts, sizes, **colors**
-- [ ] 1.6  Absolute character offset tracking (span foundation)
-- [ ] 1.7  Column detection via x-coordinate clustering
-- [ ] 1.8  Reading-order reconstruction
+- [x] 1.1  Upload validation: MIME + magic bytes
+- [x] 1.2  Upload validation: size (8MB), pages (10), encryption, corruption
+- [x] 1.3  Scanned-PDF detection (text density) + helpful rejection message
+- [x] 1.4  English-language detection
+- [x] 1.5  PyMuPDF extraction: blocks, bboxes, fonts, sizes, **colors**
+- [x] 1.6  Absolute character offset tracking (span foundation)
+- [x] 1.7  Column detection via x-coordinate clustering
+- [x] 1.8  Reading-order reconstruction
 - [ ] 1.9  Normalizer: unicode, ligatures, bullets, de-hyphenation
 - [ ] 1.10 **Offset-preserving** normalization map
-- [ ] 1.11 Repeated header/footer stripping
+- [x] 1.11 Repeated header/footer stripping
 - [ ] 1.12 Section-header lexicon (~120 variants)
 - [ ] 1.13 Multi-signal heading scorer (font, caps, bold, length, gap)
 - [ ] 1.14 Sectionizer producing sections with spans
