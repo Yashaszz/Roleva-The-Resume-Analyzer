@@ -21,6 +21,9 @@
 
 **Progress: 88 / 217 tasks (~41%) — scoring engine complete. 695 tests green.**
 
+> **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
+> the principles, the repo map, the open blockers and the mistakes already paid for.
+
 ---
 
 ## PROGRESS DASHBOARD
