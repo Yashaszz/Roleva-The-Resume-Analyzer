@@ -1,0 +1,56 @@
+# Keeps the free tiers awake.
+#
+# Render suspends an idle instance and takes ~50 seconds to cold-start it.
+# Supabase pauses a project after a week of no activity and then needs a manual
+# restore, which would take Roleva offline until somebody noticed.
+#
+# A ping every 10 minutes during waking hours prevents both. It deliberately
+# does not run overnight: nobody is using Roleva at 04:00 IST, and burning
+# GitHub Actions minutes to keep a server warm for nobody is the kind of thing
+# that quietly eats a free tier.
+#
+# GitHub's scheduler is best-effort and can be delayed by several minutes under
+# load. That is fine here — the analysis path also warms itself when a user
+# opens the upload page, and this is the backstop for the Supabase pause, which
+# is measured in days.
+
+name: Keep alive
+
+on:
+  schedule:
+    # Every 10 minutes, 02:00-19:00 UTC (07:30-00:30 IST).
+    - cron: "*/10 2-19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Wake the API and the database
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "API_URL secret is not set; nothing to ping yet."
+            exit 0
+          fi
+
+          # A cold Render instance can take ~50s to answer, so the timeout is
+          # generous and the retry exists for the case where the first request
+          # is the one that triggers the wake-up and times out doing it.
+          for attempt in 1 2 3; do
+            if curl --silent --show-error --fail --max-time 90 "$API_URL/warmup"; then
+              echo ""
+              echo "Awake on attempt $attempt."
+              exit 0
+            fi
+            echo "Attempt $attempt failed; retrying."
+            sleep 15
+          done
+
+          echo "API did not respond after 3 attempts."
+          exit 1

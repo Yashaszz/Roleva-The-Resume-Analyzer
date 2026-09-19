@@ -21,7 +21,7 @@
 - [x] **PHASE 4 CODE COMPLETE** — all 9 tasks; Gate 4 awaits a live spot check
 - [ ] **← YOU ARE HERE. Phase 5: API & orchestration.**
 
-**Progress: 109 / 217 tasks (~50%) — the API is reachable and persists. 877 tests green.**
+**Progress: 114 / 217 tasks (~53%) — streaming, warm-up and scrubbed error reporting. 898 tests green.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -38,14 +38,14 @@
 | 2 | JD & Matching | 18 | 18 | **CODE DONE** (Gate 2 needs calibration set) |
 | 3 | Scoring & ATS | 19 | 19 | **CODE DONE** (Gate 3 needs calibration set) |
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
-| 5 | API & Orchestration | 16 | 10 | In progress |
+| 5 | API & Orchestration | 16 | 15 | In progress |
 | 6 | Design Exploration | 12 | 0 | Not started |
 | 7 | Frontend Build | 32 | 0 | Not started |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **109** | **50%** |
+| **TOTAL** | | **217** | **114** | **53%** |
 
 ---
 
@@ -237,18 +237,18 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 5.1  Pipeline orchestrator with per-stage isolation
 - [x] 5.2  Parallelize independent stages
 - [x] 5.3  SSE progress event contract
-- [ ] 5.4  SSE emitter + partial-result delivery
+- [x] 5.4  SSE emitter + partial-result delivery
 - [x] 5.5  `POST /analyze` (multipart)
-- [ ] 5.6  `GET /stream/{id}`
+- [x] 5.6  ~~`GET /stream/{id}`~~ → `POST /analyze/stream` (see sse.py: the two-request split needs shared memory Render's free tier does not have)
 - [x] 5.7  `GET /analyses`, `GET /analyses/{id}`, `DELETE /analyses/{id}`
 - [x] 5.8  Persistence to Supabase (resume, job_target, analysis)
 - [x] 5.9  Content-hash caching (resume + JD) — skip redundant LLM calls
 - [x] 5.10 Rate limiting (per-user 5/day, per-IP 20/hr)
 - [x] 5.11 Global daily LLM budget guard + graceful "capacity reached"
 - [x] 5.12 Exception → user-facing message mapping (every failure mode)
-- [ ] 5.13 **Warm-up endpoint** + frontend ping strategy
-- [ ] 5.14 GitHub Actions cron ping (keeps Render + Supabase awake)
-- [ ] 5.15 Sentry + per-stage timing telemetry
+- [x] 5.13 **Warm-up endpoint** + frontend ping strategy
+- [x] 5.14 GitHub Actions cron ping (keeps Render + Supabase awake)
+- [x] 5.15 Sentry + per-stage timing telemetry
 - [ ] 5.16 Integration tests across full corpus
 
 ### GATE 5

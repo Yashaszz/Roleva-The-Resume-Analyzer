@@ -110,6 +110,16 @@ class RolevaError(Exception):
         self.detail = detail
         super().__init__(code.value)
 
+    @property
+    def message(self) -> str:
+        """The sentence shown to the user.
+
+        Available without building an HTTPException, because a failure inside an
+        already-open SSE stream has to be written into the stream rather than
+        raised as a status code.
+        """
+        return self.detail or MESSAGES[self.code][1]
+
     def to_http(self) -> HTTPException:
         http_status, message = MESSAGES[self.code]
         return HTTPException(
