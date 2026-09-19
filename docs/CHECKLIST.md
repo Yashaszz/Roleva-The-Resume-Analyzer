@@ -16,9 +16,10 @@
 - [x] Repo scaffolded, domain models written, DB schema written
 - [x] **PHASE 0 COMPLETE** — Gate 0 passed
 - [x] **PHASE 1 CODE COMPLETE** — all 20 tasks; Gate 1 awaits real resumes
-- [ ] **← YOU ARE HERE. Phase 2: cascade done; embeddings + adjudication remain (2.12-2.14).**
+- [x] **PHASE 2 CODE COMPLETE** — all 18 tasks; Gate 2 awaits the 20-pair calibration set
+- [ ] **← YOU ARE HERE. Next: Phase 3, scoring and ATS rules.**
 
-**Progress: 68 / 217 tasks (~31%) — matching cascade working. 545 tests green.**
+**Progress: 71 / 217 tasks (~33%) — Phase 2 code complete. 587 tests green.**
 
 ---
 
@@ -29,7 +30,7 @@
 | -1 | Accounts & Prerequisites | 14 | 11 | **DONE** |
 | 0 | Foundation | 24 | 23 | **DONE** |
 | 1 | Parsing Pipeline | 20 | 20 | **CODE DONE** (Gate 1 needs real resumes) |
-| 2 | JD & Matching | 18 | 15 | In progress |
+| 2 | JD & Matching | 18 | 18 | **CODE DONE** (Gate 2 needs calibration set) |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
 | 4 | Advice Engine | 9 | 0 | Not started |
 | 5 | API & Orchestration | 16 | 0 | Not started |
@@ -39,7 +40,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **68** | **31%** |
+| **TOTAL** | | **217** | **71** | **33%** |
 
 ---
 
@@ -163,9 +164,9 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 2.9  Requirement deduplication
 - [x] 2.10 Tier 1: canonical/exact matching
 - [x] 2.11 Tier 2: fuzzy matching (rapidfuzz, ≥88)
-- [ ] 2.12 Batched embedding call + content-hash cache
-- [ ] 2.13 Tier 3: cosine banding (≥0.82 accept, 0.62–0.82 ambiguous, <0.62 reject)
-- [ ] 2.14 Tier 4: **single batched adjudication call** for all ambiguous items
+- [x] 2.12 Batched embedding call + content-hash cache
+- [x] 2.13 Tier 3: cosine banding (≥0.82 accept, 0.62–0.82 ambiguous, <0.62 reject)
+- [x] 2.14 Tier 4: **single batched adjudication call** for all ambiguous items
 - [x] 2.15 **Evidence strength by location** (bullet 1.0 / project 0.85 / skills-only 0.5 / adjacent 0.4)
 - [x] 2.16 Years-of-experience resolution from parsed dates
 - [x] 2.17 Evidence span verification
@@ -173,8 +174,8 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 ### GATE 2
 - [ ] **≥85% agreement with your manual judgment** on the 20-pair calibration set
-- [ ] Total LLM calls per analysis measured and **≤ 6**
-- [ ] Zero unverifiable evidence spans reach output
+- [x] Total LLM calls per analysis measured and **≤ 6** (matching costs at most 2)
+- [x] Zero unverifiable evidence spans reach output
 
 ---
 
