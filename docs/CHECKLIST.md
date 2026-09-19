@@ -16,9 +16,9 @@
 - [x] Repo scaffolded, domain models written, DB schema written
 - [x] **PHASE 0 COMPLETE** — Gate 0 passed
 - [x] **PHASE 1 CODE COMPLETE** — all 20 tasks; Gate 1 awaits real resumes
-- [ ] **← YOU ARE HERE. Next: Phase 2, JD extraction and matching.**
+- [ ] **← YOU ARE HERE. Phase 2: cleaning, cues and taxonomy done; matching cascade next.**
 
-**Progress: 53 / 217 tasks (~24%) — Phase 1 code complete. 416 tests green.**
+**Progress: 59 / 217 tasks (~27%) — Phase 2 deterministic layer done. 506 tests green.**
 
 ---
 
@@ -29,7 +29,7 @@
 | -1 | Accounts & Prerequisites | 14 | 11 | **DONE** |
 | 0 | Foundation | 24 | 23 | **DONE** |
 | 1 | Parsing Pipeline | 20 | 20 | **CODE DONE** (Gate 1 needs real resumes) |
-| 2 | JD & Matching | 18 | 0 | Not started |
+| 2 | JD & Matching | 18 | 6 | In progress |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
 | 4 | Advice Engine | 9 | 0 | Not started |
 | 5 | API & Orchestration | 16 | 0 | Not started |
@@ -39,7 +39,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **53** | **24%** |
+| **TOTAL** | | **217** | **59** | **27%** |
 
 ---
 
@@ -152,14 +152,14 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 # PHASE 2: JD & MATCHING
 
-- [ ] 2.1  JD length validation (<200 reject, <600 warn)
-- [ ] 2.2  JD cleaner (strip EEO, benefits, salary, "about us")
+- [x] 2.1  JD length validation (<200 reject, <600 warn)
+- [x] 2.2  JD cleaner (strip EEO, benefits, salary, "about us")
 - [ ] 2.3  Requirement extraction LLM call
 - [ ] 2.4  Role-family + seniority classification (same call, no extra request)
-- [ ] 2.5  Deterministic priority cue rules (must / strong / nice override layer)
-- [ ] 2.6  Quantifier regex ("3+ years")
-- [ ] 2.7  Skill taxonomy seeded (~800 canonical entries + aliases)
-- [ ] 2.8  Alias resolver
+- [x] 2.5  Deterministic priority cue rules (must / strong / nice override layer)
+- [x] 2.6  Quantifier regex ("3+ years")
+- [x] 2.7  Skill taxonomy seeded (~800 canonical entries + aliases)
+- [x] 2.8  Alias resolver
 - [ ] 2.9  Requirement deduplication
 - [ ] 2.10 Tier 1: canonical/exact matching
 - [ ] 2.11 Tier 2: fuzzy matching (rapidfuzz, ≥88)
