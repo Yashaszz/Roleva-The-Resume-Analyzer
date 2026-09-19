@@ -52,6 +52,8 @@ target-version = "py312"
 "roleva/parsing/contact.py" = ["RUF001"]
 "roleva/parsing/dates.py" = ["RUF001", "RUF002"]
 "roleva/parsing/spans.py" = ["RUF001"]
+"roleva/quality/metrics.py" = ["RUF001", "SIM905"]
+"roleva/ats/rules.py" = ["RUF001", "RUF002"]
 "tests/**" = ["RUF001"]
 
 [tool.ruff.lint]

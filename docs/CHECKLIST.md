@@ -17,9 +17,9 @@
 - [x] **PHASE 0 COMPLETE** — Gate 0 passed
 - [x] **PHASE 1 CODE COMPLETE** — all 20 tasks; Gate 1 awaits real resumes
 - [x] **PHASE 2 CODE COMPLETE** — all 18 tasks; Gate 2 awaits the 20-pair calibration set
-- [ ] **← YOU ARE HERE. Next: Phase 3, scoring and ATS rules.**
+- [ ] **← YOU ARE HERE. Phase 3: ATS + metrics done; scoring engine next (3.12-3.19).**
 
-**Progress: 71 / 217 tasks (~33%) — Phase 2 code complete. 587 tests green.**
+**Progress: 81 / 217 tasks (~37%) — ATS rules and writing metrics done. 633 tests green.**
 
 ---
 
@@ -31,7 +31,7 @@
 | 0 | Foundation | 24 | 23 | **DONE** |
 | 1 | Parsing Pipeline | 20 | 20 | **CODE DONE** (Gate 1 needs real resumes) |
 | 2 | JD & Matching | 18 | 18 | **CODE DONE** (Gate 2 needs calibration set) |
-| 3 | Scoring & ATS | 19 | 0 | Not started |
+| 3 | Scoring & ATS | 19 | 10 | In progress |
 | 4 | Advice Engine | 9 | 0 | Not started |
 | 5 | API & Orchestration | 16 | 0 | Not started |
 | 6 | Design Exploration | 12 | 0 | Not started |
@@ -40,7 +40,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **71** | **33%** |
+| **TOTAL** | | **217** | **81** | **37%** |
 
 ---
 
@@ -181,16 +181,16 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 # PHASE 3: SCORING & ATS
 
-- [ ] 3.1  ATS rule registry framework
-- [ ] 3.2  Check: multi-column layout (−15)
-- [ ] 3.3  Check: tables (−12), text-as-image (−25)
-- [ ] 3.4  Check: header/footer content (−10)
-- [ ] 3.5  Check: missing/nonstandard sections (−12 / −8)
-- [ ] 3.6  Check: missing contact fields (−10 each)
-- [ ] 3.7  Check: unparseable dates (−6), exotic fonts (−5)
-- [ ] 3.8  Check: **hidden text detection** (−20 + warning)
-- [ ] 3.9  Check: excessive length (−8), filename (−2), special chars (−4)
-- [ ] 3.10 Deterministic writing metrics (quantification, action verbs, bullet length, weak phrases, passive voice, pronouns, tense, repetition, density)
+- [x] 3.1  ATS rule registry framework
+- [x] 3.2  Check: multi-column layout (−15)
+- [x] 3.3  Check: tables (−12), text-as-image (−25)
+- [x] 3.4  Check: header/footer content (−10)
+- [x] 3.5  Check: missing/nonstandard sections (−12 / −8)
+- [x] 3.6  Check: missing contact fields (−10 each)
+- [x] 3.7  Check: unparseable dates (−6), exotic fonts (−5)
+- [x] 3.8  Check: **hidden text detection** (−20 + warning)
+- [x] 3.9  Check: excessive length (−8), filename (−2), special chars (−4)
+- [x] 3.10 Deterministic writing metrics (quantification, action verbs, bullet length, weak phrases, passive voice, pronouns, tense, repetition, density)
 - [ ] 3.11 Basic grammar/spelling flagging (B7)
 - [ ] 3.12 Anchored quality rubric LLM call (all sections, one call)
 - [ ] 3.13 `rubric.yaml` with versioned weights

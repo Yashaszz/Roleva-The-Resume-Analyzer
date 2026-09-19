@@ -50,6 +50,19 @@ def close(doc: pymupdf.Document) -> None:
     doc.close()
 
 
+def table_row_counts(page: pymupdf.Page) -> list[int]:
+    """Row counts of any tables on the page, empty when there are none.
+
+    Table detection varies by document and can raise on unusual ones, so a
+    failure here means 'no tables found' rather than a failed analysis.
+    """
+    try:
+        finder = page.find_tables()
+    except Exception:  # pragma: no cover - depends on document internals
+        return []
+    return [int(table.row_count) for table in finder.tables]
+
+
 def rect(bbox: Any) -> pymupdf.Rect:
     box: pymupdf.Rect = pymupdf.Rect(bbox)
     return box

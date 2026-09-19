@@ -171,30 +171,71 @@ def two_column_sidebar(path: Path) -> None:
 
 
 def table_layout(path: Path) -> None:
-    """Experience laid out in an HTML table — common in template builders and a
-    known ATS hazard."""
+    """Experience laid out in a real bordered table.
+
+    Common in template builders, and a genuine ATS hazard: many parsers read
+    cells in storage order rather than visual order, separating a date from the
+    role it belongs to. The borders are drawn as vector lines because that is
+    what a table actually is — an HTML table rendered without them is not
+    detectable as one, by us or by anybody else.
+    """
     doc = _new_doc()
-    page, rect = _full_page(doc)
-    html = (
-        _header_html()
-        + """
-        <h2>Experience</h2>
-        <table width="100%" cellpadding="3" border="1">
-          <tr><td width="28%"><b>Jun 2025 - Aug 2025</b></td>
-              <td>Software Engineering Intern, Zentara Technologies.
-                  Built a Django REST service handling 40,000 requests per day.
-                  Reduced p95 latency from 820ms to 210ms.</td></tr>
-          <tr><td><b>Dec 2024 - Feb 2025</b></td>
-              <td>Web Development Intern, Kalpa Studio.
-                  Implemented a React dashboard used by 12 internal staff.</td></tr>
-        </table>
-        """
-        + "<h2>Education</h2>"
-        + EDUCATION_HTML
-        + "<h2>Skills</h2>"
-        + SKILLS_HTML
+    page = doc.new_page(width=PAGE_W, height=PAGE_H)
+
+    page.insert_htmlbox(
+        pymupdf.Rect(MARGIN, MARGIN, PAGE_W - MARGIN, 150),
+        _header_html() + "<h2>Experience</h2>",
+        css=BASE_CSS,
     )
-    page.insert_htmlbox(rect, html, css=BASE_CSS)
+
+    rows = [
+        (
+            "Jun 2025 - Aug 2025",
+            "Software Engineering Intern, Zentara Technologies. Built a Django "
+            "REST service handling 40,000 requests per day.",
+        ),
+        (
+            "Dec 2024 - Feb 2025",
+            "Web Development Intern, Kalpa Studio. Implemented a React dashboard "
+            "used by 12 internal staff.",
+        ),
+        (
+            "Jun 2024 - Aug 2024",
+            "Teaching Assistant, Pune Institute of Technology. Supported 60 "
+            "students through the data structures course.",
+        ),
+    ]
+
+    left, right, split = MARGIN, PAGE_W - MARGIN, MARGIN + 150
+    top, row_height = 160, 60
+
+    for index, (dates, description) in enumerate(rows):
+        y = top + index * row_height
+        cell = pymupdf.Rect(left, y, right, y + row_height)
+
+        # Real vector borders: the horizontal rules and the column divider.
+        page.draw_line((left, y), (right, y), width=0.6)
+        page.draw_line((left, y + row_height), (right, y + row_height), width=0.6)
+        page.draw_line((split, y), (split, y + row_height), width=0.6)
+        page.draw_line((left, y), (left, y + row_height), width=0.6)
+        page.draw_line((right, y), (right, y + row_height), width=0.6)
+
+        page.insert_htmlbox(
+            pymupdf.Rect(left + 4, y + 4, split - 4, cell.y1 - 4),
+            f"<p><b>{dates}</b></p>",
+            css=BASE_CSS,
+        )
+        page.insert_htmlbox(
+            pymupdf.Rect(split + 4, y + 4, right - 4, cell.y1 - 4),
+            f"<p>{description}</p>",
+            css=BASE_CSS,
+        )
+
+    page.insert_htmlbox(
+        pymupdf.Rect(MARGIN, top + len(rows) * row_height + 20, PAGE_W - MARGIN, PAGE_H - MARGIN),
+        "<h2>Education</h2>" + EDUCATION_HTML + "<h2>Skills</h2>" + SKILLS_HTML,
+        css=BASE_CSS,
+    )
     doc.save(path)
 
 
