@@ -4,7 +4,7 @@
 Read this first, then `docs/CHECKLIST.md`, then `docs/ARCHITECTURE.md` only if a design
 decision is unclear.
 
-Last updated: 2026-09-19 · commit `602f6a2` · working tree clean · all pushed.
+Last updated: 2026-09-19 · Phase 3 complete · all pushed.
 
 ---
 
@@ -75,11 +75,13 @@ apps/api/roleva/
                  cascade semantic adjudicator pipeline
   ats/           signals(tables, margins, fonts, images) rules(15 registered checks)
   quality/       metrics(7 deterministic) rubric_judge(anchored 1–5)
+                 proofread(closed-set flags, unscored)
   scoring/       rubric.yaml (published, v1.0.0) engine.py (pure)
   llm/           client(failover+repair retry) sanitize(PII+injection) budget
   api/           auth(ES256+HS256) errors
-  advice/  orchestration/  storage/     ← empty, next up
-apps/api/tests/unit/     20 test modules
+  storage/       samples(anonymous cohort rows, no user_id)
+  advice/  orchestration/                    ← empty, next up
+apps/api/tests/unit/     22 test modules
 apps/api/tests/golden/scores.json        6 pinned scenarios
 ```
 
@@ -90,24 +92,36 @@ Never print its values. Verify with `node scripts/check-env.mjs`.
 
 ## 6. Where the work stands
 
-**695 tests passing · ruff clean · mypy clean · 88/217 checklist tasks (41%)**
+**755 tests passing · ruff clean · mypy clean · 90/217 checklist tasks (41%)**
 
 | Phase | Status |
 |---|---|
 | 0 Foundations | complete |
 | 1 Parsing | complete (Gate 1 blocked on real PDFs) |
 | 2 JD + matching | complete |
-| 3 Scoring & ATS | **17/19** — `3.11` and `3.18` remain |
-| 4 Advice engine | not started |
+| 3 Scoring & ATS | complete (Gate 3 blocked on the calibration set) |
+| 4 Advice engine | **next** |
 | 5 API & orchestration | not started |
 | 6–11 | design exploration, frontend, sharing, hardening, deploy, launch |
 
 ### Immediate next tasks
 
-- **3.11 Basic grammar/spelling flagging.** User chose B7 = *basic* flagging. Heuristics, not a grammar engine — no new heavy dependency. Flag only what is confidently wrong: obvious misspellings against a small domain-aware wordlist, doubled words, spacing/punctuation slips, inconsistent capitalisation. Must never fire on a correctly-spelled technology name.
-- **3.18 `score_samples` write path.** Anonymised, **no `user_id`** by design — that column is deliberately absent from the table so a row cannot be linked back to a person. Feeds the percentiles that stay hidden below N=30.
+Phase 4, the advice engine. The shape is already decided by the principles above:
 
-Then Gate 3 review → Phase 4.
+- **4.1 weak-bullet selection is deterministic** — the metrics already name their
+  offenders, so the choice of what to rewrite never involves a model.
+- **4.2 one merged advice call** — suggestions, recommendations and summary in a
+  single request, because the free tier limits requests.
+- **4.3 the grounding validator is the load-bearing piece** — a rewrite may not
+  introduce a number, employer or technology absent from the original. One
+  regeneration, then the suggestion is dropped rather than shown.
+- **4.6 projected gain is recomputed by the scoring engine**, never estimated by
+  the model. This is the same rule as everywhere else: the model writes prose,
+  the code produces numbers.
+
+Gate 3's last criterion — *no number anywhere originates from an LLM* — is
+deliberately left unticked until Phase 4 is done, because `projected_gain` is the
+last place that rule could still be broken.
 
 ---
 
@@ -134,6 +148,9 @@ Then Gate 3 review → Phase 4.
 - Fuzzy threshold: typos score 82–95, distinct-skill collisions 40–77. 82 is the seam. Guard against two *known-distinct* skills matching.
 - Longest-match-wins on requirement tiers, or `"Preferred qualifications"` becomes a MUST.
 - PyMuPDF's `text` table strategy invents tables. Only trust vector-line detection.
+- A resume proofreader must be closed-set. A dictionary flags the candidate's own
+  surname; `Excel at communication` is not a spreadsheet. Every term on the casing
+  list needs its lowercase form checked against ordinary English first.
 - The must-have gate has to cap **overall**, not just job match. A golden case caught this: a resume matching zero must-haves still scored 75.4 "Competitive" because ATS and quality carried it. Now 55.0.
 
 ---

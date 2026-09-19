@@ -17,9 +17,10 @@
 - [x] **PHASE 0 COMPLETE** — Gate 0 passed
 - [x] **PHASE 1 CODE COMPLETE** — all 20 tasks; Gate 1 awaits real resumes
 - [x] **PHASE 2 CODE COMPLETE** — all 18 tasks; Gate 2 awaits the 20-pair calibration set
-- [ ] **← YOU ARE HERE. Phase 3: scoring done; score_samples write path left (3.18).**
+- [x] **PHASE 3 CODE COMPLETE** — all 19 tasks; Gate 3 awaits the 20-pair calibration set
+- [ ] **← YOU ARE HERE. Phase 4: the advice engine.**
 
-**Progress: 88 / 217 tasks (~41%) — scoring engine complete. 695 tests green.**
+**Progress: 90 / 217 tasks (~41%) — Phase 3 code complete. 755 tests green.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -34,7 +35,7 @@
 | 0 | Foundation | 24 | 23 | **DONE** |
 | 1 | Parsing Pipeline | 20 | 20 | **CODE DONE** (Gate 1 needs real resumes) |
 | 2 | JD & Matching | 18 | 18 | **CODE DONE** (Gate 2 needs calibration set) |
-| 3 | Scoring & ATS | 19 | 17 | In progress |
+| 3 | Scoring & ATS | 19 | 19 | **CODE DONE** (Gate 3 needs calibration set) |
 | 4 | Advice Engine | 9 | 0 | Not started |
 | 5 | API & Orchestration | 16 | 0 | Not started |
 | 6 | Design Exploration | 12 | 0 | Not started |
@@ -43,7 +44,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **88** | **41%** |
+| **TOTAL** | | **217** | **90** | **41%** |
 
 ---
 
@@ -194,14 +195,14 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 3.8  Check: **hidden text detection** (−20 + warning)
 - [x] 3.9  Check: excessive length (−8), filename (−2), special chars (−4)
 - [x] 3.10 Deterministic writing metrics (quantification, action verbs, bullet length, weak phrases, passive voice, pronouns, tense, repetition, density)
-- [ ] 3.11 Basic grammar/spelling flagging (B7)
+- [x] 3.11 Basic grammar/spelling flagging (B7)
 - [x] 3.12 Anchored quality rubric LLM call (all sections, one call)
 - [x] 3.13 `rubric.yaml` with versioned weights
 - [x] 3.14 **Pure scoring engine** (zero I/O, zero LLM) — Job Match, ATS, Quality, Overall
 - [x] 3.15 Must-have gate (caps at 55 / 72)
 - [x] 3.16 Explanation objects (components → contributions → evidence refs)
 - [x] 3.17 Expected-band reference table (Track 2 relative scoring)
-- [ ] 3.18 `score_samples` write path (unlinkable — no user_id)
+- [x] 3.18 `score_samples` write path (unlinkable — no user_id)
 - [x] 3.19 Golden score regression tests in CI
 
 ### GATE 3
