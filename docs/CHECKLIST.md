@@ -14,9 +14,10 @@
 - [x] Scoring system designed
 - [x] Roadmap defined
 - [x] Repo scaffolded, domain models written, DB schema written
-- [ ] **← YOU ARE HERE. Blocked on: Python 3.12 install + Gemini/Supabase keys.**
+- [x] **PHASE 0 COMPLETE** — Gate 0 passed
+- [ ] **← YOU ARE HERE. Next: Phase 1, the parsing pipeline.**
 
-**Progress: 29 / 217 tasks (~13%) — both test corpora in place; Phase 1 unblocked.**
+**Progress: 33 / 217 tasks (~15%) — Phase 0 complete, Gate 0 passed. 160 tests green.**
 
 ---
 
@@ -24,8 +25,8 @@
 
 | Phase | Name | Tasks | Done | Status |
 |---|---|---|---|---|
-| -1 | Accounts & Prerequisites | 14 | 6 | Nearly done |
-| 0 | Foundation | 24 | 17 | In progress |
+| -1 | Accounts & Prerequisites | 14 | 11 | **DONE** |
+| 0 | Foundation | 24 | 23 | **DONE** |
 | 1 | Parsing Pipeline | 20 | 0 | Not started |
 | 2 | JD & Matching | 18 | 0 | Not started |
 | 3 | Scoring & ATS | 19 | 0 | Not started |
@@ -37,7 +38,7 @@
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **29** | **13%** |
+| **TOTAL** | | **217** | **33** | **15%** |
 
 ---
 
@@ -75,13 +76,13 @@ The contract layer. Get this right or everything downstream churns.
 - [x] 0.3  Python package + `pyproject.toml` (ruff, mypy, pytest)
 - [x] 0.4  `.gitignore`, `.editorconfig`, `README.md`
 - [~] 0.5  docker-compose — OPTIONAL, dropped from critical path
-- [ ] 0.6  `docs/ARCHITECTURE.md` committed
+- [x] 0.6  `docs/ARCHITECTURE.md` committed
 
 ## Database & auth
 - [x] 0.7  Supabase migration: `profiles`, `resumes`, `job_targets`, `analyses`
 - [x] 0.8  Supabase migration: `share_links`, `score_samples`, `cohort_stats`, `rate_limits`, `llm_usage`
-- [ ] 0.9  **RLS policies enabled and tested on every user table**
-- [ ] 0.10 Supabase Auth configured (email + Google OAuth, verification ON)
+- [x] 0.9  **RLS policies enabled and tested on every user table**
+- [x] 0.10 Supabase Auth configured (email + Google OAuth, verification ON)
 
 ## Skeletons
 - [x] 0.11 FastAPI app boots, `/health` returns 200
@@ -106,9 +107,9 @@ The contract layer. Get this right or everything downstream churns.
 - [x] 0.23 15+ job descriptions collected (SDE, data, product, design; intern + entry)
 
 ### GATE 0
-- [ ] CI green
-- [ ] A user can sign up, verify email, and log in
-- [ ] RLS proven: user A cannot read user B's row
+- [x] CI green
+- [x] A user can sign up, verify email, and log in
+- [x] RLS proven: user A cannot read user B's row (18 live tests)
 - [x] PII redactor round-trips text with zero loss
 
 ---

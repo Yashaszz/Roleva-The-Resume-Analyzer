@@ -28,6 +28,11 @@ class Settings(BaseSettings):
 
     # --- supabase ---
     supabase_url: str = ""
+    # Public by design: it appears in browser code. RLS is what protects the
+    # data, which is why the schema migration matters more than this key does.
+    supabase_anon_key: str = ""
+    # Bypasses RLS entirely. Used only for operational tables that have no
+    # policies; user-owned rows are always written with the caller's own token.
     supabase_service_role_key: str = ""
     supabase_jwt_secret: str = ""
 
