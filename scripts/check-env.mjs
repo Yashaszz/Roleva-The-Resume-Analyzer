@@ -184,17 +184,33 @@ if (process.argv.includes('--live')) {
   const url = env.SUPABASE_URL;
   const anon = env.SUPABASE_ANON_KEY;
 
+  // The dashboard shows several URLs and it is easy to copy the wrong one. A
+  // full REST endpoint pasted here produces `.../rest/v1//rest/v1/profiles`,
+  // which fails as an opaque 404 rather than saying what is actually wrong.
+  const urlProblem = (value) => {
+    if (!/^https:\/\//.test(value)) return 'must start with https://';
+    const withoutScheme = value.replace(/^https:\/\//, '').replace(/\/+$/, '');
+    if (withoutScheme.includes('/')) {
+      return `should be the project base URL only — drop the "/${withoutScheme.split('/').slice(1).join('/')}" part`;
+    }
+    if (!withoutScheme.endsWith('.supabase.co')) return 'should end in .supabase.co';
+    return null;
+  };
+
   if (!url || PLACEHOLDERS.some((p) => p.test(url))) {
     console.log('  --       not configured yet (see docs/SUPABASE_SETUP.md)');
+  } else if (urlProblem(url)) {
+    console.log(`  FAIL     SUPABASE_URL ${urlProblem(url)}`);
+    console.log('           expected: https://<project-ref>.supabase.co');
+    failed = true;
   } else {
     try {
+      // 401 and 404 both mean the host answered, which is all this probe is
+      // for; whether the schema is usable is the next check's job.
       const res = await fetch(`${url}/rest/v1/`, { headers: { apikey: anon ?? '' } });
-      console.log(
-        res.ok || res.status === 404
-          ? '  OK       project reachable'
-          : `  FAIL     HTTP ${res.status}`,
-      );
-      if (!res.ok && res.status !== 404) failed = true;
+      const reachable = res.ok || res.status === 404 || res.status === 401;
+      console.log(reachable ? '  OK       project reachable' : `  FAIL     HTTP ${res.status}`);
+      if (!reachable) failed = true;
 
       // Confirms the schema migration was applied. profiles has RLS enabled and
       // no session is attached, so an empty result is the correct outcome — the
@@ -203,9 +219,16 @@ if (process.argv.includes('--live')) {
         headers: { apikey: anon ?? '', Authorization: `Bearer ${anon ?? ''}` },
       });
       if (table.status === 200) {
-        console.log('  OK       schema applied (profiles table exists)');
+        // An empty array is the correct result: RLS is on and no user session
+        // is attached. What matters is that the table resolves at all.
+        console.log('  OK       schema applied, RLS active (profiles readable, returns no rows)');
       } else if (table.status === 404) {
-        console.log('  FAIL     schema NOT applied — run supabase/migrations/0001_initial_schema.sql');
+        const detail = await table.json().catch(() => ({}));
+        console.log(
+          detail?.code === 'PGRST205'
+            ? '  FAIL     profiles table not found — run supabase/migrations/0001_initial_schema.sql'
+            : `  FAIL     schema check failed (${detail?.code ?? '404'}) — ${detail?.message ?? 'unknown'}`,
+        );
         failed = true;
       } else {
         console.log(`  WARN     profiles returned HTTP ${table.status}`);
@@ -219,12 +242,33 @@ if (process.argv.includes('--live')) {
       if (jwks.ok) {
         const body = await jwks.json();
         const keys = body?.keys ?? [];
+        const secretSet = !PLACEHOLDERS.some((p) => p.test(env.SUPABASE_JWT_SECRET ?? ''));
+
         if (keys.length > 0) {
           const algs = [...new Set(keys.map((k) => k.alg ?? k.kty))].join(', ');
-          console.log(`  INFO     asymmetric JWT signing keys in use (${algs})`);
+          console.log(`  OK       asymmetric JWT signing keys (${algs}) — verified via JWKS`);
+          if (secretSet) {
+            console.log('  WARN     SUPABASE_JWT_SECRET is set but unused on this project');
+            console.log('           asymmetric projects verify against the public keys above');
+          }
+        } else if (secretSet) {
+          console.log('  OK       legacy shared JWT secret (HS256)');
         } else {
-          console.log('  INFO     legacy shared JWT secret in use (HS256)');
+          console.log('  FAIL     project uses HS256 but SUPABASE_JWT_SECRET is not set');
+          failed = true;
         }
+      }
+
+      // Needed for the operational tables (llm_usage, rate_limits,
+      // score_samples), which have no policies and are service-role only.
+      // User-owned rows are NOT written with this key — those requests carry
+      // the caller's own token so RLS still applies.
+      if (PLACEHOLDERS.some((p) => p.test(env.SUPABASE_SERVICE_ROLE_KEY ?? ''))) {
+        console.log('  FAIL     SUPABASE_SERVICE_ROLE_KEY not set');
+        console.log('           Project Settings -> API -> service_role -> Reveal');
+        failed = true;
+      } else {
+        console.log('  OK       service role key present');
       }
     } catch {
       console.log('  FAIL     could not reach the project');

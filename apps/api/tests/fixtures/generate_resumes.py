@@ -151,9 +151,7 @@ def two_column_sidebar(path: Path) -> None:
     main = pymupdf.Rect(230, MARGIN, PAGE_W - MARGIN, PAGE_H - MARGIN)
 
     page.draw_rect(sidebar, color=None, fill=(0.94, 0.95, 0.97))
-    sidebar_text = pymupdf.Rect(
-        sidebar.x0 + 10, sidebar.y0 + 10, sidebar.x1 - 10, sidebar.y1 - 10
-    )
+    sidebar_text = pymupdf.Rect(sidebar.x0 + 10, sidebar.y0 + 10, sidebar.x1 - 10, sidebar.y1 - 10)
     page.insert_htmlbox(
         sidebar_text,
         f"""<h1>{CONTACT["name"]}</h1>

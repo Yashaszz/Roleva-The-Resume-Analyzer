@@ -117,7 +117,7 @@ Go to **Project Settings → API**.
 
 | Copy this | Into `.env` as | Notes |
 |---|---|---|
-| Project URL | `SUPABASE_URL` | Looks like `https://abcdefgh.supabase.co` |
+| Project URL | `SUPABASE_URL` | **The base URL only** — `https://abcdefgh.supabase.co`. Not the API/REST URL. Copying `.../rest/v1/` by mistake makes every request 404. |
 | `anon` `public` key | `SUPABASE_ANON_KEY` | Safe in the browser — RLS is what protects the data |
 | `service_role` key | `SUPABASE_SERVICE_ROLE_KEY` | **Bypasses RLS entirely.** Backend only. Never in frontend code, never in a commit |
 
@@ -130,8 +130,11 @@ Still in **Project Settings**, look for **JWT Keys** (newer projects) or
 
 | What you see | What it means |
 |---|---|
-| A **JWT Secret** field with a long random string | Legacy HS256. Copy it into `SUPABASE_JWT_SECRET`. The current code already handles this. |
-| **Signing keys** with `ECC (P-256)` or `RSA`, and no plain secret | Newer asymmetric signing. There is nothing to copy — **I need to update `auth.py` to verify via JWKS instead.** Just tell me and I will. |
+| A **JWT Secret** field with a long random string | Legacy HS256. Copy it into `SUPABASE_JWT_SECRET`. |
+| **Signing keys** with `ECC (P-256)` or `RSA`, and no plain secret | Newer asymmetric signing. **Leave `SUPABASE_JWT_SECRET` empty** — the backend fetches the public keys from the project's JWKS endpoint instead. |
+
+Both are supported; the backend picks based on the token's own algorithm and
+never mixes key sources between them.
 
 The checker reports which scheme your project uses, so you do not have to guess:
 

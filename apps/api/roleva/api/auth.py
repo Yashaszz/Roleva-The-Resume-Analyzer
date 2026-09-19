@@ -4,17 +4,27 @@ The browser talks to Supabase Auth directly and receives a signed JWT. Roleva's
 backend never sees a password; it only verifies the token's signature and reads
 the user id from it.
 
-Two independent protections, deliberately:
+Supabase issues tokens under two different schemes, and a project can migrate
+from one to the other, so both are supported:
 
-  * This middleware, which decides whether a request is authenticated at all.
-  * Row Level Security in Postgres, which refuses cross-user reads even if a
-    bug here lets the wrong user through.
+  * **ES256 / RS256** — asymmetric. The project publishes public keys at a JWKS
+    endpoint; the private key never leaves Supabase. This is the default for
+    newer projects.
+  * **HS256** — a shared secret in `SUPABASE_JWT_SECRET`. Legacy projects.
 
-Neither is trusted to be sufficient on its own.
+Which one applies is decided by the token's own `alg` header, but the key
+*source* is bound to the algorithm and never mixed: a shared secret is only ever
+used for HS256, and a JWKS public key only ever for ES256/RS256. That separation
+is what blocks the classic algorithm-confusion attack, where an attacker signs a
+token with HS256 using a public key as the HMAC secret.
+
+Verification sits alongside Row Level Security rather than replacing it. Neither
+is trusted to be sufficient on its own.
 """
 
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass
 from typing import Annotated, Any
 
@@ -28,7 +38,31 @@ from roleva.config import Settings, get_settings
 #: Supabase signs access tokens with this audience claim.
 _AUDIENCE = "authenticated"
 
+#: Asymmetric algorithms verified against the project's published public keys.
+_ASYMMETRIC = ("ES256", "RS256")
+
+#: The only symmetric algorithm accepted, and only with the shared secret.
+_SYMMETRIC = ("HS256",)
+
 _bearer = HTTPBearer(auto_error=False)
+
+# PyJWKClient caches fetched keys, but building one performs no I/O, so a client
+# per project URL is created once and reused. The lock keeps two concurrent
+# first-requests from each building their own.
+_jwks_clients: dict[str, jwt.PyJWKClient] = {}
+_jwks_lock = threading.Lock()
+
+
+def _jwks_client(settings: Settings) -> jwt.PyJWKClient:
+    url = f"{settings.supabase_url.rstrip('/')}/auth/v1/.well-known/jwks.json"
+    client = _jwks_clients.get(url)
+    if client is None:
+        with _jwks_lock:
+            client = _jwks_clients.get(url)
+            if client is None:
+                client = jwt.PyJWKClient(url, cache_keys=True, lifespan=3600)
+                _jwks_clients[url] = client
+    return client
 
 
 @dataclass(frozen=True)
@@ -42,24 +76,56 @@ class AuthenticatedUser:
         return self.email_verified
 
 
+def _resolve_key(token: str, settings: Settings) -> tuple[Any, tuple[str, ...]]:
+    """Pick the verification key from the token's declared algorithm.
+
+    Returns the key together with the *only* algorithms it may be used for, so
+    the caller cannot accidentally verify an HS256 token against a public key.
+    """
+    try:
+        header = jwt.get_unverified_header(token)
+    except jwt.PyJWTError as exc:
+        raise RolevaError(ErrorCode.UNAUTHORIZED) from exc
+
+    algorithm = header.get("alg")
+
+    if algorithm in _ASYMMETRIC:
+        if not settings.supabase_url:
+            raise RolevaError(
+                ErrorCode.UNAUTHORIZED,
+                "Authentication is not configured on this server.",
+            )
+        try:
+            return _jwks_client(settings).get_signing_key_from_jwt(token).key, _ASYMMETRIC
+        except jwt.PyJWTError as exc:
+            raise RolevaError(ErrorCode.UNAUTHORIZED) from exc
+
+    if algorithm in _SYMMETRIC:
+        if not settings.supabase_jwt_secret:
+            raise RolevaError(
+                ErrorCode.UNAUTHORIZED,
+                "Authentication is not configured on this server.",
+            )
+        return settings.supabase_jwt_secret, _SYMMETRIC
+
+    # Anything else, including "none", is refused outright.
+    raise RolevaError(ErrorCode.UNAUTHORIZED)
+
+
 def decode_token(token: str, settings: Settings) -> AuthenticatedUser:
     """Verify a Supabase access token and extract the caller's identity.
 
-    Signature, expiry and audience are all checked. A token that fails any of
-    them is indistinguishable, from the caller's point of view, from no token
-    at all — error detail here would only help an attacker.
+    Signature, expiry and audience are all checked. A token failing any of them
+    is indistinguishable, from the caller's point of view, from no token at all —
+    error detail here would only help an attacker.
     """
-    if not settings.supabase_jwt_secret:
-        raise RolevaError(
-            ErrorCode.UNAUTHORIZED,
-            "Authentication is not configured on this server.",
-        )
+    key, algorithms = _resolve_key(token, settings)
 
     try:
         claims: dict[str, Any] = jwt.decode(
             token,
-            settings.supabase_jwt_secret,
-            algorithms=["HS256"],
+            key,
+            algorithms=list(algorithms),
             audience=_AUDIENCE,
             options={"require": ["exp", "sub"]},
         )
