@@ -21,7 +21,7 @@
 - [x] **PHASE 4 CODE COMPLETE** — all 9 tasks; Gate 4 awaits a live spot check
 - [ ] **← YOU ARE HERE. Phase 5: API & orchestration.**
 
-**Progress: 99 / 217 tasks (~46%) — Phase 4 code complete. 826 tests green.**
+**Progress: 102 / 217 tasks (~47%) — the pipeline runs end to end. 845 tests green.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -38,14 +38,14 @@
 | 2 | JD & Matching | 18 | 18 | **CODE DONE** (Gate 2 needs calibration set) |
 | 3 | Scoring & ATS | 19 | 19 | **CODE DONE** (Gate 3 needs calibration set) |
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
-| 5 | API & Orchestration | 16 | 0 | Not started |
+| 5 | API & Orchestration | 16 | 3 | In progress |
 | 6 | Design Exploration | 12 | 0 | Not started |
 | 7 | Frontend Build | 32 | 0 | Not started |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **99** | **46%** |
+| **TOTAL** | | **217** | **102** | **47%** |
 
 ---
 
@@ -234,9 +234,9 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 # PHASE 5: API & ORCHESTRATION
 
-- [ ] 5.1  Pipeline orchestrator with per-stage isolation
-- [ ] 5.2  Parallelize independent stages
-- [ ] 5.3  SSE progress event contract
+- [x] 5.1  Pipeline orchestrator with per-stage isolation
+- [x] 5.2  Parallelize independent stages
+- [x] 5.3  SSE progress event contract
 - [ ] 5.4  SSE emitter + partial-result delivery
 - [ ] 5.5  `POST /analyze` (multipart)
 - [ ] 5.6  `GET /stream/{id}`
