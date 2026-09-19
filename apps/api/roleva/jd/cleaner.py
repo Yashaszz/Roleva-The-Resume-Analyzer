@@ -142,10 +142,7 @@ def _is_boilerplate_block(block: str) -> bool:
 
     # A block dense with benefit words is a perks list whatever it is titled.
     hits = sum(1 for word in _BENEFIT_WORDS if word in lowered)
-    if hits >= 3:
-        return True
-
-    return False
+    return hits >= 3
 
 
 def _split_blocks(text: str) -> list[str]:
