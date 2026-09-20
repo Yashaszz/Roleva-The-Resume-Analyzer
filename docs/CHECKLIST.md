@@ -22,7 +22,7 @@
 - [x] **PHASE 5 CODE COMPLETE** — all 16 tasks; a live analysis ran against a real key
 - [ ] **← YOU ARE HERE. Phase 6: design exploration — needs you to pick a direction.**
 
-**Progress: 115 / 217 tasks (~53%) — Phase 5 code complete; one real analysis ran end to end. 933 tests green.**
+**Progress: 120 / 217 tasks (~55%) — three design directions built; 6.6 needs your decision.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -40,13 +40,13 @@
 | 3 | Scoring & ATS | 19 | 19 | **CODE DONE** (Gate 3 needs calibration set) |
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
-| 6 | Design Exploration | 12 | 0 | Not started |
+| 6 | Design Exploration | 12 | 5 | Awaiting your choice |
 | 7 | Frontend Build | 32 | 0 | Not started |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **115** | **53%** |
+| **TOTAL** | | **217** | **120** | **55%** |
 
 ---
 
@@ -262,11 +262,11 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 # PHASE 6: DESIGN EXPLORATION *(approval gate)*
 
-- [ ] 6.1  Reference research — what to avoid, what to aim for
-- [ ] 6.2  **Direction A** — concept, typography, color, layout, motion, sample report screen
-- [ ] 6.3  **Direction B** — same deliverables
-- [ ] 6.4  **Direction C** — same deliverables
-- [ ] 6.5  Present all three with trade-offs
+- [x] 6.1  Reference research — what to avoid, what to aim for
+- [x] 6.2  **Direction A** — The Ledger (audit record)
+- [x] 6.3  **Direction B** — The Instrument (measuring device)
+- [x] 6.4  **Direction C** — The Margin (annotated document)
+- [x] 6.5  Present all three with trade-offs — `docs/DESIGN.md`
 - [ ] 6.6  **YOU CHOOSE ONE**
 - [ ] 6.7  Design token system built (color, type, space, radius, motion)
 - [ ] 6.8  Score-visualization language designed (custom SVG)
