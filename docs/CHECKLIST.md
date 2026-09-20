@@ -20,9 +20,10 @@
 - [x] **PHASE 3 CODE COMPLETE** — all 19 tasks; Gate 3 awaits the 20-pair calibration set
 - [x] **PHASE 4 CODE COMPLETE** — all 9 tasks; Gate 4 awaits a live spot check
 - [x] **PHASE 5 CODE COMPLETE** — all 16 tasks; a live analysis ran against a real key
-- [ ] **← YOU ARE HERE. Phase 6: design exploration — needs you to pick a direction.**
+- [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
+- [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 120 / 217 tasks (~55%) — three design directions built; 6.6 needs your decision.**
+**Progress: 127 / 217 tasks (~59%) — Direction B locked, tokens verified. Gate 6 passed.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -40,13 +41,13 @@
 | 3 | Scoring & ATS | 19 | 19 | **CODE DONE** (Gate 3 needs calibration set) |
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
-| 6 | Design Exploration | 12 | 5 | Awaiting your choice |
+| 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
 | 7 | Frontend Build | 32 | 0 | Not started |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **120** | **55%** |
+| **TOTAL** | | **217** | **127** | **59%** |
 
 ---
 
@@ -267,18 +268,18 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 6.3  **Direction B** — The Instrument (measuring device)
 - [x] 6.4  **Direction C** — The Margin (annotated document)
 - [x] 6.5  Present all three with trade-offs — `docs/DESIGN.md`
-- [ ] 6.6  **YOU CHOOSE ONE**
-- [ ] 6.7  Design token system built (color, type, space, radius, motion)
-- [ ] 6.8  Score-visualization language designed (custom SVG)
-- [ ] 6.9  Requirement-map visualization designed
-- [ ] 6.10 Evidence-linking interaction model designed
-- [ ] 6.11 Motion system (durations, easings, choreography rules)
-- [ ] 6.12 Dark/light mode decision + palette locked
+- [x] 6.6  **YOU CHOSE B — The Instrument** (20 Sep 2026)
+- [x] 6.7  Design token system built (color, type, space, radius, motion)
+- [x] 6.8  Score-visualization language designed — no dial, mono numerals, cap stated
+- [x] 6.9  Requirement-map visualization designed — 3 states, never colour alone
+- [x] 6.10 Evidence-linking interaction model designed — no tooltips, keyboard-walkable
+- [x] 6.11 Motion system — 3 durations, decelerating only, nothing loops
+- [x] 6.12 Dark only in v1; palette locked and verified
 
 ### GATE 6
-- [ ] One direction chosen and documented in `docs/DESIGN.md`
-- [ ] Tokens implemented and rendering
-- [ ] Palette passes AA contrast before any screen is built
+- [x] One direction chosen and documented in `docs/DESIGN.md`
+- [x] Tokens implemented — `apps/web/app/tokens.css`
+- [x] Palette passes AA contrast before any screen is built — 26 pairs, 0 failing, 0 near the limit
 
 ---
 

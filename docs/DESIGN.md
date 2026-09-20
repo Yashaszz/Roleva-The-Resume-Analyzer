@@ -153,17 +153,153 @@ fast, and nothing about it is embarrassing.
 
 ## 6. Decision
 
-> **Chosen direction:** _pending_
->
-> Recorded here once you choose. Gate 6 does not pass until this line names one.
+> **Chosen direction: B — The Instrument.** Chosen 20 Sep 2026.
+
+Everything below follows from that choice.
 
 ---
 
-## 7. Still to do in Phase 6 (after the choice)
+## 7. Tokens
 
-- 6.7 Design token system — colour, type, space, radius, motion
-- 6.8 Score-visualisation language, custom SVG
-- 6.9 Requirement-map visualisation
-- 6.10 Evidence-linking interaction model
-- 6.11 Motion system — durations, easings, choreography
-- 6.12 Dark/light decision and locked palette, AA contrast verified before any screen is built
+`apps/web/app/tokens.css`. Two layers, and the split is load-bearing:
+
+- `--c-*` **primitives** — raw values. No component may reference one.
+- everything else is **semantic**. A component asks for `--evidence-shown`,
+  never `--teal-300`.
+
+That indirection is why a light theme is possible later without touching a
+component, and why "which teal was the matched one" is never a question anyone
+has to answer.
+
+**The rule for the rest of the codebase:** no raw hex, no magic pixel values, no
+inline transition timings. A missing value means a missing token.
+
+---
+
+## 8. Score-visualisation language
+
+**No dial.** The circular progress ring is the category cliché and it is also
+the least informative rendering available for a number with five weighted
+components.
+
+| Element | Treatment |
+|---|---|
+| Overall | 78px mono numeral, once per page. Set in mono so it does not change width as it settles |
+| Components | 34px mono, three across, each with its expected range beside it |
+| Cap | When the must-have gate fires, the overall number turns `--status-capped` and the word CAPPED sits beside it. The cap is the most important fact on the page when it applies |
+| Expected range | Always labelled "typical", never a percentile. Percentiles appear only above N=30 |
+| Ceiling | "78 — six changes away" — the projected total from the advice engine, shown beside the current score |
+
+Every number on the page is monospaced. A score that reflows while it counts
+looks unstable, and this product's whole argument is that its numbers are solid.
+
+---
+
+## 9. Requirement map
+
+The hero of this direction. Fourteen requirements legible in one glance, as a
+7-column grid of cells.
+
+**Three states, and state is never carried by colour alone:**
+
+| State | Rendering | Mark |
+|---|---|---|
+| Demonstrated | Filled `--evidence-shown-bg`, dark label | ● filled |
+| Listed only | Panel background, `--evidence-listed-line` outline | ◐ half |
+| Absent | Recessed `--evidence-absent-bg`, `--evidence-absent-line` outline | ○ empty |
+
+The mark is an inline SVG, not a character, so it renders identically
+everywhere. The cell also carries the priority (MUST / STRONG / NICE) and the
+requirement name as text. **The map survives greyscale printing and the common
+forms of colour blindness** — which is the actual requirement, not merely a
+courtesy.
+
+### A conflict the contrast check surfaced
+
+The first palette filled all three states. A mid-teal dark enough to hold light
+text measured **2.57:1 against its own panel** — meaning the cell's shape was
+invisible even though its label was readable.
+
+Making *demonstrated* the only filled state resolves it, and says something
+true: evidence is the presence of something, and the other two states are
+degrees of its absence.
+
+---
+
+## 10. Evidence-linking interaction model
+
+The product's central claim is that every number traces to a line in the user's
+own résumé. The interaction has to make that **cheap to check**, not merely
+possible.
+
+1. **Resting state shows evidence already.** The panel under the map carries the
+   quote for whichever requirement is focused. Nothing is hidden behind a hover.
+2. **Selecting a cell** swaps the quote panel and marks the cell. Click or
+   keyboard; the cells are real `<button>`s in a grid with arrow-key movement.
+3. **The quote is verbatim**, with its section and page. It has already passed
+   span verification on the backend — anything that failed was dropped and never
+   reaches the client.
+4. **No tooltips.** A tooltip is unreachable by keyboard, invisible on touch,
+   and unprintable. Evidence is not a hint.
+5. **The chain is always walkable**: score → component → requirement → quote →
+   location. Four steps, no dead ends.
+
+---
+
+## 11. Motion
+
+Values **settle**; they do not perform.
+
+| Token | Duration | Used for |
+|---|---|---|
+| `--duration-instant` | 90ms | hover, focus, press |
+| `--duration-quick` | 160ms | a panel appearing |
+| `--duration-settle` | 320ms | a number arriving at its value |
+
+- **Easing is decelerating only** — `cubic-bezier(0.2, 0, 0, 1)`. No spring, no
+  overshoot. A score that springs past 55 and comes back has told the user
+  something untrue for 200ms.
+- **Stagger is 12ms**, so fourteen grid cells finish in under 200ms.
+- **Nothing loops.** The only continuous motion in the product is the progress
+  indicator during analysis, which represents real stage transitions.
+- **Nothing animates on scroll.** Scroll-triggered reveals make a report feel
+  like a marketing page.
+- `prefers-reduced-motion` zeroes every duration token at the source, so a
+  component written against the tokens honours it without knowing it exists.
+
+An analysis takes thirty seconds and the user is already anxious. Animation that
+draws attention to itself makes the wait worse.
+
+---
+
+## 12. Dark / light
+
+**Dark only in v1.** The decision, with its reasoning:
+
+- Two palettes means two palettes to verify for contrast, and a dark-first
+  product whose light mode is an afterthought looks worse than one with no light
+  mode at all.
+- The semantic token layer exists so light is a later change to one file.
+- The case most likely to want it is the **shared report page** — a recruiter
+  opening a link on a bright screen — and that is Phase 8.
+
+### Contrast, verified
+
+`scripts/check-contrast.mjs` reads the real token file, resolves `var()` chains,
+and checks every pair the design uses:
+
+```
+26 checked (19 text, 7 shape) · 0 failing · 0 near the limit
+```
+
+Text pairs are held to 4.5:1 (AA), shapes to 3:1 (WCAG 1.4.11 — a cell's fill is
+a graphical object required to understand content). Anything clearing by less
+than 0.6 is reported as near the limit, because a palette that *just* passes is
+one small tweak from failing.
+
+**The list in that script is the contract.** A combination not in it is a
+combination nobody has verified.
+
+It caught two real problems before a single screen existed: the filled-state
+conflict above, and `--line-strong` — a hairline explicitly meant to be seen —
+measuring **1.50:1**, which is a line nobody could see.

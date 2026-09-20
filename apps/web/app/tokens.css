@@ -1,125 +1,248 @@
 /*
- * Roleva design tokens.
+ * Roleva design tokens — Direction B, "The Instrument".
  *
- * DELIBERATELY PROVISIONAL. The real visual identity is chosen in the design
- * phase, after exploring several directions. What matters now is the
- * *structure*: every colour, size and duration is a token, so switching
- * directions later is a change to this one file rather than a rewrite of every
- * component.
+ * Chosen in Phase 6 and recorded in docs/DESIGN.md. The idea the palette has to
+ * serve: this is a measuring device, not a document. The ground is dark so that
+ * data is the only thing on the page emitting light, and colour is reserved for
+ * meaning — there is no decorative colour anywhere in this file.
  *
- * Rule for the rest of the codebase: no raw hex values, no magic pixel sizes,
- * no inline transition timings. If a component needs a value that is not here,
- * the token is missing — add it.
+ * TWO LAYERS, and the distinction matters:
+ *
+ *   --c-*        primitives. Raw values. Components must never use these.
+ *   everything else  semantic. What a component asks for is what it means:
+ *                    --evidence-shown, not --teal-300.
+ *
+ * That indirection is the whole reason a light theme is possible later without
+ * touching a component, and the reason "which teal was the matched one again"
+ * is never a question anybody has to answer.
+ *
+ * Rule for the rest of the codebase: no raw hex, no magic pixel values, no
+ * inline transition timings. If a component needs a value that is not here, the
+ * token is missing — add it, with a comment saying what it means.
+ *
+ * Every text/background pair below is verified against WCAG AA by
+ * `scripts/check-contrast.mjs`, which reads THIS FILE. Changing a colour here
+ * and not running that script is how a palette quietly stops being legible.
  */
 
 :root {
+  /* ===================================================================== */
+  /* PRIMITIVES — never referenced by a component                          */
+  /* ===================================================================== */
+
+  /* Neutral ramp. Cool-shifted rather than pure grey: a true neutral against
+     the teal reads slightly pink, which makes the panels look dirty. */
+  --c-ink-900: #0b0e0f; /* the canvas itself */
+  --c-ink-800: #121718; /* panels sitting on it */
+  --c-ink-700: #1c2526; /* raised: an inactive cell, a hover */
+  --c-ink-600: #262d2e; /* hairlines that merely separate */
+  /* A line that carries meaning — the edge of a control, the boundary of a
+     selected row — has to clear 3:1 against what it sits on, exactly like any
+     other graphical object. The first value here was #2f3839, which measured
+     1.50:1 and was therefore a line nobody could see. */
+  --c-ink-500: #687677;
+  --c-ink-300: #98a2a0; /* muted text — see the contrast note below */
+  --c-ink-200: #b7bfbe; /* secondary text */
+  --c-ink-100: #edefef; /* primary text */
+  --c-ink-000: #ffffff;
+
+  /* Signal. One hue, used only where evidence exists. Teal rather than green
+     because green/red is the one pairing that disappears for the commonest
+     form of colour blindness, and this palette leans on exactly that contrast. */
+  --c-signal-400: #7fe3d0; /* demonstrated */
+  --c-signal-500: #4e8a80; /* the same hue at border strength — a dimmer of
+                              the same colour, because partial credit should
+                              read as less of the same thing, not as another
+                              category */
+  --c-signal-900: #0d1f1d; /* signal tint for backgrounds */
+
+  /* Caution. Where a score is capped or a requirement half-met. */
+  --c-caution-400: #f2b155;
+  --c-caution-900: #1e1508;
+
+  /* Absence. Deliberately low-energy: a missing requirement is information,
+     not an emergency, and a page of alarm red would be unreadable and unkind. */
+  --c-absent-400: #f3a2a2;
+  --c-absent-500: #b36060; /* border strength, 4.1:1 on a panel */
+  --c-absent-900: #2a1a1a;
+
+  /* ===================================================================== */
+  /* SEMANTIC — what components use                                        */
+  /* ===================================================================== */
+
   /* --- surfaces --- */
-  --surface-base: #ffffff;
-  --surface-raised: #f7f8fa;
-  --surface-sunken: #eef0f4;
-  --surface-inverse: #111418;
+  --surface-canvas: var(--c-ink-900);
+  --surface-panel: var(--c-ink-800);
+  --surface-raised: var(--c-ink-700);
+  --surface-inverse: var(--c-ink-100);
 
   /* --- text --- */
-  --text-primary: #111418;
-  --text-secondary: #4a5261;
-  --text-muted: #6b7382;
-  --text-inverse: #f7f8fa;
+  --text-primary: var(--c-ink-100);
+  --text-secondary: var(--c-ink-200);
+  /* Muted is for labels and units, never for anything a user has to read to
+     understand their result. It is the lightest thing in the file that still
+     clears AA on --surface-panel; anything dimmer failed. */
+  --text-muted: var(--c-ink-300);
+  --text-on-signal: var(--c-ink-900);
+  --text-on-inverse: var(--c-ink-900);
 
   /* --- lines --- */
-  --line-subtle: #e3e7ee;
-  --line-strong: #c9cfda;
+  /* Subtle separates; strong means something. Only --line-strong is held to
+     the 3:1 non-text requirement, because only it carries information. */
+  --line-subtle: var(--c-ink-600);
+  --line-strong: var(--c-ink-500);
 
-  /* --- accent --- */
-  --accent: #1f4ed8;
-  --accent-hover: #1a41b4;
-  --accent-subtle: #eaf0ff;
+  /* --- evidence, the core vocabulary of the product ------------------- */
+  /* These three states appear in the requirement map, the score breakdown and
+     the recommendation list, and they mean the same thing in all three.
+     
+     Only ONE of them is a filled cell. The first attempt filled all three and
+     ran into a real conflict: a mid-teal dark enough to hold light text was too
+     dark to clear 3:1 against the panel it sat on, so the cell's own shape
+     stopped being visible. Making "demonstrated" the only fill resolves it and
+     says something true — evidence is the presence of something, and the other
+     two states are degrees of its absence.
+     
+     State is never carried by colour alone. Every cell also carries a mark
+     (filled / half / empty) and a text label, so the map survives greyscale
+     printing and the commonest forms of colour blindness. */
+  --evidence-shown-bg: var(--c-signal-400); /* filled: demonstrated in a bullet */
+  --evidence-shown-text: var(--c-ink-900); /* dark text on that fill */
+  --evidence-shown-mark: var(--c-ink-900);
 
-  /*
-   * Score semantics. These are never used alone to convey meaning — every
-   * score also carries a label and a shape, because roughly one in twelve men
-   * cannot reliably distinguish red from green.
-   */
-  --score-strong: #17795e;
-  --score-competitive: #3f7d20;
-  --score-needs-work: #9a6700;
-  --score-gaps: #b4460e;
-  --score-misaligned: #a41d1d;
+  --evidence-listed-bg: var(--surface-panel); /* outlined: named, never shown */
+  --evidence-listed-line: var(--c-signal-500);
+  --evidence-listed-text: var(--c-ink-100);
 
-  /* --- state --- */
-  --danger: #b4231d;
-  --warning: #9a6700;
-  --success: #17795e;
+  --evidence-absent-bg: var(--c-absent-900); /* recessed: no evidence at all */
+  --evidence-absent-line: var(--c-absent-500);
+  --evidence-absent-text: var(--c-absent-400);
 
-  /* --- spacing: a 4px scale --- */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
+  /* The signal colour when it is text rather than a fill. */
+  --evidence-shown: var(--c-signal-400);
 
-  /* --- radius --- */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.875rem;
-  --radius-full: 999px;
+  /* --- status --- */
+  --status-capped: var(--c-caution-400);
+  --status-capped-bg: var(--c-caution-900);
+  --status-good: var(--c-signal-400);
+  --status-good-bg: var(--c-signal-900);
 
-  /* --- type --- */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.375rem;
-  --text-2xl: 1.75rem;
-  --text-3xl: 2.25rem;
+  /* --- interaction --- */
+  --focus-ring: var(--c-signal-400);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 
-  /* --- motion --- */
-  --duration-fast: 120ms;
-  --duration-base: 200ms;
-  --duration-slow: 360ms;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* ===================================================================== */
+  /* TYPE                                                                  */
+  /* ===================================================================== */
+  /* One family in two voices. IBM Plex was drawn as a system typeface for
+     technical work: it has a genuine mono companion with matching metrics, it
+     is not Inter, and its figures are unambiguous at 10px, which matters when
+     the whole page is numbers. */
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Every number in this product is set in mono, without exception. A score
+     that changes width as it counts is a score that looks unstable. */
+  --font-numeric: var(--font-mono);
+
+  /* Scale. Ratio 1.2 from a 14px base, rounded to whole pixels: fractional
+     type sizes blur on non-retina displays, which many users have. */
+  --text-2xs: 10px; /* mono labels only, letterspaced */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 34px; /* component scores */
+  --text-3xl: 78px; /* the overall score, once per page */
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.4;
+  --leading-normal: 1.6; /* body copy the user actually reads */
+
+  /* Mono labels are set in caps with wide tracking. That is the one typographic
+     signal this design uses to say "this is an instrument reading". */
+  --tracking-label: 0.14em;
+  --tracking-tight: -0.02em;
+  --tracking-number: -0.04em;
+
+  /* ===================================================================== */
+  /* SPACE — 4px base                                                      */
+  /* ===================================================================== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ===================================================================== */
+  /* RADIUS                                                                */
+  /* ===================================================================== */
+  /* Near-square on purpose. Instruments have edges; rounded corners are the
+     visual grammar of consumer software and would soften exactly the quality
+     this direction is built on. Nothing in the product is rounder than 4px. */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  /* ===================================================================== */
+  /* MOTION                                                                */
+  /* ===================================================================== */
+  /* Values settle; they do not perform. The longest duration here is 320ms,
+     and nothing loops. An analysis takes thirty seconds and the user is already
+     anxious — animation that draws attention to itself makes the wait worse. */
+  --duration-instant: 90ms; /* hover, focus, press */
+  --duration-quick: 160ms; /* a panel appearing */
+  --duration-settle: 320ms; /* a number arriving at its value */
+
+  /* Decelerating: things arrive and stop. No overshoot, no bounce, no spring —
+     a score that springs past 55 and comes back has told the user something
+     untrue for 200ms. */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Stagger between items in a sequence (grid cells, list rows). Small enough
+     that fourteen cells finish in under 200ms. */
+  --stagger-step: 12ms;
+
+  /* ===================================================================== */
+  /* LAYOUT                                                                */
+  /* ===================================================================== */
+  --measure-prose: 68ch; /* nothing the user reads runs wider */
+  --panel-max: 1280px;
+  --sidebar-width: 300px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --surface-base: #0f1216;
-    --surface-raised: #171b21;
-    --surface-sunken: #0a0c0f;
-    --surface-inverse: #f7f8fa;
-
-    --text-primary: #eef1f5;
-    --text-secondary: #aeb6c2;
-    --text-muted: #838c9a;
-    --text-inverse: #111418;
-
-    --line-subtle: #242a33;
-    --line-strong: #39414d;
-
-    --accent: #6f95ff;
-    --accent-hover: #89a8ff;
-    --accent-subtle: #16203a;
-
-    --score-strong: #4bc79e;
-    --score-competitive: #7fc35c;
-    --score-needs-work: #d8a53a;
-    --score-gaps: #ec8452;
-    --score-misaligned: #e26a6a;
-
-    --danger: #e26a6a;
-    --warning: #d8a53a;
-    --success: #4bc79e;
-  }
-}
-
-/* Motion is a comprehension aid here, never decoration — so removing it costs
-   the user nothing. */
+/*
+ * Reduced motion is honoured everywhere by zeroing the durations rather than
+ * by writing a second set of rules. A component written against these tokens
+ * gets this behaviour for free and cannot forget it.
+ */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --duration-fast: 0ms;
-    --duration-base: 0ms;
-    --duration-slow: 0ms;
+    --duration-instant: 0ms;
+    --duration-quick: 0ms;
+    --duration-settle: 0ms;
+    --stagger-step: 0ms;
   }
 }
+
+/*
+ * LIGHT THEME — deliberately not shipped in v1.
+ *
+ * The decision and its reasoning are in docs/DESIGN.md §6.12. In short: two
+ * palettes means two palettes to verify for contrast, and a dark-first product
+ * whose light mode is an afterthought looks worse than one with no light mode
+ * at all. The semantic layer above exists so that adding it later is a change
+ * to this file and nothing else.
+ *
+ * The shared-report page is the case most likely to want it — a recruiter
+ * opening a link on a bright screen — and that is Phase 8, not now.
+ */
