@@ -1,28 +1,29 @@
 /*
- * Roleva design tokens — Direction B, "The Instrument".
+ * Roleva design tokens — Direction D, "Thread".
  *
  * Chosen in Phase 6 and recorded in docs/DESIGN.md. The idea the palette has to
- * serve: this is a measuring device, not a document. The ground is dark so that
- * data is the only thing on the page emitting light, and colour is reserved for
- * meaning — there is no decorative colour anywhere in this file.
+ * serve: this product is about the GAP between what a job demands and what a
+ * resume shows, so absence has to be as visible as presence — a shape on the
+ * page rather than a red word.
  *
- * TWO LAYERS, and the distinction matters:
+ * The ground is warm ink, not slate. That is a deliberate correction: dark
+ * slate with a teal accent is the visual signature of every generated dashboard,
+ * and a resume tool that looks like a monitoring console has told the user
+ * something wrong about itself before they have read a word.
+ *
+ * TWO LAYERS, and the distinction is load-bearing:
  *
  *   --c-*        primitives. Raw values. Components must never use these.
  *   everything else  semantic. What a component asks for is what it means:
- *                    --evidence-shown, not --teal-300.
- *
- * That indirection is the whole reason a light theme is possible later without
- * touching a component, and the reason "which teal was the matched one again"
- * is never a question anybody has to answer.
+ *                    --evidence-shown, not --mint-400.
  *
  * Rule for the rest of the codebase: no raw hex, no magic pixel values, no
  * inline transition timings. If a component needs a value that is not here, the
  * token is missing — add it, with a comment saying what it means.
  *
- * Every text/background pair below is verified against WCAG AA by
- * `scripts/check-contrast.mjs`, which reads THIS FILE. Changing a colour here
- * and not running that script is how a palette quietly stops being legible.
+ * Every pair below is verified by `scripts/check-contrast.mjs`, which reads THIS
+ * FILE. Changing a colour here without running it is how a palette quietly stops
+ * being legible.
  */
 
 :root {
@@ -30,102 +31,98 @@
   /* PRIMITIVES — never referenced by a component                          */
   /* ===================================================================== */
 
-  /* Neutral ramp. Cool-shifted rather than pure grey: a true neutral against
-     the teal reads slightly pink, which makes the panels look dirty. */
-  --c-ink-900: #0b0e0f; /* the canvas itself */
-  --c-ink-800: #121718; /* panels sitting on it */
-  --c-ink-700: #1c2526; /* raised: an inactive cell, a hover */
-  --c-ink-600: #262d2e; /* hairlines that merely separate */
-  /* A line that carries meaning — the edge of a control, the boundary of a
-     selected row — has to clear 3:1 against what it sits on, exactly like any
-     other graphical object. The first value here was #2f3839, which measured
-     1.50:1 and was therefore a line nobody could see. */
-  --c-ink-500: #687677;
-  --c-ink-300: #98a2a0; /* muted text — see the contrast note below */
-  --c-ink-200: #b7bfbe; /* secondary text */
-  --c-ink-100: #edefef; /* primary text */
+  /* Warm neutral ramp. Every step carries a little red and yellow, so the page
+     reads as ink on paper rather than as a screen that is switched off. */
+  --c-ink-900: #100f0d; /* the ground */
+  --c-ink-850: #161411; /* panels */
+  --c-ink-800: #1c1916; /* raised: a hover, an active row */
+  --c-ink-700: #241f1a; /* hairlines */
+  /* A line that carries meaning has to clear 3:1 against what it sits on,
+     exactly like any other graphical object. #34302a looked right and
+     measured 1.40 — a line nobody could see. */
+  --c-ink-600: #776d5c;
+  --c-ink-500: #8a8173; /* disabled text and inert marks — kept lighter than
+                           600 so the ramp stays monotonic after that fix */
+  --c-ink-300: #a49b8c; /* muted text — the dimmest thing that clears AA */
+  --c-ink-200: #bdb5a6; /* secondary text */
+  --c-ink-100: #f2ede3; /* primary text — warm ivory, never pure white */
   --c-ink-000: #ffffff;
 
-  /* Signal. One hue, used only where evidence exists. Teal rather than green
-     because green/red is the one pairing that disappears for the commonest
-     form of colour blindness, and this palette leans on exactly that contrast. */
-  --c-signal-400: #7fe3d0; /* demonstrated */
-  --c-signal-500: #4e8a80; /* the same hue at border strength — a dimmer of
-                              the same colour, because partial credit should
-                              read as less of the same thing, not as another
-                              category */
-  --c-signal-900: #0d1f1d; /* signal tint for backgrounds */
+  /* Signal. Where evidence exists. A mint green-teal: warm enough to sit with
+     the ink, far enough from the red that the two never rely on hue alone. */
+  --c-signal-400: #63e6be;
+  /* The listed-only thread. The value taken from the mockup measured 2.95
+     against the panel it crosses, which for a line that IS the information
+     is not a subtle aesthetic — it is a missing thread. */
+  --c-signal-600: #429b7e;
+  --c-signal-950: #1b211e; /* the tint behind a quoted line */
 
-  /* Caution. Where a score is capped or a requirement half-met. */
-  --c-caution-400: #f2b155;
-  --c-caution-900: #1e1508;
+  /* Caution. A capped score, a partial match. */
+  --c-caution-400: #f2994a;
+  --c-caution-950: #1c1611;
 
   /* Absence. Deliberately low-energy: a missing requirement is information,
-     not an emergency, and a page of alarm red would be unreadable and unkind. */
-  --c-absent-400: #f3a2a2;
-  --c-absent-500: #b36060; /* border strength, 4.1:1 on a panel */
-  --c-absent-900: #2a1a1a;
+     not an emergency, and a page of alarm red would be unkind as well as
+     unreadable. */
+  --c-absent-400: #e06c6c;
+  --c-absent-600: #b05c5c;
+  --c-absent-950: #1e1614;
 
   /* ===================================================================== */
   /* SEMANTIC — what components use                                        */
   /* ===================================================================== */
 
   /* --- surfaces --- */
-  --surface-canvas: var(--c-ink-900);
-  --surface-panel: var(--c-ink-800);
-  --surface-raised: var(--c-ink-700);
+  --surface-ground: var(--c-ink-900);
+  --surface-panel: var(--c-ink-850);
+  --surface-raised: var(--c-ink-800);
   --surface-inverse: var(--c-ink-100);
 
   /* --- text --- */
   --text-primary: var(--c-ink-100);
   --text-secondary: var(--c-ink-200);
-  /* Muted is for labels and units, never for anything a user has to read to
-     understand their result. It is the lightest thing in the file that still
-     clears AA on --surface-panel; anything dimmer failed. */
+  /* Muted is for labels and units, never for anything a user must read to
+     understand their result. */
   --text-muted: var(--c-ink-300);
+  --text-dim: var(--c-ink-500); /* a stage that has not started yet */
   --text-on-signal: var(--c-ink-900);
   --text-on-inverse: var(--c-ink-900);
 
   /* --- lines --- */
-  /* Subtle separates; strong means something. Only --line-strong is held to
-     the 3:1 non-text requirement, because only it carries information. */
-  --line-subtle: var(--c-ink-600);
-  --line-strong: var(--c-ink-500);
+  --line-subtle: var(--c-ink-700);
+  --line-strong: var(--c-ink-600);
 
-  /* --- evidence, the core vocabulary of the product ------------------- */
-  /* These three states appear in the requirement map, the score breakdown and
-     the recommendation list, and they mean the same thing in all three.
-     
-     Only ONE of them is a filled cell. The first attempt filled all three and
-     ran into a real conflict: a mid-teal dark enough to hold light text was too
-     dark to clear 3:1 against the panel it sat on, so the cell's own shape
-     stopped being visible. Making "demonstrated" the only fill resolves it and
-     says something true — evidence is the presence of something, and the other
-     two states are degrees of its absence.
-     
-     State is never carried by colour alone. Every cell also carries a mark
-     (filled / half / empty) and a text label, so the map survives greyscale
-     printing and the commonest forms of colour blindness. */
-  --evidence-shown-bg: var(--c-signal-400); /* filled: demonstrated in a bullet */
-  --evidence-shown-text: var(--c-ink-900); /* dark text on that fill */
-  --evidence-shown-mark: var(--c-ink-900);
-
-  --evidence-listed-bg: var(--surface-panel); /* outlined: named, never shown */
-  --evidence-listed-line: var(--c-signal-500);
-  --evidence-listed-text: var(--c-ink-100);
-
-  --evidence-absent-bg: var(--c-absent-900); /* recessed: no evidence at all */
-  --evidence-absent-line: var(--c-absent-500);
-  --evidence-absent-text: var(--c-absent-400);
-
-  /* The signal colour when it is text rather than a fill. */
+  /* --- evidence, the core vocabulary --------------------------------- */
+  /* Three states. State is NEVER carried by colour alone: each one also has a
+     mark (filled / half / empty) and a line style (solid / dashed / stopped).
+     Measured in greyscale the two unfilled states are indistinguishable by
+     colour, so the mark and the dash pattern are what actually carry them. */
   --evidence-shown: var(--c-signal-400);
+  --evidence-shown-bg: var(--c-signal-950);
+  --evidence-shown-line: var(--c-signal-400);
+
+  --evidence-listed: var(--c-signal-400);
+  --evidence-listed-bg: var(--surface-panel);
+  --evidence-listed-line: var(--c-signal-600);
+
+  --evidence-absent: var(--c-absent-400);
+  --evidence-absent-bg: var(--c-absent-950);
+  --evidence-absent-line: var(--c-absent-600);
+
+  /* --- the thread, this direction's signature ------------------------- */
+  /* A thread runs from a requirement to the line of the resume that satisfies
+     it. Dashed means listed but never demonstrated. A thread that stops at an
+     open circle found nothing — which is the whole point: absence is drawn. */
+  --thread-shown: var(--c-signal-400);
+  --thread-listed: var(--c-signal-600);
+  --thread-absent: var(--c-absent-400);
+  --thread-width: 1.6px;
 
   /* --- status --- */
   --status-capped: var(--c-caution-400);
-  --status-capped-bg: var(--c-caution-900);
+  --status-capped-bg: var(--c-caution-950);
   --status-good: var(--c-signal-400);
-  --status-good-bg: var(--c-signal-900);
+  --status-good-bg: var(--c-signal-950);
 
   /* --- interaction --- */
   --focus-ring: var(--c-signal-400);
@@ -135,42 +132,42 @@
   /* ===================================================================== */
   /* TYPE                                                                  */
   /* ===================================================================== */
-  /* One family in two voices. IBM Plex was drawn as a system typeface for
-     technical work: it has a genuine mono companion with matching metrics, it
-     is not Inter, and its figures are unambiguous at 10px, which matters when
-     the whole page is numbers. */
-  /* The --font-plex-* variables are produced by next/font in app/layout.tsx,
-     which self-hosts the files and gives them hashed family names. The literal
-     names after them are the fallback for anything rendering outside the Next
-     app — the artboards on the design canvas, for instance. */
-  --font-sans: var(--font-plex-sans), "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  /* Three voices, each with a job:
+       display — Fraunces, a high-contrast serif with an optical-size axis.
+                 Headlines and the hero number. This is what stops the page
+                 reading as analytics: a serif at 46px is editorial, and nobody
+                 arrives at it by default.
+       body    — Public Sans. Neutral, legible, and specifically not Inter.
+       mono    — IBM Plex Mono, for data that has to align in a column. */
+  --font-display: var(--font-fraunces), Fraunces, "Times New Roman", serif;
+  --font-sans: var(--font-public-sans), "Public Sans", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
 
-  /* Every number in this product is set in mono, without exception. A score
-     that changes width as it counts is a score that looks unstable. */
+  /* Tabular data stays mono so columns align. The hero score is display serif:
+     it is a statement, not a reading. */
   --font-numeric: var(--font-mono);
 
-  /* Scale. Ratio 1.2 from a 14px base, rounded to whole pixels: fractional
-     type sizes blur on non-retina displays, which many users have. */
-  --text-2xs: 10px; /* mono labels only, letterspaced */
+  /* Scale. Wider than an instrument's, because this design uses real display
+     sizes — the jump from 27 to 46 is the point, not an accident. */
+  --text-2xs: 10px; /* mono labels, letterspaced */
   --text-xs: 11px;
   --text-sm: 13px;
-  --text-base: 14px;
+  --text-base: 15px; /* body — this is prose now, not readings */
   --text-md: 16px;
-  --text-lg: 20px;
-  --text-xl: 24px;
-  --text-2xl: 34px; /* component scores */
-  --text-3xl: 78px; /* the overall score, once per page */
+  --text-lg: 21px;
+  --text-xl: 27px;
+  --text-2xl: 34px;
+  --text-display: 46px; /* the sentence that opens the report */
+  --text-hero: 104px; /* the overall score, once per page */
 
-  --leading-tight: 1.15;
+  --leading-tight: 1.08;
   --leading-snug: 1.4;
-  --leading-normal: 1.6; /* body copy the user actually reads */
+  --leading-normal: 1.6;
 
-  /* Mono labels are set in caps with wide tracking. That is the one typographic
-     signal this design uses to say "this is an instrument reading". */
-  --tracking-label: 0.14em;
-  --tracking-tight: -0.02em;
-  --tracking-number: -0.04em;
+  --tracking-label: 0.18em;
+  --tracking-number: -0.02em; /* mono figures, which run wide by default */
+  --tracking-display: -0.02em;
+  --tracking-hero: -0.045em;
 
   /* ===================================================================== */
   /* SPACE — 4px base                                                      */
@@ -185,68 +182,67 @@
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
+  --space-20: 80px;
 
   /* ===================================================================== */
   /* RADIUS                                                                */
   /* ===================================================================== */
-  /* Near-square on purpose. Instruments have edges; rounded corners are the
-     visual grammar of consumer software and would soften exactly the quality
-     this direction is built on. Nothing in the product is rounder than 4px. */
   --radius-none: 0px;
-  --radius-sm: 2px;
+  --radius-sm: 3px;
   --radius-md: 4px;
 
   /* ===================================================================== */
   /* MOTION                                                                */
   /* ===================================================================== */
-  /* Values settle; they do not perform. The longest duration here is 320ms,
-     and nothing loops. An analysis takes thirty seconds and the user is already
-     anxious — animation that draws attention to itself makes the wait worse. */
-  --duration-instant: 90ms; /* hover, focus, press */
-  --duration-quick: 160ms; /* a panel appearing */
-  --duration-settle: 320ms; /* a number arriving at its value */
+  /* "Noticeably alive, still purposeful." Every movement explains a
+     relationship: a thread draws because something was found, a number counts
+     because it is being computed, a row settles because it just arrived.
+     Nothing loops, and nothing moves on scroll. */
+  --duration-instant: 110ms; /* hover, focus, press */
+  --duration-quick: 200ms; /* a panel or row arriving */
+  --duration-settle: 420ms; /* a number arriving at its value */
+  --duration-draw: 900ms; /* one thread drawing across the gap */
 
-  /* Decelerating: things arrive and stop. No overshoot, no bounce, no spring —
-     a score that springs past 55 and comes back has told the user something
-     untrue for 200ms. */
+  /* Decelerating. No overshoot — a score that springs past 55 and comes back
+     has told the user something untrue for 200ms. */
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Stagger between items in a sequence (grid cells, list rows). Small enough
-     that fourteen cells finish in under 200ms. */
-  --stagger-step: 12ms;
+  /* Threads draw one after another rather than together, so the eye can follow
+     the matching happening. Fourteen finish in about 1.7s. */
+  --stagger-step: 60ms;
+  --stagger-fast: 14ms; /* list rows, grid cells */
 
   /* ===================================================================== */
   /* LAYOUT                                                                */
   /* ===================================================================== */
-  --measure-prose: 68ch; /* nothing the user reads runs wider */
-  --panel-max: 1280px;
-  --sidebar-width: 300px;
+  --measure-prose: 68ch;
+  --measure-display: 21ch; /* a display sentence breaks about here */
+  --page-max: 1280px;
 }
 
 /*
- * Reduced motion is honoured everywhere by zeroing the durations rather than
- * by writing a second set of rules. A component written against these tokens
- * gets this behaviour for free and cannot forget it.
+ * Reduced motion is honoured by zeroing the durations at the source, so any
+ * component written against these tokens gets it without knowing the media
+ * query exists. Threads still render — they appear rather than draw, which
+ * loses the choreography and keeps all of the information.
  */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-instant: 0ms;
     --duration-quick: 0ms;
     --duration-settle: 0ms;
+    --duration-draw: 0ms;
     --stagger-step: 0ms;
+    --stagger-fast: 0ms;
   }
 }
 
 /*
  * LIGHT THEME — deliberately not shipped in v1.
  *
- * The decision and its reasoning are in docs/DESIGN.md §6.12. In short: two
- * palettes means two palettes to verify for contrast, and a dark-first product
- * whose light mode is an afterthought looks worse than one with no light mode
- * at all. The semantic layer above exists so that adding it later is a change
- * to this file and nothing else.
- *
- * The shared-report page is the case most likely to want it — a recruiter
- * opening a link on a bright screen — and that is Phase 8, not now.
+ * Reasoning in docs/DESIGN.md §12. Two palettes means two to verify, and a
+ * dark-first product whose light mode is an afterthought looks worse than one
+ * with no light mode at all. The semantic layer above exists so that adding it
+ * later is a change to this file and nothing else.
  */

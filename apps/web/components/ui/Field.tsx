@@ -15,7 +15,7 @@ import type { InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "rea
 import { useId } from "react";
 
 const CONTROL =
-  "w-full bg-canvas text-primary border border-line-strong rounded-sm " +
+  "w-full bg-ground text-primary border border-line-strong rounded-sm " +
   "px-3 py-2.5 text-base " +
   "placeholder:text-muted " +
   "transition-colors [transition-duration:var(--duration-instant)] " +
@@ -50,7 +50,7 @@ function FieldShell({ label, hint, error, meta, required, children }: FieldShell
         <label htmlFor={id} className="label">
           {label}
           {required ? (
-            <span className="text-absent-text" aria-hidden="true">
+            <span className="text-absent" aria-hidden="true">
               {" *"}
             </span>
           ) : null}
@@ -69,7 +69,7 @@ function FieldShell({ label, hint, error, meta, required, children }: FieldShell
       {error ? (
         // role="alert" so a validation failure is announced immediately rather
         // than waiting for focus to reach the field.
-        <p id={errorId} role="alert" className="text-sm text-absent-text">
+        <p id={errorId} role="alert" className="text-sm text-absent">
           {error}
         </p>
       ) : null}
@@ -159,7 +159,7 @@ export function LengthMeter({
   }[state];
 
   const colour = {
-    short: "text-absent-text",
+    short: "text-absent",
     thin: "text-capped",
     ok: "text-shown",
   }[state];

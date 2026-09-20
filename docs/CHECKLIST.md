@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 131 / 217 tasks (~60%) — primitives built and rendering at /design.**
+**Progress: 131 / 217 tasks (~60%) — direction changed to D; primitives rebuilt and rendering at /design.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -268,18 +268,18 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 6.3  **Direction B** — The Instrument (measuring device)
 - [x] 6.4  **Direction C** — The Margin (annotated document)
 - [x] 6.5  Present all three with trade-offs — `docs/DESIGN.md`
-- [x] 6.6  **YOU CHOSE B — The Instrument** (20 Sep 2026)
+- [x] 6.6  **YOU CHOSE D — Thread** (20 Sep 2026; B was chosen first and rejected on sight of the built primitives)
 - [x] 6.7  Design token system built (color, type, space, radius, motion)
 - [x] 6.8  Score-visualization language designed — no dial, mono numerals, cap stated
-- [x] 6.9  Requirement-map visualization designed — 3 states, never colour alone
+- [x] 6.9  Thread map designed — absence has a shape; 3 states, never colour alone
 - [x] 6.10 Evidence-linking interaction model designed — no tooltips, keyboard-walkable
-- [x] 6.11 Motion system — 3 durations, decelerating only, nothing loops
+- [x] 6.11 Motion system — 4 durations, threads draw, decelerating only, nothing loops
 - [x] 6.12 Dark only in v1; palette locked and verified
 
 ### GATE 6
 - [x] One direction chosen and documented in `docs/DESIGN.md`
 - [x] Tokens implemented — `apps/web/app/tokens.css`
-- [x] Palette passes AA contrast before any screen is built — 26 pairs, 0 failing, 0 near the limit
+- [x] Palette passes AA contrast before any screen is built — 25 pairs, 0 failing, 0 near the limit (caught 3 invisible colours in D)
 
 ---
 

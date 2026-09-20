@@ -86,34 +86,30 @@ function ratio(fg, bg) {
  * used sparingly and never for anything small enough to be doubted.
  */
 const PAIRS = [
-  // --- body text on the two surfaces ---
-  ["--text-primary", "--surface-canvas", "primary text on the canvas"],
+  // --- body text on the three surfaces ---
+  ["--text-primary", "--surface-ground", "primary text on the ground"],
   ["--text-primary", "--surface-panel", "primary text on a panel"],
+  ["--text-primary", "--surface-raised", "primary text on a raised row"],
+  ["--text-secondary", "--surface-ground", "secondary text on the ground"],
   ["--text-secondary", "--surface-panel", "secondary text on a panel"],
-  ["--text-secondary", "--surface-canvas", "secondary text on the canvas"],
+  ["--text-muted", "--surface-ground", "muted labels on the ground"],
   ["--text-muted", "--surface-panel", "muted labels on a panel"],
-  ["--text-muted", "--surface-canvas", "muted labels on the canvas"],
-  ["--text-primary", "--surface-raised", "primary text on a raised cell"],
 
   // --- the evidence vocabulary ---
-  ["--evidence-shown", "--surface-canvas", "'demonstrated' as text"],
-  ["--evidence-shown", "--surface-panel", "'demonstrated' as text on a panel"],
-  ["--evidence-shown-text", "--evidence-shown-bg", "label inside a demonstrated cell"],
-  ["--evidence-listed-text", "--evidence-listed-bg", "label inside a listed-only cell"],
-  ["--evidence-absent-text", "--evidence-absent-bg", "label inside an absent cell"],
-  ["--evidence-absent-text", "--surface-panel", "'absent' as text on a panel"],
+  ["--evidence-shown", "--surface-ground", "'demonstrated' as text"],
+  ["--evidence-shown", "--evidence-shown-bg", "a quoted line on its tint"],
+  ["--text-primary", "--evidence-shown-bg", "the quote itself"],
+  ["--evidence-absent", "--surface-ground", "'nothing found' as text"],
+  ["--evidence-absent", "--evidence-absent-bg", "absent text on its tint"],
 
   // --- status ---
-  ["--status-capped", "--surface-panel", "the capped warning's text"],
-  ["--status-capped", "--status-capped-bg", "capped text in its own callout"],
-  ["--status-good", "--status-good-bg", "good text in its own callout"],
+  ["--status-capped", "--surface-ground", "the capped score"],
+  ["--status-capped", "--status-capped-bg", "capped text in its callout"],
+  ["--status-good", "--status-good-bg", "good text in its callout"],
 
-  // --- the big number, which is large text but should not need the allowance ---
-  ["--status-capped", "--surface-panel", "the overall score when capped", { large: true }],
-
-  // --- inverse (a primary button) ---
+  // --- inverse and signal fills (buttons) ---
   ["--text-on-inverse", "--surface-inverse", "text on an inverse button"],
-  ["--text-on-signal", "--evidence-shown", "text on a signal button"],
+  ["--text-on-signal", "--evidence-shown", "text on the primary button"],
 ];
 
 /* ------------------------------------------------------------------- run --- */
@@ -122,18 +118,26 @@ const PAIRS = [
  * Non-text contrast, WCAG 1.4.11. A cell's fill or outline is what tells the
  * user which state it is in, so it is a "graphical object required to
  * understand content" and needs 3:1 against what it sits on — not the 4.5:1 a
- * label needs, but not nothing either. This is the check that caught the first
- * palette: a listed-only teal dark enough to hold light text was too dark for
- * its own cell to be visible.
+ * label needs, but not nothing either.
+ *
+ * This section has now caught the same class of mistake in two different
+ * palettes. In Direction B a listed-only fill dark enough to hold light text
+ * was too dark for its own cell to be visible; in Direction D three colours
+ * picked by eye from the mockup — the listed thread, the absent border and the
+ * meaningful hairline — measured 2.95, 2.62 and 1.40. A thread that cannot be
+ * seen is not a subtle thread, it is a missing one.
  */
 const SHAPES = [
-  ["--evidence-shown-bg", "--surface-panel", "a demonstrated cell against its panel"],
-  ["--evidence-listed-line", "--surface-panel", "a listed-only cell's outline"],
-  ["--evidence-absent-line", "--surface-panel", "an absent cell's outline"],
+  // A thread IS the information in this direction, so every variant of it has
+  // to be visible against the panel it crosses.
+  ["--thread-shown", "--surface-panel", "a demonstrated thread"],
+  ["--thread-listed", "--surface-panel", "a listed-only thread"],
+  ["--thread-absent", "--surface-panel", "a thread that found nothing"],
+  ["--evidence-listed-line", "--surface-panel", "a listed-only border"],
+  ["--evidence-absent-line", "--surface-panel", "an absent border"],
   ["--line-strong", "--surface-panel", "a hairline that has to be seen"],
-  ["--focus-ring", "--surface-canvas", "the focus ring on the canvas"],
+  ["--focus-ring", "--surface-ground", "the focus ring on the ground"],
   ["--focus-ring", "--surface-panel", "the focus ring on a panel"],
-  ["--status-capped", "--surface-panel", "the capped marker"],
 ];
 
 const tokens = parseTokens(readFileSync(TOKENS, "utf8"));
@@ -178,7 +182,7 @@ for (const [fgName, bgName, label, options = {}] of ALL) {
 }
 
 const width = Math.max(...rows.map(([, , label]) => label.length));
-console.log("\nWCAG contrast — Roleva palette (Direction B)\n");
+console.log("\nWCAG contrast — Roleva palette (Direction D, Thread)\n");
 for (const [status, value, label, note] of rows) {
   const mark = status === "FAIL" ? "FAIL" : " OK ";
   console.log(`  ${mark}  ${value.padStart(6)}  ${label.padEnd(width)}  ${note}`);

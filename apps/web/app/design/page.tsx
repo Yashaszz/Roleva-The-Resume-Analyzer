@@ -15,6 +15,7 @@ import { Empty, SkeletonGrid, SkeletonScore } from "@/components/ui/Loading";
 import { Dialog, DialogClose, Disclosure, Popover, Tooltip, TooltipProvider } from "@/components/ui/Overlay";
 import { EvidenceMark, Label, Panel, PanelTitle, Rule } from "@/components/ui/Panel";
 import { ToastProvider, useToast } from "@/components/ui/Toast";
+import { ThreadMap, type ThreadRow } from "@/components/report/Thread";
 
 export default function DesignPage() {
   return (
@@ -22,7 +23,7 @@ export default function DesignPage() {
       <ToastProvider>
         <main className="mx-auto w-full max-w-[1280px] px-4 sm:px-8 py-10 flex flex-col gap-10">
           <header className="flex flex-col gap-2">
-            <Label>Roleva · Direction B · The Instrument</Label>
+            <Label>Roleva · Direction D · Thread</Label>
             <h1 className="text-xl font-medium">Primitives</h1>
             <p className="text-sm text-secondary max-w-[68ch] leading-normal">
               Every component in every state. A token change is verified here before it
@@ -97,6 +98,17 @@ export default function DesignPage() {
             </div>
           </Section>
 
+          <Section title="The thread map — this direction's signature">
+            <p className="text-sm text-secondary max-w-[68ch] leading-normal">
+              What the job asks on the left, what your resume actually says on the right,
+              a thread between them where evidence was found. A thread that stops at an
+              open circle found nothing — the absence has a shape rather than being one
+              more red row in a list. The drawing is decorative: the same pairs are a
+              real description list underneath, so a screen reader never touches it.
+            </p>
+            <ThreadMap rows={SAMPLE_ROWS} />
+          </Section>
+
           <Section title="Disclosure — the explainability control">
             <Panel>
               <Disclosure
@@ -165,11 +177,16 @@ export default function DesignPage() {
           </Section>
 
           <Section title="Type scale">
-            <div className="flex flex-col gap-3">
-              <div className="numeric text-3xl text-capped leading-tight">55</div>
+            <div className="flex flex-col gap-4">
+              <div className="display text-capped" style={{ fontSize: "var(--text-hero)", letterSpacing: "var(--tracking-hero)" }}>
+                55
+              </div>
+              <div className="display max-w-[21ch]" style={{ fontSize: "var(--text-display)" }}>
+                You show <em className="italic text-shown">two</em> of the five things this job
+                calls essential.
+              </div>
+              <div className="display text-xl">A section heading</div>
               <div className="numeric text-2xl">71.4</div>
-              <div className="text-xl">Backend Engineer, entry</div>
-              <div className="text-lg">A section heading</div>
               <div className="text-md text-secondary max-w-[68ch] leading-normal">
                 Body copy at 16px. Nothing the user has to read runs wider than 68
                 characters.
@@ -183,6 +200,42 @@ export default function DesignPage() {
     </TooltipProvider>
   );
 }
+
+/* ----------------------------------------------------------------- sample -- */
+
+/**
+ * The real output of the live run on 20 Sep, so the page is checked against
+ * data the product actually produces rather than against tidy invented rows.
+ */
+const SAMPLE_ROWS: ThreadRow[] = [
+  {
+    id: "1",
+    requirement: "Python",
+    priority: "must",
+    state: "shown",
+    evidence: "Built a Django service handling 40,000 requests per day",
+    location: "Experience, page 1",
+  },
+  {
+    id: "2",
+    requirement: "Testing",
+    priority: "must",
+    state: "shown",
+    evidence: "Wrote 60 unit tests, raising coverage from 34% to 81%",
+    location: "Experience, page 1",
+  },
+  { id: "3", requirement: "PostgreSQL", priority: "must", state: "listed" },
+  { id: "4", requirement: "Docker", priority: "must", state: "absent" },
+  { id: "5", requirement: "AWS", priority: "must", state: "absent" },
+  {
+    id: "6",
+    requirement: "Django",
+    priority: "strong",
+    state: "shown",
+    evidence: "Reduced p95 latency from 820ms to 210ms by adding indexes",
+    location: "Experience, page 1",
+  },
+];
 
 /* ---------------------------------------------------------------- helpers -- */
 
@@ -209,9 +262,9 @@ function Cell({
   // and absent borders land at 54 and 48 — indistinguishable. Solid vs dashed
   // separates them without relying on hue at all.
   const style = {
-    shown: "bg-shown-bg text-shown-text border-transparent border-solid",
+    shown: "bg-shown text-on-signal border-transparent border-solid",
     listed: "bg-panel text-primary border-listed-line border-solid",
-    absent: "bg-absent-bg text-absent-text border-absent-line border-dashed",
+    absent: "bg-absent-bg text-absent border-absent-line border-dashed",
   }[state];
 
   return (
@@ -237,7 +290,7 @@ function Row({
   const colour = {
     shown: "text-shown",
     listed: "text-primary",
-    absent: "text-absent-text",
+    absent: "text-absent",
   }[state];
 
   return (

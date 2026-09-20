@@ -29,7 +29,7 @@ const VARIANTS: Record<Variant, string> = {
   // The signal colour, used here because a primary action is the one place a
   // filled accent earns its space.
   primary:
-    "bg-shown-bg text-shown-text border-transparent hover:brightness-110 active:brightness-95",
+    "bg-shown text-on-signal border-transparent hover:brightness-110 active:brightness-95",
   secondary:
     "bg-panel text-primary border-line-strong hover:bg-raised active:bg-panel",
   ghost:
@@ -37,7 +37,7 @@ const VARIANTS: Record<Variant, string> = {
   // Destructive actions are outlined rather than filled. A filled red button is
   // easy to hit by accident, and everything using this variant deletes something.
   danger:
-    "bg-transparent text-absent-text border-absent-line hover:bg-absent-bg",
+    "bg-transparent text-absent border-absent-line hover:bg-absent-bg",
 };
 
 const SIZES: Record<Size, string> = {

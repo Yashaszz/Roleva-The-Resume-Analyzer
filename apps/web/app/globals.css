@@ -12,7 +12,7 @@
  */
 @theme inline {
   /* --- surfaces --- */
-  --color-canvas: var(--surface-canvas);
+  --color-ground: var(--surface-ground);
   --color-panel: var(--surface-panel);
   --color-raised: var(--surface-raised);
   --color-inverse: var(--surface-inverse);
@@ -21,6 +21,7 @@
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
   --color-muted: var(--text-muted);
+  --color-dim: var(--text-dim);
   --color-on-signal: var(--text-on-signal);
   --color-on-inverse: var(--text-on-inverse);
 
@@ -31,11 +32,12 @@
   /* --- the evidence vocabulary --- */
   --color-shown: var(--evidence-shown);
   --color-shown-bg: var(--evidence-shown-bg);
-  --color-shown-text: var(--evidence-shown-text);
+  --color-shown-line: var(--evidence-shown-line);
+  --color-listed: var(--evidence-listed);
   --color-listed-line: var(--evidence-listed-line);
+  --color-absent: var(--evidence-absent);
   --color-absent-bg: var(--evidence-absent-bg);
   --color-absent-line: var(--evidence-absent-line);
-  --color-absent-text: var(--evidence-absent-text);
 
   /* --- status --- */
   --color-capped: var(--status-capped);
@@ -44,6 +46,7 @@
   --color-good-bg: var(--status-good-bg);
 
   /* --- type --- */
+  --font-display: var(--font-display);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 
@@ -55,7 +58,8 @@
   --text-lg: var(--text-lg);
   --text-xl: var(--text-xl);
   --text-2xl: var(--text-2xl);
-  --text-3xl: var(--text-3xl);
+  --text-display: var(--text-display);
+  --text-hero: var(--text-hero);
 
   /* --- radius: nothing in this product is rounder than 4px --- */
   --radius-none: var(--radius-none);
@@ -67,11 +71,11 @@ html {
   /* Dark only in v1. Declared so form controls and scrollbars follow, rather
      than rendering as light-mode widgets on a dark page. */
   color-scheme: dark;
-  background: var(--surface-canvas);
+  background: var(--surface-ground);
 }
 
 body {
-  background: var(--surface-canvas);
+  background: var(--surface-ground);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: var(--text-base);
@@ -101,6 +105,19 @@ body {
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--text-muted);
+}
+
+/*
+ * Display type. Fraunces with its optical-size axis set from the rendered size,
+ * so a 104px score and a 21px heading are drawn for their sizes rather than one
+ * being a scaled copy of the other.
+ */
+.display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-tight);
+  font-optical-sizing: auto;
 }
 
 /*

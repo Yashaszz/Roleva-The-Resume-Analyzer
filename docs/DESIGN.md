@@ -151,168 +151,174 @@ fast, and nothing about it is embarrassing.
 
 ---
 
-## 6. Decision
+## 6. Decision — and the correction
 
-> **Chosen direction: B — The Instrument.** Chosen 20 Sep 2026.
+**First choice: B, The Instrument (20 Sep).** Built the primitives on it.
 
-Everything below follows from that choice.
+**Rejected on sight of the real thing, same day.** Your words: not a typical
+AI-designed website. That is the reaction the trade-off table predicted — B's
+row said *"Risk of looking generic: highest"* — so it was a real problem rather
+than a matter of taste, and the cheapest possible moment to act was four tasks
+into Phase 7 rather than thirty-two.
+
+**Chosen direction: D — Thread.**
 
 ---
 
-## 7. Tokens
+## 7. Direction D — Thread
+
+**Concept.** The subject of this product is the **gap** between what a job
+demands and what a resume shows. So the gap *is* the interface.
+
+Demands on the left, the candidate's own sentences on the right, threads drawn
+between them:
+
+| Thread | Means |
+|---|---|
+| Solid | Demonstrated in a bullet |
+| Dashed | Named in a skills list, never shown in use |
+| **Stops at an open circle** | Nothing found at all |
+
+The third case is why this direction exists. Every other resume tool renders a
+missing requirement as a red word in a list, where it reads as one more row.
+Here the absence has a *shape* — a thread that starts and goes nowhere, with
+empty space beside it. The gaps are countable from across the room.
+
+### What changed from B
+
+| | B | D |
+|---|---|---|
+| Ground | Slate near-black | **Warm ink** — slate + teal *is* the generated-dashboard signature |
+| Display | IBM Plex Sans, small | **Fraunces**, a high-contrast serif with an optical-size axis |
+| Body | IBM Plex Sans | **Public Sans** — and specifically not Inter |
+| Voice | `JOB MATCH 55.0` | *"You show two of the five things this job calls essential."* |
+| Layout | Panel grid | Asymmetric, real negative space |
+| Signature | A requirement matrix | **The thread map** |
+
+Sentences instead of labels is the largest shift. B reported readings; D talks
+to the person reading it.
+
+---
+
+## 8. Tokens
 
 `apps/web/app/tokens.css`. Two layers, and the split is load-bearing:
 
 - `--c-*` **primitives** — raw values. No component may reference one.
-- everything else is **semantic**. A component asks for `--evidence-shown`,
-  never `--teal-300`.
+- everything else is **semantic**: `--evidence-shown`, never `--mint-400`.
 
-That indirection is why a light theme is possible later without touching a
-component, and why "which teal was the matched one" is never a question anyone
-has to answer.
-
-**The rule for the rest of the codebase:** no raw hex, no magic pixel values, no
-inline transition timings. A missing value means a missing token.
+**That indirection paid for itself immediately.** Switching the entire product
+from B to D was a rewrite of one file plus a rename pass — the components asked
+for meanings, and the meanings survived the change of direction.
 
 ---
 
-## 8. Score-visualisation language
+## 9. Score-visualisation language
 
-**No dial.** The circular progress ring is the category cliché and it is also
-the least informative rendering available for a number with five weighted
-components.
+**No dial.** The circular progress ring is the category cliché and the least
+informative rendering available for a number with five weighted components.
 
 | Element | Treatment |
 |---|---|
-| Overall | 78px mono numeral, once per page. Set in mono so it does not change width as it settles |
-| Components | 34px mono, three across, each with its expected range beside it |
-| Cap | When the must-have gate fires, the overall number turns `--status-capped` and the word CAPPED sits beside it. The cap is the most important fact on the page when it applies |
-| Expected range | Always labelled "typical", never a percentile. Percentiles appear only above N=30 |
-| Ceiling | "78 — six changes away" — the projected total from the advice engine, shown beside the current score |
+| Overall | 104px **Fraunces**, once per page. A statement, not a readout |
+| The verdict | A display-serif *sentence*, not a band label |
+| Components | Mono, with expected range beside them |
+| Cap | The number turns `--status-capped` and the callout says why in words |
+| Ceiling | "78 — up from 55", labelled an upper bound, not a promise |
 
-Every number on the page is monospaced. A score that reflows while it counts
-looks unstable, and this product's whole argument is that its numbers are solid.
+Tabular data stays mono so columns align. The hero number is serif because it
+is the page's first sentence.
 
 ---
 
-## 9. Requirement map
+## 10. The thread map
 
-The hero of this direction. Fourteen requirements legible in one glance, as a
-7-column grid of cells.
+Covered in §7. Two things about how it is built:
 
-**Three states, and state is never carried by colour alone:**
+**The drawing is not the information.** The SVG is `aria-hidden`, and the same
+relationships sit in the DOM as a real description list — each requirement a
+`<dt>`, its evidence or its absence a `<dd>`. A screen reader gets *"Docker: no
+evidence found in your resume"* without touching the graphic. Threads are
+progressive enhancement over a list that already works.
 
-| State | Rendering | Mark |
+**Phones get the list, not the drawing.** A 132px gap between two columns of
+text leaves nothing readable on either side at 375px, so below `sm` the same
+data becomes stacked pairs with state on a left border. Nothing is lost but the
+drawing.
+
+---
+
+## 11. Evidence-linking interaction model
+
+1. **Resting state shows evidence already** — the quote sits opposite its
+   requirement. Nothing hidden behind a hover.
+2. **No tooltips.** Unreachable by keyboard, invisible on touch, absent from
+   print. Evidence is not a hint.
+3. **The quote is verbatim**, with its section and page, and has already passed
+   span verification on the backend.
+4. **The chain is always walkable**: score → component → requirement → quote →
+   location.
+
+---
+
+## 12. Motion — "noticeably alive, still purposeful"
+
+| Token | Duration | For |
 |---|---|---|
-| Demonstrated | Filled `--evidence-shown-bg`, dark label | ● filled |
-| Listed only | Panel background, `--evidence-listed-line` outline | ◐ half |
-| Absent | Recessed `--evidence-absent-bg`, `--evidence-absent-line` outline | ○ empty |
+| `--duration-instant` | 110ms | hover, focus, press |
+| `--duration-quick` | 200ms | a panel or row arriving |
+| `--duration-settle` | 420ms | a number reaching its value |
+| `--duration-draw` | 900ms | one thread crossing the gap |
 
-The mark is an inline SVG, not a character, so it renders identically
-everywhere. The cell also carries the priority (MUST / STRONG / NICE) and the
-requirement name as text.
-
-**Measured, not assumed.** Converting the palette to greyscale puts the two
-outlined states at 54 and 48 out of 255 — effectively identical. So the colours
-do *not* carry this distinction on a monochrome printout; the mark and the
-border style do:
-
-| State | Fill (greyscale) | Border | Mark |
-|---|---|---|---|
-| Demonstrated | 163 — unmistakable | none | ● filled |
-| Listed only | 2 | solid | ◐ half |
-| Absent | 3 | **dashed** | ○ empty |
-
-That is the point of the rule. Had the marks been decoration rather than the
-actual carrier, this design would have failed on the first printed copy and
-nobody would have found out until a user mentioned it.
-
-### A conflict the contrast check surfaced
-
-The first palette filled all three states. A mid-teal dark enough to hold light
-text measured **2.57:1 against its own panel** — meaning the cell's shape was
-invisible even though its label was readable.
-
-Making *demonstrated* the only filled state resolves it, and says something
-true: evidence is the presence of something, and the other two states are
-degrees of its absence.
+- **Threads draw left to right, staggered 60ms**, because that is the order the
+  matching happens in. The motion explains a process rather than decorating an
+  arrival. Fourteen finish in about 1.7s.
+- **Decelerating easing only.** No overshoot — a score that springs past 55 and
+  comes back has told the user something untrue for 200ms.
+- **Nothing loops. Nothing moves on scroll.**
+- `prefers-reduced-motion` zeroes every duration at the source, so a component
+  written against the tokens honours it without knowing it exists. Threads still
+  render — they appear rather than draw.
 
 ---
 
-## 10. Evidence-linking interaction model
+## 13. Dark / light, and verified contrast
 
-The product's central claim is that every number traces to a line in the user's
-own résumé. The interaction has to make that **cheap to check**, not merely
-possible.
-
-1. **Resting state shows evidence already.** The panel under the map carries the
-   quote for whichever requirement is focused. Nothing is hidden behind a hover.
-2. **Selecting a cell** swaps the quote panel and marks the cell. Click or
-   keyboard; the cells are real `<button>`s in a grid with arrow-key movement.
-3. **The quote is verbatim**, with its section and page. It has already passed
-   span verification on the backend — anything that failed was dropped and never
-   reaches the client.
-4. **No tooltips.** A tooltip is unreachable by keyboard, invisible on touch,
-   and unprintable. Evidence is not a hint.
-5. **The chain is always walkable**: score → component → requirement → quote →
-   location. Four steps, no dead ends.
-
----
-
-## 11. Motion
-
-Values **settle**; they do not perform.
-
-| Token | Duration | Used for |
-|---|---|---|
-| `--duration-instant` | 90ms | hover, focus, press |
-| `--duration-quick` | 160ms | a panel appearing |
-| `--duration-settle` | 320ms | a number arriving at its value |
-
-- **Easing is decelerating only** — `cubic-bezier(0.2, 0, 0, 1)`. No spring, no
-  overshoot. A score that springs past 55 and comes back has told the user
-  something untrue for 200ms.
-- **Stagger is 12ms**, so fourteen grid cells finish in under 200ms.
-- **Nothing loops.** The only continuous motion in the product is the progress
-  indicator during analysis, which represents real stage transitions.
-- **Nothing animates on scroll.** Scroll-triggered reveals make a report feel
-  like a marketing page.
-- `prefers-reduced-motion` zeroes every duration token at the source, so a
-  component written against the tokens honours it without knowing it exists.
-
-An analysis takes thirty seconds and the user is already anxious. Animation that
-draws attention to itself makes the wait worse.
-
----
-
-## 12. Dark / light
-
-**Dark only in v1.** The decision, with its reasoning:
-
-- Two palettes means two palettes to verify for contrast, and a dark-first
-  product whose light mode is an afterthought looks worse than one with no light
-  mode at all.
-- The semantic token layer exists so light is a later change to one file.
-- The case most likely to want it is the **shared report page** — a recruiter
-  opening a link on a bright screen — and that is Phase 8.
-
-### Contrast, verified
-
-`scripts/check-contrast.mjs` reads the real token file, resolves `var()` chains,
-and checks every pair the design uses:
+**Dark only in v1.** Two palettes means two to verify, and a dark-first product
+whose light mode is an afterthought looks worse than one with no light mode.
+The semantic layer makes it a one-file change when the shared report page wants
+it in Phase 8.
 
 ```
-26 checked (19 text, 7 shape) · 0 failing · 0 near the limit
+25 checked (17 text, 8 shape) · 0 failing · 0 near the limit
 ```
 
-Text pairs are held to 4.5:1 (AA), shapes to 3:1 (WCAG 1.4.11 — a cell's fill is
-a graphical object required to understand content). Anything clearing by less
-than 0.6 is reported as near the limit, because a palette that *just* passes is
-one small tweak from failing.
+Text pairs are held to 4.5:1, shapes to 3:1 (WCAG 1.4.11 — a thread is a
+graphical object required to understand content).
 
-**The list in that script is the contract.** A combination not in it is a
-combination nobody has verified.
+### What the checker caught, in both palettes
 
-It caught two real problems before a single screen existed: the filled-state
-conflict above, and `--line-strong` — a hairline explicitly meant to be seen —
-measuring **1.50:1**, which is a line nobody could see.
+It has now found the same class of mistake twice, which is the argument for
+running it before screens exist rather than after.
+
+**In B:** a listed-only fill dark enough to hold light text measured 2.57:1
+against its own panel — readable label, invisible cell. And `--line-strong`, a
+hairline whose entire purpose is to be seen, measured **1.50:1**.
+
+**In D:** three colours picked by eye from the mockup failed —
+
+| Token | Measured | Now |
+|---|---|---|
+| The listed-only thread | **2.95** | 5.45 |
+| The absent border | **2.62** | 3.97 |
+| The meaningful hairline | **1.40** | 3.61 |
+
+A thread that cannot be seen is not a subtle thread. It is a missing one — and
+in this direction the thread *is* the information.
+
+### Greyscale
+
+Colour does **not** carry the distinction between the two unfilled states: in
+greyscale they land within six points of each other. The mark (●/◐/○) and the
+line style (solid / dashed / stopped) are what actually carry it. That is why
+the rule is "never colour alone" rather than "pick distinguishable colours".
