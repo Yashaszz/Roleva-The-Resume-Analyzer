@@ -436,3 +436,45 @@ class TestVerdict:
             metrics=measure(_resume(*STRONG_BULLETS)),
         )
         assert verdict.build(self._facts(inputs))
+
+
+class TestHeadline:
+    """The sentence the report opens with, at display size."""
+
+    def _facts(self, inputs: ScoringInputs) -> verdict.Facts:
+        return verdict.facts(scores=inputs.score(), job=inputs.job, matches=inputs.matches)
+
+    def test_it_states_the_essential_coverage(self) -> None:
+        inputs = _inputs(strengths=[1.0, 1.0, 0.0, 0.0, 0.0])
+        assert verdict.headline(self._facts(inputs)) == (
+            "You show 2 of the 5 things this job calls essential."
+        )
+
+    def test_full_coverage_reads_naturally(self) -> None:
+        """ "all 3 of the 3" is what a template writes; a person would not."""
+        inputs = _inputs(strengths=[1.0, 1.0, 1.0])
+        assert verdict.headline(self._facts(inputs)) == (
+            "You show all 3 things this job calls essential."
+        )
+
+    def test_it_is_one_sentence(self) -> None:
+        """A headline is set at 46px. Two sentences there is a wall."""
+        for strengths in ([1.0, 0.0], [1.0, 1.0], [0.0, 0.0, 0.0]):
+            text = verdict.headline(self._facts(_inputs(strengths=strengths)))
+            assert text.count(".") == 1, text
+
+    def test_a_posting_with_no_essentials_still_gets_one(self) -> None:
+        inputs = _inputs(strengths=[1.0, 0.0], priorities=[Priority.NICE, Priority.NICE])
+        text = verdict.headline(self._facts(inputs))
+        assert text.strip()
+        assert text.count(".") == 1
+
+    def test_it_never_flatters_a_failing_resume(self) -> None:
+        """No encouraging fallback: a resume matching nothing is told so."""
+        inputs = _inputs(strengths=[0.0, 0.0, 0.0])
+        text = verdict.headline(self._facts(inputs))
+        assert "0 of the 3" in text
+
+    def test_it_is_deterministic(self) -> None:
+        data = self._facts(_inputs(strengths=[1.0, 0.0, 0.5]))
+        assert len({verdict.headline(data) for _ in range(10)}) == 1

@@ -93,6 +93,9 @@ class AnalysisReport(StrictModel):
     ats: AtsReport
     scores: ScoreReport
 
+    #: The single sentence the report opens with, at display size. Built from
+    #: computed facts, like everything else here.
+    headline: str = ""
     verdict: str = ""
     strengths: list[str] = Field(default_factory=list)
     weaknesses: list[str] = Field(default_factory=list)

@@ -1,0 +1,911 @@
+{
+  "schema_version": 1,
+  "id": "7acfbd6303f848bba7df4bc51e7ff54e",
+  "status": "complete",
+  "created_at": "2026-09-20T09:19:15.077967Z",
+  "resume": {
+    "schema_version": 1,
+    "contact": {
+      "name": "Ananya Deshmukh",
+      "email": "ananya.deshmukh@example.com",
+      "phone": "+91 98220 41567",
+      "location": "Pune, Maharashtra",
+      "links": [
+        "linkedin.com/in/ananyadeshmukh",
+        "github.com/adeshmukh"
+      ]
+    },
+    "summary": null,
+    "experience": [
+      {
+        "id": "1e6e2fefb570",
+        "title": "Software Engineering Intern",
+        "organization": "Zentara Technologies",
+        "location": null,
+        "dates": {
+          "start_year": 2024,
+          "start_month": 6,
+          "end_year": 2025,
+          "end_month": 6,
+          "is_current": false,
+          "raw": "Jun 2024 - Jun 2025"
+        },
+        "bullets": [],
+        "span": {
+          "doc": "resume",
+          "start": 147,
+          "end": 174,
+          "text": "Software Engineering Intern",
+          "page": null,
+          "section_id": null
+        }
+      }
+    ],
+    "education": [],
+    "projects": [],
+    "skills": [
+      {
+        "id": "16c19707f135",
+        "raw": "Python",
+        "canonical": null,
+        "origin": "skills_list",
+        "span": {
+          "doc": "resume",
+          "start": 633,
+          "end": 639,
+          "text": "Python",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "6f60fd2c3df2",
+        "raw": "Django",
+        "canonical": null,
+        "origin": "experience_bullet",
+        "span": {
+          "doc": "resume",
+          "start": 206,
+          "end": 212,
+          "text": "Django",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "b0c66537f5fa",
+        "raw": "PostgreSQL",
+        "canonical": null,
+        "origin": "skills_list",
+        "span": {
+          "doc": "resume",
+          "start": 739,
+          "end": 749,
+          "text": "PostgreSQL",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "8dd6207327f0",
+        "raw": "Git",
+        "canonical": null,
+        "origin": "skills_list",
+        "span": {
+          "doc": "resume",
+          "start": 726,
+          "end": 729,
+          "text": "Git",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "4e94a8735934",
+        "raw": "Linux",
+        "canonical": null,
+        "origin": "skills_list",
+        "span": {
+          "doc": "resume",
+          "start": 751,
+          "end": 756,
+          "text": "Linux",
+          "page": null,
+          "section_id": null
+        }
+      }
+    ],
+    "certifications": [],
+    "awards": [],
+    "publications": [],
+    "sections": [
+      {
+        "id": "6e9f1a1f524e",
+        "kind": "contact",
+        "heading_text": null,
+        "order": 0,
+        "span": null,
+        "heading_confidence": 0.9
+      },
+      {
+        "id": "394a6ca21da3",
+        "kind": "experience",
+        "heading_text": "Experience",
+        "order": 1,
+        "span": null,
+        "heading_confidence": 1.0
+      },
+      {
+        "id": "0ee4bfbdf858",
+        "kind": "education",
+        "heading_text": "Education",
+        "order": 2,
+        "span": null,
+        "heading_confidence": 1.0
+      },
+      {
+        "id": "21df65f07b43",
+        "kind": "skills",
+        "heading_text": "Skills",
+        "order": 3,
+        "span": null,
+        "heading_confidence": 1.0
+      }
+    ],
+    "page_count": 1,
+    "parse_confidence": 0.0,
+    "parse_warnings": []
+  },
+  "job": {
+    "schema_version": 1,
+    "title": "Backend Engineer",
+    "company": "Northwind",
+    "role_family": "backend_engineering",
+    "seniority": "entry",
+    "requirements": [
+      {
+        "id": "c7f664a8b3db",
+        "text": "Python",
+        "canonical": "Python",
+        "category": "hard_skill",
+        "priority": "must",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 3,
+        "span": {
+          "doc": "job_description",
+          "start": 148,
+          "end": 154,
+          "text": "Python",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "9e0609505f67",
+        "text": "Django",
+        "canonical": "Django",
+        "category": "hard_skill",
+        "priority": "must",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      },
+      {
+        "id": "8c595f9fa181",
+        "text": "PostgreSQL",
+        "canonical": "PostgreSQL",
+        "category": "hard_skill",
+        "priority": "must",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      },
+      {
+        "id": "806d1cedcbd5",
+        "text": "Docker",
+        "canonical": "Docker",
+        "category": "tool",
+        "priority": "must",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      },
+      {
+        "id": "4eebe79059f6",
+        "text": "AWS",
+        "canonical": "AWS",
+        "category": "tool",
+        "priority": "must",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": {
+          "doc": "job_description",
+          "start": 303,
+          "end": 306,
+          "text": "AWS",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "b66fbbd166dc",
+        "text": "REST APIs",
+        "canonical": "REST APIs",
+        "category": "hard_skill",
+        "priority": "strong",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": {
+          "doc": "job_description",
+          "start": 246,
+          "end": 255,
+          "text": "REST APIs",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "4735cdbf7d7f",
+        "text": "Unit testing",
+        "canonical": "Unit Testing",
+        "category": "hard_skill",
+        "priority": "strong",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      },
+      {
+        "id": "0d57e3ecbefc",
+        "text": "Git",
+        "canonical": "Git",
+        "category": "tool",
+        "priority": "strong",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      },
+      {
+        "id": "6e8126dfd720",
+        "text": "Redis",
+        "canonical": "Redis",
+        "category": "tool",
+        "priority": "strong",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      },
+      {
+        "id": "5ee675e69e8c",
+        "text": "CI/CD",
+        "canonical": "CI/CD",
+        "category": "hard_skill",
+        "priority": "nice",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      },
+      {
+        "id": "10fdbb4cfae0",
+        "text": "Kubernetes",
+        "canonical": "Kubernetes",
+        "category": "tool",
+        "priority": "nice",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": {
+          "doc": "job_description",
+          "start": 665,
+          "end": 675,
+          "text": "Kubernetes",
+          "page": null,
+          "section_id": null
+        }
+      },
+      {
+        "id": "078db92f20e1",
+        "text": "Linux",
+        "canonical": "Linux",
+        "category": "tool",
+        "priority": "nice",
+        "priority_source": "extracted",
+        "quantifier": null,
+        "mention_count": 1,
+        "span": null
+      }
+    ],
+    "warnings": []
+  },
+  "matches": {
+    "matches": [
+      {
+        "requirement_id": "c7f664a8b3db",
+        "status": "partial",
+        "strength": 0.5,
+        "evidence": [
+          {
+            "span": {
+              "doc": "resume",
+              "start": 633,
+              "end": 639,
+              "text": "Python",
+              "page": null,
+              "section_id": null
+            },
+            "origin": "skills_list",
+            "provenance": "lexical",
+            "similarity": null,
+            "note": "matched as Python"
+          }
+        ],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more."
+      },
+      {
+        "requirement_id": "9e0609505f67",
+        "status": "matched",
+        "strength": 1.0,
+        "evidence": [
+          {
+            "span": {
+              "doc": "resume",
+              "start": 206,
+              "end": 212,
+              "text": "Django",
+              "page": null,
+              "section_id": null
+            },
+            "origin": "experience_bullet",
+            "provenance": "lexical",
+            "similarity": null,
+            "note": "matched as Django"
+          }
+        ],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Demonstrated in your work experience"
+      },
+      {
+        "requirement_id": "8c595f9fa181",
+        "status": "partial",
+        "strength": 0.5,
+        "evidence": [
+          {
+            "span": {
+              "doc": "resume",
+              "start": 739,
+              "end": 749,
+              "text": "PostgreSQL",
+              "page": null,
+              "section_id": null
+            },
+            "origin": "skills_list",
+            "provenance": "lexical",
+            "similarity": null,
+            "note": "matched as PostgreSQL"
+          }
+        ],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more."
+      },
+      {
+        "requirement_id": "806d1cedcbd5",
+        "status": "missing",
+        "strength": 0.0,
+        "evidence": [],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Not found anywhere in the resume"
+      },
+      {
+        "requirement_id": "4eebe79059f6",
+        "status": "missing",
+        "strength": 0.0,
+        "evidence": [],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Not found anywhere in the resume"
+      },
+      {
+        "requirement_id": "b66fbbd166dc",
+        "status": "missing",
+        "strength": 0.0,
+        "evidence": [],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Not found anywhere in the resume"
+      },
+      {
+        "requirement_id": "4735cdbf7d7f",
+        "status": "missing",
+        "strength": 0.0,
+        "evidence": [],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Not found anywhere in the resume"
+      },
+      {
+        "requirement_id": "0d57e3ecbefc",
+        "status": "partial",
+        "strength": 0.5,
+        "evidence": [
+          {
+            "span": {
+              "doc": "resume",
+              "start": 726,
+              "end": 729,
+              "text": "Git",
+              "page": null,
+              "section_id": null
+            },
+            "origin": "skills_list",
+            "provenance": "lexical",
+            "similarity": null,
+            "note": "matched as Git"
+          }
+        ],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more."
+      },
+      {
+        "requirement_id": "6e8126dfd720",
+        "status": "missing",
+        "strength": 0.0,
+        "evidence": [],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Not found anywhere in the resume"
+      },
+      {
+        "requirement_id": "5ee675e69e8c",
+        "status": "missing",
+        "strength": 0.0,
+        "evidence": [],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Not found anywhere in the resume"
+      },
+      {
+        "requirement_id": "10fdbb4cfae0",
+        "status": "missing",
+        "strength": 0.0,
+        "evidence": [],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Not found anywhere in the resume"
+      },
+      {
+        "requirement_id": "078db92f20e1",
+        "status": "partial",
+        "strength": 0.5,
+        "evidence": [
+          {
+            "span": {
+              "doc": "resume",
+              "start": 751,
+              "end": 756,
+              "text": "Linux",
+              "page": null,
+              "section_id": null
+            },
+            "origin": "skills_list",
+            "provenance": "lexical",
+            "similarity": null,
+            "note": "matched as Linux"
+          }
+        ],
+        "is_adjacent": false,
+        "observed_months": null,
+        "explanation": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more."
+      }
+    ],
+    "unmatched_resume_skills": [],
+    "llm_adjudicated_count": 0
+  },
+  "ats": {
+    "findings": [
+      {
+        "rule_id": "ats.text_in_table",
+        "severity": "major",
+        "deduction": 12.0,
+        "title": "Content inside a table",
+        "detail": "Part of your resume is laid out as a table. Many parsers read table cells in storage order rather than visual order, so dates and roles can end up separated from each other.",
+        "fix": "Replace the table with plain paragraphs and bullet points.",
+        "page": 1,
+        "occurrences": 1
+      }
+    ],
+    "hidden_text_detected": false,
+    "checks_run": 15
+  },
+  "scores": {
+    "overall": {
+      "kind": "overall",
+      "value": 40.0,
+      "band": "significant_gaps",
+      "components": [
+        {
+          "key": "job_match",
+          "label": "Job Match",
+          "contribution": 12.96,
+          "weight": 0.45,
+          "raw_value": 28.8,
+          "provenance": "computed",
+          "detail": "28.8 weighted at 45%",
+          "evidence_refs": []
+        },
+        {
+          "key": "quality",
+          "label": "Quality",
+          "contribution": 9.45,
+          "weight": 0.35,
+          "raw_value": 27.0,
+          "provenance": "computed",
+          "detail": "27.0 weighted at 35%",
+          "evidence_refs": []
+        },
+        {
+          "key": "ats",
+          "label": "Ats",
+          "contribution": 17.6,
+          "weight": 0.2,
+          "raw_value": 88.0,
+          "provenance": "computed",
+          "detail": "88.0 weighted at 20%",
+          "evidence_refs": []
+        }
+      ],
+      "cap_applied": null,
+      "uncapped_value": null,
+      "confidence": 0.674
+    },
+    "job_match": {
+      "kind": "job_match",
+      "value": 28.8,
+      "band": "not_aligned",
+      "components": [
+        {
+          "key": "requirement:c7f664a8b3db",
+          "label": "Python",
+          "contribution": 1.5,
+          "weight": 3.0,
+          "raw_value": 0.5,
+          "provenance": "computed",
+          "detail": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more.",
+          "evidence_refs": [
+            "c7f664a8b3db"
+          ]
+        },
+        {
+          "key": "requirement:9e0609505f67",
+          "label": "Django",
+          "contribution": 3.0,
+          "weight": 3.0,
+          "raw_value": 1.0,
+          "provenance": "computed",
+          "detail": "Demonstrated in your work experience",
+          "evidence_refs": [
+            "9e0609505f67"
+          ]
+        },
+        {
+          "key": "requirement:8c595f9fa181",
+          "label": "PostgreSQL",
+          "contribution": 1.5,
+          "weight": 3.0,
+          "raw_value": 0.5,
+          "provenance": "computed",
+          "detail": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more.",
+          "evidence_refs": [
+            "8c595f9fa181"
+          ]
+        },
+        {
+          "key": "requirement:806d1cedcbd5",
+          "label": "Docker",
+          "contribution": 0.0,
+          "weight": 3.0,
+          "raw_value": 0.0,
+          "provenance": "computed",
+          "detail": "Not found anywhere in the resume",
+          "evidence_refs": [
+            "806d1cedcbd5"
+          ]
+        },
+        {
+          "key": "requirement:4eebe79059f6",
+          "label": "AWS",
+          "contribution": 0.0,
+          "weight": 3.0,
+          "raw_value": 0.0,
+          "provenance": "computed",
+          "detail": "Not found anywhere in the resume",
+          "evidence_refs": [
+            "4eebe79059f6"
+          ]
+        },
+        {
+          "key": "requirement:b66fbbd166dc",
+          "label": "REST APIs",
+          "contribution": 0.0,
+          "weight": 2.0,
+          "raw_value": 0.0,
+          "provenance": "computed",
+          "detail": "Not found anywhere in the resume",
+          "evidence_refs": [
+            "b66fbbd166dc"
+          ]
+        },
+        {
+          "key": "requirement:4735cdbf7d7f",
+          "label": "Unit testing",
+          "contribution": 0.0,
+          "weight": 2.0,
+          "raw_value": 0.0,
+          "provenance": "computed",
+          "detail": "Not found anywhere in the resume",
+          "evidence_refs": [
+            "4735cdbf7d7f"
+          ]
+        },
+        {
+          "key": "requirement:0d57e3ecbefc",
+          "label": "Git",
+          "contribution": 1.0,
+          "weight": 2.0,
+          "raw_value": 0.5,
+          "provenance": "computed",
+          "detail": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more.",
+          "evidence_refs": [
+            "0d57e3ecbefc"
+          ]
+        },
+        {
+          "key": "requirement:6e8126dfd720",
+          "label": "Redis",
+          "contribution": 0.0,
+          "weight": 2.0,
+          "raw_value": 0.0,
+          "provenance": "computed",
+          "detail": "Not found anywhere in the resume",
+          "evidence_refs": [
+            "6e8126dfd720"
+          ]
+        },
+        {
+          "key": "requirement:5ee675e69e8c",
+          "label": "CI/CD",
+          "contribution": 0.0,
+          "weight": 1.0,
+          "raw_value": 0.0,
+          "provenance": "computed",
+          "detail": "Not found anywhere in the resume",
+          "evidence_refs": [
+            "5ee675e69e8c"
+          ]
+        },
+        {
+          "key": "requirement:10fdbb4cfae0",
+          "label": "Kubernetes",
+          "contribution": 0.0,
+          "weight": 1.0,
+          "raw_value": 0.0,
+          "provenance": "computed",
+          "detail": "Not found anywhere in the resume",
+          "evidence_refs": [
+            "10fdbb4cfae0"
+          ]
+        },
+        {
+          "key": "requirement:078db92f20e1",
+          "label": "Linux",
+          "contribution": 0.5,
+          "weight": 1.0,
+          "raw_value": 0.5,
+          "provenance": "computed",
+          "detail": "Listed in your skills section, but not shown in use. Demonstrated experience counts for more.",
+          "evidence_refs": [
+            "078db92f20e1"
+          ]
+        }
+      ],
+      "cap_applied": null,
+      "uncapped_value": null,
+      "confidence": 0.674
+    },
+    "ats": {
+      "kind": "ats",
+      "value": 88.0,
+      "band": "strong",
+      "components": [
+        {
+          "key": "ats.text_in_table",
+          "label": "Content inside a table",
+          "contribution": -12.0,
+          "weight": null,
+          "raw_value": null,
+          "provenance": "rule",
+          "detail": "Replace the table with plain paragraphs and bullet points.",
+          "evidence_refs": []
+        }
+      ],
+      "cap_applied": null,
+      "uncapped_value": null,
+      "confidence": 0.674
+    },
+    "quality": {
+      "kind": "quality",
+      "value": 27.0,
+      "band": "not_aligned",
+      "components": [
+        {
+          "key": "rubric:clarity",
+          "label": "Clarity",
+          "contribution": 7.5,
+          "weight": 0.25,
+          "raw_value": 4.0,
+          "provenance": "judged",
+          "detail": "Rated 4 of 5",
+          "evidence_refs": []
+        },
+        {
+          "key": "rubric:impact",
+          "label": "Impact",
+          "contribution": 6.0,
+          "weight": 0.3,
+          "raw_value": 3.0,
+          "provenance": "judged",
+          "detail": "Rated 3 of 5",
+          "evidence_refs": []
+        },
+        {
+          "key": "rubric:specificity",
+          "label": "Specificity",
+          "contribution": 7.5,
+          "weight": 0.25,
+          "raw_value": 4.0,
+          "provenance": "judged",
+          "detail": "Rated 4 of 5",
+          "evidence_refs": []
+        },
+        {
+          "key": "rubric:professionalism",
+          "label": "Professionalism",
+          "contribution": 3.0,
+          "weight": 0.1,
+          "raw_value": 4.0,
+          "provenance": "judged",
+          "detail": "Rated 4 of 5",
+          "evidence_refs": []
+        },
+        {
+          "key": "rubric:relevance",
+          "label": "Relevance",
+          "contribution": 3.0,
+          "weight": 0.1,
+          "raw_value": 4.0,
+          "provenance": "judged",
+          "detail": "Rated 4 of 5",
+          "evidence_refs": []
+        }
+      ],
+      "cap_applied": null,
+      "uncapped_value": null,
+      "confidence": 0.674
+    },
+    "must_coverage": 0.4,
+    "overall_coverage": 0.2885,
+    "expected_bands": [
+      {
+        "kind": "job_match",
+        "low": 60.0,
+        "high": 75.0,
+        "position": "below"
+      },
+      {
+        "kind": "quality",
+        "low": 65.0,
+        "high": 80.0,
+        "position": "below"
+      },
+      {
+        "kind": "ats",
+        "low": 80.0,
+        "high": 92.0,
+        "position": "within"
+      }
+    ],
+    "percentiles": [],
+    "rubric_version": "1.0.0"
+  },
+  "headline": "You show 3 of the 5 things this job calls essential.",
+  "verdict": "Significant gaps \u2014 40 out of 100. Substantial revision needed, or a different target role. You match 3 of 5 essential requirements for this role. The gaps that matters most: Docker, AWS. You list Python, PostgreSQL, Git without showing where you used them \u2014 a reader cannot tell how far that experience goes. The writing is the weakest part: most bullets describe duties rather than results.",
+  "strengths": [
+    "You match 3 of 5 essential requirements."
+  ],
+  "weaknesses": [
+    "7 requirements with no evidence at all.",
+    "3 skills listed but never demonstrated.",
+    "Writing scores 27; bullets read as responsibilities."
+  ],
+  "section_feedback": [],
+  "bullet_suggestions": [],
+  "recommendations": [
+    {
+      "id": "req:4eebe79059f6",
+      "title": "Address the missing requirement: AWS",
+      "detail": "This job asks for AWS and nothing in your resume mentions it. If you have the experience, add the bullet that shows it. If you do not, this is the gap to close before applying.",
+      "severity": "high",
+      "projected_gain": 5.2,
+      "related_requirement_ids": [
+        "4eebe79059f6"
+      ]
+    },
+    {
+      "id": "req:806d1cedcbd5",
+      "title": "Address the missing requirement: Docker",
+      "detail": "This job asks for Docker and nothing in your resume mentions it. If you have the experience, add the bullet that shows it. If you do not, this is the gap to close before applying.",
+      "severity": "high",
+      "projected_gain": 5.2,
+      "related_requirement_ids": [
+        "806d1cedcbd5"
+      ]
+    },
+    {
+      "id": "req:b66fbbd166dc",
+      "title": "Address the missing requirement: REST APIs",
+      "detail": "This job asks for REST APIs and nothing in your resume mentions it. If you have the experience, add the bullet that shows it. If you do not, this is the gap to close before applying.",
+      "severity": "medium",
+      "projected_gain": 3.5,
+      "related_requirement_ids": [
+        "b66fbbd166dc"
+      ]
+    },
+    {
+      "id": "req:6e8126dfd720",
+      "title": "Address the missing requirement: Redis",
+      "detail": "This job asks for Redis and nothing in your resume mentions it. If you have the experience, add the bullet that shows it. If you do not, this is the gap to close before applying.",
+      "severity": "medium",
+      "projected_gain": 3.5,
+      "related_requirement_ids": [
+        "6e8126dfd720"
+      ]
+    },
+    {
+      "id": "req:4735cdbf7d7f",
+      "title": "Address the missing requirement: Unit testing",
+      "detail": "This job asks for Unit testing and nothing in your resume mentions it. If you have the experience, add the bullet that shows it. If you do not, this is the gap to close before applying.",
+      "severity": "medium",
+      "projected_gain": 3.5,
+      "related_requirement_ids": [
+        "4735cdbf7d7f"
+      ]
+    },
+    {
+      "id": "req:8c595f9fa181",
+      "title": "Show where you used PostgreSQL",
+      "detail": "PostgreSQL appears in your skills list, but no bullet shows you using it. A reader cannot tell whether you have used it once or for years. Add it to a bullet that describes what you built and what happened.",
+      "severity": "high",
+      "projected_gain": 2.6,
+      "related_requirement_ids": [
+        "8c595f9fa181"
+      ]
+    }
+  ],
+  "rubric_version": "1.0.0",
+  "prompt_version": "rubric-v1",
+  "degraded_stages": []
+}

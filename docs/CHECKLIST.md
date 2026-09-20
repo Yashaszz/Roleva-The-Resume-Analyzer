@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 142 / 217 tasks (~65%) — upload and progress built; route protection verified live.**
+**Progress: 152 / 217 tasks (~70%) — the report renders, from a fixture the real pipeline produced.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -42,12 +42,12 @@
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
-| 7 | Frontend Build | 32 | 15 | In progress |
+| 7 | Frontend Build | 32 | 25 | In progress |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **142** | **65%** |
+| **TOTAL** | | **217** | **152** | **70%** |
 
 ---
 
@@ -308,17 +308,17 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 7.16 SSE client + BFF proxy (report hydration lands with 7.17–7.27)
 
 ## Report
-- [ ] 7.17 Verdict / competitiveness band
-- [ ] 7.18 Four score visualizations (custom SVG)
-- [ ] 7.19 Expected-band relative display
-- [ ] 7.20 Score expansion → components → contributions
-- [ ] 7.21 Requirement map (JD ↔ resume evidence)
-- [ ] 7.22 Skill ledger: matched / partial / missing (must-haves separated)
-- [ ] 7.23 **Evidence viewer** — click any claim, see the exact resume line
-- [ ] 7.24 ATS checklist with location + impact + fix
+- [x] 7.17 Verdict / competitiveness band
+- [x] 7.18 Score visualisations — no dial; hero sentence + three tiles
+- [x] 7.19 Expected-band relative display ("typical", never a percentile)
+- [x] 7.20 Score expansion → components → contributions
+- [x] 7.21 Thread map (JD ↔ resume evidence)
+- [x] 7.22 Skill ledger: matched / partial / missing (must-haves separated)
+- [x] 7.23 **Evidence viewer** — click any claim, see the exact resume line
+- [x] 7.24 ATS checklist with location + impact + fix
 - [ ] 7.25 Section-by-section feedback
-- [ ] 7.26 Bullet improvement panel + copy-to-clipboard
-- [ ] 7.27 Ranked recommendations with projected score gain
+- [x] 7.26 Bullet improvement panel + copy-to-clipboard
+- [x] 7.27 Ranked recommendations with projected score gain
 
 ## Account surfaces
 - [ ] 7.28 History dashboard (past analyses)

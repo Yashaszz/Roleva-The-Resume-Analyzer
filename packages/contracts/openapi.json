@@ -6,10 +6,234 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/analyze": {
+      "post": {
+        "summary": "Analyze",
+        "description": "Analyse one resume against one job description.\n\nSynchronous. At fewer than a hundred analyses a day there is no queue worth\nrunning, and a request that returns the finished report is far simpler to\nreason about than a job id the client has to poll.",
+        "operationId": "analyze_analyze_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analyze_analyze_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/analyze/stream": {
+      "post": {
+        "summary": "Analyze Stream",
+        "description": "The same analysis, with progress events while it runs.\n\nEverything that can be rejected is rejected *before* the stream opens, so a\nquota error is still an HTTP 429 the client can handle normally. Once the\nfirst byte is sent the status is 200 for good, and any later failure has to\ntravel as an error frame instead.",
+        "operationId": "analyze_stream_analyze_stream_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analyze_stream_analyze_stream_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/analyses": {
+      "get": {
+        "summary": "List Analyses",
+        "description": "The signed-in user's analysis history, newest first.",
+        "operationId": "list_analyses_analyses_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response List Analyses Analyses Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analyses/{analysis_id}": {
+      "get": {
+        "summary": "Get Analysis",
+        "operationId": "get_analysis_analyses__analysis_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "analysis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Analysis Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Analysis",
+        "description": "Delete an analysis permanently.\n\nNo soft delete. When somebody asks for their resume data to be removed, a\nrow marked `deleted = true` is not removal.",
+        "operationId": "delete_analysis_analyses__analysis_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "analysis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Analysis Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
-        "description": "Liveness probe.\n\nAlso the warm-up endpoint: the frontend pings this the moment a user lands\non the upload page, so Render's free-tier instance wakes up during the ~60s\nthe user spends picking a file and pasting a job description.",
+        "description": "Liveness probe. Touches nothing, so it answers even when the DB is down.",
         "operationId": "health_health_get",
         "responses": {
           "200": {
@@ -20,6 +244,27 @@
                   "additionalProperties": true,
                   "type": "object",
                   "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/warmup": {
+      "get": {
+        "summary": "Warmup",
+        "description": "Wake both free tiers before the user needs them.\n\nTwo things sleep, not one. Render suspends an idle instance and takes\nroughly fifty seconds to cold-start it; Supabase pauses an idle project and\ntakes several seconds on its first query. A health check that touches no\ndatabase wakes only half of what an analysis needs.\n\nSo this also runs the cheapest possible query. The frontend calls it the\nmoment somebody lands on the upload page \u2014 during the sixty-odd seconds they\nspend choosing a file and pasting a job description, which is exactly the\nwindow both services need.\n\nUnauthenticated on purpose: requiring a token would mean the wake-up could\nnot happen until after sign-in, which is most of the wait it exists to\nremove. It reads no rows and reveals nothing.",
+        "operationId": "warmup_warmup_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Warmup Warmup Get"
                 }
               }
             }
@@ -55,13 +300,118 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "HTTPBearer": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    },
     "schemas": {
+      "AnalysisReport": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisStatus"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "resume": {
+            "$ref": "#/components/schemas/ResumeDocument"
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobTarget"
+          },
+          "matches": {
+            "$ref": "#/components/schemas/MatchReport"
+          },
+          "ats": {
+            "$ref": "#/components/schemas/AtsReport"
+          },
+          "scores": {
+            "$ref": "#/components/schemas/ScoreReport"
+          },
+          "headline": {
+            "default": "",
+            "title": "Headline",
+            "type": "string"
+          },
+          "verdict": {
+            "default": "",
+            "title": "Verdict",
+            "type": "string"
+          },
+          "strengths": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Strengths",
+            "type": "array"
+          },
+          "weaknesses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weaknesses",
+            "type": "array"
+          },
+          "section_feedback": {
+            "items": {
+              "$ref": "#/components/schemas/SectionFeedback"
+            },
+            "title": "Section Feedback",
+            "type": "array"
+          },
+          "bullet_suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/BulletSuggestion"
+            },
+            "title": "Bullet Suggestions",
+            "type": "array"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "title": "Recommendations",
+            "type": "array"
+          },
+          "rubric_version": {
+            "title": "Rubric Version",
+            "type": "string"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "degraded_stages": {
+            "items": {
+              "$ref": "#/components/schemas/Stage"
+            },
+            "title": "Degraded Stages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "resume",
+          "job",
+          "matches",
+          "ats",
+          "scores",
+          "rubric_version",
+          "prompt_version"
+        ],
+        "title": "AnalysisReport",
+        "type": "object"
+      },
       "AnalysisStatus": {
         "enum": [
           "pending",
@@ -196,6 +546,48 @@
         ],
         "title": "Band",
         "type": "string"
+      },
+      "Body_analyze_analyze_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "The resume, as a PDF"
+          },
+          "job_description": {
+            "type": "string",
+            "title": "Job Description",
+            "description": "The full job posting text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file",
+          "job_description"
+        ],
+        "title": "Body_analyze_analyze_post"
+      },
+      "Body_analyze_stream_analyze_stream_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "The resume, as a PDF"
+          },
+          "job_description": {
+            "type": "string",
+            "title": "Job Description",
+            "description": "The full job posting text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file",
+          "job_description"
+        ],
+        "title": "Body_analyze_stream_analyze_stream_post"
       },
       "Bullet": {
         "additionalProperties": false,
@@ -744,6 +1136,19 @@
         },
         "title": "ExperienceItem",
         "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
       },
       "JobTarget": {
         "additionalProperties": false,
@@ -1719,111 +2124,45 @@
         "title": "Stage",
         "type": "string"
       },
-      "AnalysisReport": {
-        "additionalProperties": false,
+      "ValidationError": {
         "properties": {
-          "schema_version": {
-            "default": 1,
-            "title": "Schema Version",
-            "type": "integer"
-          },
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "status": {
-            "$ref": "#/components/schemas/AnalysisStatus"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "resume": {
-            "$ref": "#/components/schemas/ResumeDocument"
-          },
-          "job": {
-            "$ref": "#/components/schemas/JobTarget"
-          },
-          "matches": {
-            "$ref": "#/components/schemas/MatchReport"
-          },
-          "ats": {
-            "$ref": "#/components/schemas/AtsReport"
-          },
-          "scores": {
-            "$ref": "#/components/schemas/ScoreReport"
-          },
-          "verdict": {
-            "default": "",
-            "title": "Verdict",
-            "type": "string"
-          },
-          "strengths": {
+          "loc": {
             "items": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             },
-            "title": "Strengths",
-            "type": "array"
+            "type": "array",
+            "title": "Location"
           },
-          "weaknesses": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Weaknesses",
-            "type": "array"
+          "msg": {
+            "type": "string",
+            "title": "Message"
           },
-          "section_feedback": {
-            "items": {
-              "$ref": "#/components/schemas/SectionFeedback"
-            },
-            "title": "Section Feedback",
-            "type": "array"
+          "type": {
+            "type": "string",
+            "title": "Error Type"
           },
-          "bullet_suggestions": {
-            "items": {
-              "$ref": "#/components/schemas/BulletSuggestion"
-            },
-            "title": "Bullet Suggestions",
-            "type": "array"
+          "input": {
+            "title": "Input"
           },
-          "recommendations": {
-            "items": {
-              "$ref": "#/components/schemas/Recommendation"
-            },
-            "title": "Recommendations",
-            "type": "array"
-          },
-          "rubric_version": {
-            "title": "Rubric Version",
-            "type": "string"
-          },
-          "prompt_version": {
-            "title": "Prompt Version",
-            "type": "string"
-          },
-          "degraded_stages": {
-            "items": {
-              "$ref": "#/components/schemas/Stage"
-            },
-            "title": "Degraded Stages",
-            "type": "array"
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
+        "type": "object",
         "required": [
-          "id",
-          "status",
-          "created_at",
-          "resume",
-          "job",
-          "matches",
-          "ats",
-          "scores",
-          "rubric_version",
-          "prompt_version"
+          "loc",
+          "msg",
+          "type"
         ],
-        "title": "AnalysisReport",
-        "type": "object"
+        "title": "ValidationError"
       },
       "ProgressEvent": {
         "additionalProperties": false,
@@ -1868,6 +2207,12 @@
         ],
         "title": "ProgressEvent",
         "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }

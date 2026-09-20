@@ -281,6 +281,7 @@ class Pipeline:
             matches=matches,
             ats=ats,
             scores=scores,
+            headline=verdict.headline(facts),
             verdict=verdict.build(facts),
             strengths=verdict.strengths(facts),
             weaknesses=verdict.weaknesses(facts),

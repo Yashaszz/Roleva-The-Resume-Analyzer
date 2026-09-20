@@ -124,6 +124,35 @@ def _plural(count: int, singular: str, plural: str | None = None) -> str:
     return singular if count == 1 else (plural or f"{singular}s")
 
 
+def headline(data: Facts) -> str:
+    """The one sentence the report opens with.
+
+    Separate from `build` because it is set at display size, and a five-sentence
+    paragraph at 46px is not a headline — it is a wall. This states the finding;
+    the paragraph below it states the consequences.
+
+    Every version is a fact the engine computed. There is no encouraging
+    fallback, because a resume that matches nothing should not be greeted with
+    an upbeat sentence.
+    """
+    if data.must_total:
+        if data.must_matched == data.must_total:
+            return f"You show all {data.must_total} things this job calls essential."
+        return (
+            f"You show {data.must_matched} of the {data.must_total} things "
+            "this job calls essential."
+        )
+
+    # A posting with no must-have requirements is unusual but legal: fall back
+    # to overall coverage rather than inventing an essential count.
+    if data.missing:
+        return (
+            f"{data.missing} of this role's {data.matched + data.partial + data.missing} "
+            "requirements have no evidence in your resume."
+        )
+    return "Your resume covers everything this posting asks for."
+
+
 def build(data: Facts) -> str:
     """Compose the verdict from facts. Deterministic and side-effect free."""
     sentences: list[str] = []

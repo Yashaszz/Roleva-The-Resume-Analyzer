@@ -7,6 +7,99 @@
  */
 
 export interface paths {
+    "/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Analyze
+         * @description Analyse one resume against one job description.
+         *
+         *     Synchronous. At fewer than a hundred analyses a day there is no queue worth
+         *     running, and a request that returns the finished report is far simpler to
+         *     reason about than a job id the client has to poll.
+         */
+        post: operations["analyze_analyze_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/analyze/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Analyze Stream
+         * @description The same analysis, with progress events while it runs.
+         *
+         *     Everything that can be rejected is rejected *before* the stream opens, so a
+         *     quota error is still an HTTP 429 the client can handle normally. Once the
+         *     first byte is sent the status is 200 for good, and any later failure has to
+         *     travel as an error frame instead.
+         */
+        post: operations["analyze_stream_analyze_stream_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/analyses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Analyses
+         * @description The signed-in user's analysis history, newest first.
+         */
+        get: operations["list_analyses_analyses_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/analyses/{analysis_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Analysis */
+        get: operations["get_analysis_analyses__analysis_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Analysis
+         * @description Delete an analysis permanently.
+         *
+         *     No soft delete. When somebody asks for their resume data to be removed, a
+         *     row marked `deleted = true` is not removal.
+         */
+        delete: operations["delete_analysis_analyses__analysis_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -16,13 +109,43 @@ export interface paths {
         };
         /**
          * Health
-         * @description Liveness probe.
-         *
-         *     Also the warm-up endpoint: the frontend pings this the moment a user lands
-         *     on the upload page, so Render's free-tier instance wakes up during the ~60s
-         *     the user spends picking a file and pasting a job description.
+         * @description Liveness probe. Touches nothing, so it answers even when the DB is down.
          */
         get: operations["health_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/warmup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Warmup
+         * @description Wake both free tiers before the user needs them.
+         *
+         *     Two things sleep, not one. Render suspends an idle instance and takes
+         *     roughly fifty seconds to cold-start it; Supabase pauses an idle project and
+         *     takes several seconds on its first query. A health check that touches no
+         *     database wakes only half of what an analysis needs.
+         *
+         *     So this also runs the cheapest possible query. The frontend calls it the
+         *     moment somebody lands on the upload page — during the sixty-odd seconds they
+         *     spend choosing a file and pasting a job description, which is exactly the
+         *     window both services need.
+         *
+         *     Unauthenticated on purpose: requiring a token would mean the wake-up could
+         *     not happen until after sign-in, which is most of the wait it exists to
+         *     remove. It reads no rows and reveals nothing.
+         */
+        get: operations["warmup_warmup_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -56,6 +179,53 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnalysisReport */
+        AnalysisReport: {
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+            /** Id */
+            id: string;
+            status: components["schemas"]["AnalysisStatus"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            resume: components["schemas"]["ResumeDocument"];
+            job: components["schemas"]["JobTarget"];
+            matches: components["schemas"]["MatchReport"];
+            ats: components["schemas"]["AtsReport"];
+            scores: components["schemas"]["ScoreReport"];
+            /**
+             * Headline
+             * @default
+             */
+            headline: string;
+            /**
+             * Verdict
+             * @default
+             */
+            verdict: string;
+            /** Strengths */
+            strengths?: string[];
+            /** Weaknesses */
+            weaknesses?: string[];
+            /** Section Feedback */
+            section_feedback?: components["schemas"]["SectionFeedback"][];
+            /** Bullet Suggestions */
+            bullet_suggestions?: components["schemas"]["BulletSuggestion"][];
+            /** Recommendations */
+            recommendations?: components["schemas"]["Recommendation"][];
+            /** Rubric Version */
+            rubric_version: string;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Degraded Stages */
+            degraded_stages?: components["schemas"]["Stage"][];
+        };
         /**
          * AnalysisStatus
          * @enum {string}
@@ -114,6 +284,32 @@ export interface components {
          * @enum {string}
          */
         Band: "strong" | "competitive" | "needs_work" | "significant_gaps" | "not_aligned";
+        /** Body_analyze_analyze_post */
+        Body_analyze_analyze_post: {
+            /**
+             * File
+             * @description The resume, as a PDF
+             */
+            file: string;
+            /**
+             * Job Description
+             * @description The full job posting text
+             */
+            job_description: string;
+        };
+        /** Body_analyze_stream_analyze_stream_post */
+        Body_analyze_stream_analyze_stream_post: {
+            /**
+             * File
+             * @description The resume, as a PDF
+             */
+            file: string;
+            /**
+             * Job Description
+             * @description The full job posting text
+             */
+            job_description: string;
+        };
         /** Bullet */
         Bullet: {
             /** Id */
@@ -348,6 +544,11 @@ export interface components {
             bullets?: components["schemas"]["Bullet"][];
             /** @default null */
             span: components["schemas"]["Span"] | null;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /**
          * JobTarget
@@ -745,47 +946,18 @@ export interface components {
          * @enum {string}
          */
         Stage: "validating" | "extracting" | "structuring" | "reading_job" | "matching" | "checking_ats" | "assessing_quality" | "scoring" | "writing_advice" | "done";
-        /** AnalysisReport */
-        AnalysisReport: {
-            /**
-             * Schema Version
-             * @default 1
-             */
-            schema_version: number;
-            /** Id */
-            id: string;
-            status: components["schemas"]["AnalysisStatus"];
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            resume: components["schemas"]["ResumeDocument"];
-            job: components["schemas"]["JobTarget"];
-            matches: components["schemas"]["MatchReport"];
-            ats: components["schemas"]["AtsReport"];
-            scores: components["schemas"]["ScoreReport"];
-            /**
-             * Verdict
-             * @default
-             */
-            verdict: string;
-            /** Strengths */
-            strengths?: string[];
-            /** Weaknesses */
-            weaknesses?: string[];
-            /** Section Feedback */
-            section_feedback?: components["schemas"]["SectionFeedback"][];
-            /** Bullet Suggestions */
-            bullet_suggestions?: components["schemas"]["BulletSuggestion"][];
-            /** Recommendations */
-            recommendations?: components["schemas"]["Recommendation"][];
-            /** Rubric Version */
-            rubric_version: string;
-            /** Prompt Version */
-            prompt_version: string;
-            /** Degraded Stages */
-            degraded_stages?: components["schemas"]["Stage"][];
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
         /**
          * ProgressEvent
@@ -817,7 +989,189 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    analyze_analyze_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_analyze_analyze_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    analyze_stream_analyze_stream_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_analyze_stream_analyze_stream_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_analyses_analyses_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_analysis_analyses__analysis_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                analysis_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_analysis_analyses__analysis_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                analysis_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    warmup_warmup_get: {
         parameters: {
             query?: never;
             header?: never;
