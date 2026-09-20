@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 137 / 217 tasks (~63%) — auth complete; sign-up renders against live Supabase.**
+**Progress: 142 / 217 tasks (~65%) — upload and progress built; route protection verified live.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -42,12 +42,12 @@
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
-| 7 | Frontend Build | 32 | 10 | In progress |
+| 7 | Frontend Build | 32 | 15 | In progress |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **137** | **63%** |
+| **TOTAL** | | **217** | **142** | **65%** |
 
 ---
 
@@ -301,11 +301,11 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 ## Core flow
 - [ ] 7.11 Landing page (with cached demo analysis, no LLM cost)
-- [ ] 7.12 Upload: dropzone + file picker + mobile
-- [ ] 7.13 Client-side preflight validation + specific errors
-- [ ] 7.14 JD input with length meter + quality hint
-- [ ] 7.15 **Analysis progress screen** (real stage names + cold-start state)
-- [ ] 7.16 SSE client + progressive report hydration
+- [x] 7.12 Upload: dropzone + file picker + mobile
+- [x] 7.13 Client-side preflight validation + specific errors
+- [x] 7.14 JD input with length meter + quality hint
+- [x] 7.15 **Analysis progress screen** (real stage names + cold-start state)
+- [x] 7.16 SSE client + BFF proxy (report hydration lands with 7.17–7.27)
 
 ## Report
 - [ ] 7.17 Verdict / competitiveness band
