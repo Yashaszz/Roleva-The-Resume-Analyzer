@@ -1,47 +1,136 @@
 @import "tailwindcss";
 @import "./tokens.css";
 
-/* Expose the tokens to Tailwind's utility classes, so `bg-surface-raised` and
-   `text-muted` resolve to the same values the CSS uses directly. */
+/*
+ * Tailwind sees the same tokens the CSS does.
+ *
+ * Every utility resolves to a semantic token, never to a raw value, so
+ * `bg-panel` and `var(--surface-panel)` can never drift apart. There is
+ * deliberately no utility for a primitive: if `bg-c-ink-800` were reachable,
+ * somebody would eventually use it and the semantic layer would stop meaning
+ * anything.
+ */
 @theme inline {
-  --color-surface-base: var(--surface-base);
-  --color-surface-raised: var(--surface-raised);
-  --color-surface-sunken: var(--surface-sunken);
-  --color-surface-inverse: var(--surface-inverse);
+  /* --- surfaces --- */
+  --color-canvas: var(--surface-canvas);
+  --color-panel: var(--surface-panel);
+  --color-raised: var(--surface-raised);
+  --color-inverse: var(--surface-inverse);
 
+  /* --- text --- */
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
   --color-muted: var(--text-muted);
-  --color-inverse: var(--text-inverse);
+  --color-on-signal: var(--text-on-signal);
+  --color-on-inverse: var(--text-on-inverse);
 
+  /* --- lines --- */
   --color-line-subtle: var(--line-subtle);
   --color-line-strong: var(--line-strong);
 
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-subtle: var(--accent-subtle);
+  /* --- the evidence vocabulary --- */
+  --color-shown: var(--evidence-shown);
+  --color-shown-bg: var(--evidence-shown-bg);
+  --color-shown-text: var(--evidence-shown-text);
+  --color-listed-line: var(--evidence-listed-line);
+  --color-absent-bg: var(--evidence-absent-bg);
+  --color-absent-line: var(--evidence-absent-line);
+  --color-absent-text: var(--evidence-absent-text);
 
-  --color-danger: var(--danger);
-  --color-warning: var(--warning);
-  --color-success: var(--success);
+  /* --- status --- */
+  --color-capped: var(--status-capped);
+  --color-capped-bg: var(--status-capped-bg);
+  --color-good: var(--status-good);
+  --color-good-bg: var(--status-good-bg);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* --- type --- */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --text-2xs: var(--text-2xs);
+  --text-xs: var(--text-xs);
+  --text-sm: var(--text-sm);
+  --text-base: var(--text-base);
+  --text-md: var(--text-md);
+  --text-lg: var(--text-lg);
+  --text-xl: var(--text-xl);
+  --text-2xl: var(--text-2xl);
+  --text-3xl: var(--text-3xl);
+
+  /* --- radius: nothing in this product is rounder than 4px --- */
+  --radius-none: var(--radius-none);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
 }
 
 html {
-  color-scheme: light dark;
+  /* Dark only in v1. Declared so form controls and scrollbars follow, rather
+     than rendering as light-mode widgets on a dark page. */
+  color-scheme: dark;
+  background: var(--surface-canvas);
 }
 
 body {
-  background: var(--surface-base);
+  background: var(--surface-canvas);
   color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* A visible focus ring on keyboard navigation only. Never removed: this is an
-   accessibility requirement, not a style choice. */
+/*
+ * A visible focus ring on keyboard navigation only. Never removed — this is an
+ * accessibility requirement, not a style choice, and the ring colour is held to
+ * 3:1 against both surfaces by scripts/check-contrast.mjs.
+ */
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
   border-radius: var(--radius-sm);
+}
+
+/*
+ * Mono labels. The one typographic signal this design uses to say "instrument
+ * reading": small, capitalised, widely tracked. Used for units and field
+ * labels, never for anything the user has to read as a sentence.
+ */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/*
+ * Every number in the product. Tabular figures so a value does not change
+ * width as it settles, which is what makes a counting score look unstable.
+ */
+.numeric {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-number);
+}
+
+/* Screen-reader-only text, for the state words behind every colour. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/*
+ * Selection uses the signal colour, because the signal colour is the only
+ * accent this product has.
+ */
+::selection {
+  background: var(--evidence-shown);
+  color: var(--text-on-signal);
 }

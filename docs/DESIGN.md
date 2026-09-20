@@ -210,9 +210,22 @@ The hero of this direction. Fourteen requirements legible in one glance, as a
 
 The mark is an inline SVG, not a character, so it renders identically
 everywhere. The cell also carries the priority (MUST / STRONG / NICE) and the
-requirement name as text. **The map survives greyscale printing and the common
-forms of colour blindness** — which is the actual requirement, not merely a
-courtesy.
+requirement name as text.
+
+**Measured, not assumed.** Converting the palette to greyscale puts the two
+outlined states at 54 and 48 out of 255 — effectively identical. So the colours
+do *not* carry this distinction on a monochrome printout; the mark and the
+border style do:
+
+| State | Fill (greyscale) | Border | Mark |
+|---|---|---|---|
+| Demonstrated | 163 — unmistakable | none | ● filled |
+| Listed only | 2 | solid | ◐ half |
+| Absent | 3 | **dashed** | ○ empty |
+
+That is the point of the rule. Had the marks been decoration rather than the
+actual carrier, this design would have failed on the first printed copy and
+nobody would have found out until a user mentioned it.
 
 ### A conflict the contrast check surfaced
 

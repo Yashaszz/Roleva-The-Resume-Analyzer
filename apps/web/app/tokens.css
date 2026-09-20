@@ -139,8 +139,12 @@
      technical work: it has a genuine mono companion with matching metrics, it
      is not Inter, and its figures are unambiguous at 10px, which matters when
      the whole page is numbers. */
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  /* The --font-plex-* variables are produced by next/font in app/layout.tsx,
+     which self-hosts the files and gives them hashed family names. The literal
+     names after them are the fallback for anything rendering outside the Next
+     app — the artboards on the design canvas, for instance. */
+  --font-sans: var(--font-plex-sans), "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
 
   /* Every number in this product is set in mono, without exception. A score
      that changes width as it counts is a score that looks unstable. */

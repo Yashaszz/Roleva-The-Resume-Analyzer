@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 127 / 217 tasks (~59%) — Direction B locked, tokens verified. Gate 6 passed.**
+**Progress: 131 / 217 tasks (~60%) — primitives built and rendering at /design.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -42,12 +42,12 @@
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
-| 7 | Frontend Build | 32 | 0 | Not started |
+| 7 | Frontend Build | 32 | 4 | In progress |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **127** | **59%** |
+| **TOTAL** | | **217** | **131** | **60%** |
 
 ---
 
@@ -286,10 +286,10 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 # PHASE 7: FRONTEND BUILD
 
 ## Primitives
-- [ ] 7.1  Button, Field, Input, Textarea
-- [ ] 7.2  Dialog, Tooltip, Popover, Disclosure (Radix-based)
-- [ ] 7.3  Toast / notification system
-- [ ] 7.4  Loading + skeleton states
+- [x] 7.1  Button, Field, Input, Textarea
+- [x] 7.2  Dialog, Tooltip, Popover, Disclosure (Radix-based)
+- [x] 7.3  Toast / notification system
+- [x] 7.4  Loading + skeleton states
 
 ## Auth
 - [ ] 7.5  Sign-up screen
