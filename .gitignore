@@ -55,3 +55,6 @@ packages/contracts/generated/
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# Local dev fixtures served over HTTP for end-to-end testing. Not shipped.
+apps/web/public/dev/

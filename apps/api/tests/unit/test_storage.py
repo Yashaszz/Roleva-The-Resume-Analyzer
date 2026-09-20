@@ -359,3 +359,68 @@ def _fake_outcome() -> Any:
         log=StageLog(),
         llm_calls=4,
     )
+
+
+class TestTheStoredIdIsWhatTheClientGets:
+    """Found by the first end-to-end run.
+
+    The pipeline generates its own analysis id; Postgres assigns the row a
+    `gen_random_uuid()`. They are different, and only the stored one can be
+    fetched back. Emitting the pipeline's id sent the browser to a 404 on a
+    report that had just been computed successfully.
+    """
+
+    @pytest.mark.asyncio
+    async def test_save_returns_the_id_postgres_assigned(self) -> None:
+        db = FakeDb()
+        stored = await AnalysisRepository(db, "u1").save(
+            _fake_outcome(), file_hash="h", jd_text="jd", jd_hash="jh"
+        )
+        # FakeDb echoes "<table>-id"; the point is that it comes from the insert
+        # response rather than from anything the caller passed in.
+        assert stored == "analyses-id"
+
+    @pytest.mark.asyncio
+    async def test_it_is_not_the_id_the_pipeline_generated(self) -> None:
+        db = FakeDb()
+        outcome = _fake_outcome()
+        pipeline_id = outcome.report.id
+        stored = await AnalysisRepository(db, "u1").save(
+            outcome, file_hash="h", jd_text="jd", jd_hash="jh"
+        )
+        assert stored != pipeline_id
+
+    @pytest.mark.asyncio
+    async def test_the_row_carries_no_client_supplied_id(self) -> None:
+        """The database assigns it, so the insert must not name one."""
+        db = FakeDb()
+        await AnalysisRepository(db, "u1").save(
+            _fake_outcome(), file_hash="h", jd_text="jd", jd_hash="jh"
+        )
+        analyses_row = next(row for table, row in db.inserts if table == "analyses")
+        assert "id" not in analyses_row
+
+    @pytest.mark.asyncio
+    async def test_a_fetched_report_carries_the_row_id_not_the_stored_one(self) -> None:
+        """The report JSON was serialised with the pipeline's id. The row's id
+        is the only one that resolves, so it wins on read."""
+        stored = _minimal_report()
+        stored["id"] = "pipeline-generated-id"
+        db = FakeDb(rows=[{"id": "row-id-from-postgres", "report": stored, "status": "complete"}])
+
+        report = await AnalysisRepository(db, "u1").get("row-id-from-postgres")  # type: ignore[arg-type]
+        assert report.id == "row-id-from-postgres"
+
+    @pytest.mark.asyncio
+    async def test_a_cache_hit_carries_the_row_id_too(self) -> None:
+        """The second call site that got this wrong. A cached report navigated
+        the browser to the id baked into its JSON, which 404s."""
+        stored = _minimal_report()
+        stored["id"] = "pipeline-generated-id"
+        db = FakeDb(
+            rows=[{"id": "row-id-from-postgres", "report": stored, "created_at": _iso(days_ago=1)}]
+        )
+
+        report = await AnalysisRepository(db, "u1").find_cached(combined_hash="h")  # type: ignore[arg-type]
+        assert report is not None
+        assert report.id == "row-id-from-postgres"

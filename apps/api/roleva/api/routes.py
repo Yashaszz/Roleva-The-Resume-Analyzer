@@ -140,7 +140,10 @@ async def analyze(
     # intent plainly for anyone editing this function later.
     del pdf_bytes
 
-    await _persist(repository, outcome, combined, job_description)
+    stored_id = await _persist(repository, outcome, combined, job_description)
+    if stored_id:
+        # The report's own id is the route it lives at.
+        outcome.report.id = stored_id
     await record_sample(
         outcome.report.scores,
         role_family=outcome.report.job.role_family,
@@ -154,12 +157,18 @@ async def _persist(
     outcome: Any,
     combined: str,
     job_description: str,
-) -> None:
-    """Save the analysis, never failing the request if saving fails.
+) -> str | None:
+    """Save the analysis and return the id it was stored under.
 
-    The user has their report in hand by this point. Losing the history entry is
-    a real problem and is logged as one, but raising here would take a finished
-    analysis away from them to report a filing error.
+    **That return value matters.** The pipeline generates its own id for the run,
+    but Postgres assigns the row a `gen_random_uuid()` of its own — so the two
+    are different, and the stored one is the only one `/analyses/{id}` can find.
+    Emitting the pipeline's id sent the client to a report that did not exist,
+    which is exactly what the first end-to-end run did.
+
+    Never fails the request. The user has their report in hand by this point;
+    losing the history entry is a real problem and is logged as one, but raising
+    here would take a finished analysis away from them to report a filing error.
     """
     try:
         analysis_id = await repository.save(
@@ -173,8 +182,10 @@ async def _persist(
             filters={"id": f"eq.{analysis_id}"},
             values={"content_hash": combined},
         )
+        return analysis_id
     except Exception:
         logger.warning("analyze.save_failed", exc_info=True)
+        return None
 
 
 @router.post("/analyze/stream")
@@ -226,6 +237,8 @@ async def analyze_stream(
                     "partial": None,
                 },
             )
+            # `cached.id` is the row id: the repository stamps it on read, so a
+            # cache hit navigates to a route that resolves.
             yield sse.result(cached.model_dump(mode="json"), analysis_id=cached.id)
             return
 
@@ -264,13 +277,18 @@ async def analyze_stream(
             yield sse.error(failure.code.value, failure.message)
             return
 
-        await _persist(repository, outcome, combined, job_description)
+        stored_id = await _persist(repository, outcome, combined, job_description)
+        if stored_id:
+            outcome.report.id = stored_id
         await record_sample(
             outcome.report.scores,
             role_family=outcome.report.job.role_family,
             seniority=outcome.report.job.seniority.value,
         )
-        yield sse.result(outcome.report.model_dump(mode="json"), analysis_id=analysis_id)
+        # The stored id, because that is the one the report can be fetched by.
+        # `None` means the save failed, and the client shows a message rather
+        # than navigating to a route that cannot resolve.
+        yield sse.result(outcome.report.model_dump(mode="json"), analysis_id=stored_id)
 
     return StreamingResponse(stream(), headers=sse.SSE_HEADERS)
 

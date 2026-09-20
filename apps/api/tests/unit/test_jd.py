@@ -364,3 +364,56 @@ class TestLongestHeadingMatchWins:
     )
     def test_the_most_specific_phrase_decides(self, heading: str, expected: Priority) -> None:
         assert priority_from_heading(heading) is expected
+
+
+class TestRequirementsCanonicaliseFromSentences:
+    """Found by the first live end-to-end run.
+
+    A real posting writes "3+ years of experience with Python required", not
+    "Python". `resolve` only recognises a string that *is* a skill name, so
+    every requirement came back with `canonical = None` — and because every tier
+    of the matching cascade resolves `canonical or text`, tiers 1 and 2 could
+    never fire. Fourteen requirements, zero matches, against a resume that
+    plainly had several of them.
+
+    The offline tests missed it because the scripted extractor returned tidy
+    one-word requirements. The fixture was unrealistic in exactly the way that
+    hid the bug.
+    """
+
+    def test_a_skill_named_in_a_sentence_is_found(self) -> None:
+        from roleva.jd.requirement_extractor import _canonical_for
+
+        assert _canonical_for("3+ years of experience with Python required") == "Python"
+        assert _canonical_for("Strong SQL and relational database design") == "SQL"
+
+    def test_a_bare_skill_name_still_works(self) -> None:
+        from roleva.jd.requirement_extractor import _canonical_for
+
+        assert _canonical_for("Kubernetes") == "Kubernetes"
+
+    def test_a_sentence_naming_no_known_skill_stays_unresolved(self) -> None:
+        from roleva.jd.requirement_extractor import _canonical_for
+
+        assert _canonical_for("2+ years of professional backend experience") is None
+
+    def test_several_skills_are_left_for_the_adjudicator(self) -> None:
+        """ "at least one of AWS, GCP or Azure" is satisfied by any of them.
+
+        Picking the first would under-match a resume that has the second, so the
+        ambiguity is preserved rather than resolved arbitrarily.
+        """
+        from roleva.jd.requirement_extractor import _canonical_for
+
+        assert (
+            _canonical_for("Experience with at least one cloud provider (AWS, GCP or Azure)")
+            is None
+        )
+
+    def test_it_is_deterministic(self) -> None:
+        """`find_in_text` returns a set internally; a set with one element has
+        one order, but the guard against relying on that is worth keeping."""
+        from roleva.jd.requirement_extractor import _canonical_for
+
+        text = "Strong SQL and relational database design"
+        assert len({_canonical_for(text) for _ in range(20)}) == 1

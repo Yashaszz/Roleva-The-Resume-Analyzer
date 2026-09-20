@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 152 / 217 tasks (~70%) — the report renders, from a fixture the real pipeline produced.**
+**Progress: 152 / 217 tasks (~70%) — first live end-to-end run passed; it found two real bugs.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -330,7 +330,7 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [ ] 7.32 Accessibility pass: keyboard nav, screen reader, focus, **no color-only encoding**
 
 ### GATE 7
-- [ ] Full flow usable on a phone
+- [ ] Full flow usable on a phone (report verified at 375px; upload path untested)
 - [ ] Lighthouse: Performance ≥85, Accessibility ≥95
 - [ ] `prefers-reduced-motion` respected everywhere
 - [ ] Any number in the report traces to a highlighted resume line

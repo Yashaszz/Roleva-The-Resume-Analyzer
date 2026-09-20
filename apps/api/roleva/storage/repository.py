@@ -180,7 +180,7 @@ class AnalysisRepository:
         )
         if not rows or not rows[0].get("report"):
             raise RolevaError(ErrorCode.NOT_FOUND)
-        return AnalysisReport.model_validate(rows[0]["report"])
+        return _with_row_id(rows[0])
 
     async def find_cached(self, *, combined_hash: str) -> AnalysisReport | None:
         """A recent analysis of exactly these inputs, if one exists.
@@ -211,7 +211,7 @@ class AnalysisRepository:
             return None
 
         logger.info("cache.hit", analysis_id=rows[0]["id"])
-        return AnalysisReport.model_validate(rows[0]["report"])
+        return _with_row_id(rows[0])
 
     # ------------------------------------------------------------ delete ---
 
@@ -227,6 +227,24 @@ class AnalysisRepository:
             filters={"id": f"eq.{analysis_id}", "user_id": f"eq.{self.user_id}"},
         )
         logger.info("analysis.deleted", analysis_id=analysis_id)
+
+
+def _with_row_id(row: dict[str, Any]) -> AnalysisReport:
+    """Return the stored report, carrying the id it can be fetched by.
+
+    The report JSON was serialised by the pipeline, which had generated its own
+    run id before Postgres assigned the row a `gen_random_uuid()`. Those are
+    different values, and only the row's is a working route — so the row's id
+    wins on every read.
+
+    Stamping it here rather than at each call site means a report can never be
+    handed out labelled with an id that does not resolve. The first end-to-end
+    run did exactly that, twice: once from a fresh analysis and once from the
+    cache, which is two call sites and one missing invariant.
+    """
+    report = AnalysisReport.model_validate(row["report"])
+    report.id = str(row["id"])
+    return report
 
 
 def _id_of(row: dict[str, Any] | None) -> str:

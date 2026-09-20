@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 from roleva.jd.cleaner import CleanedJd
 from roleva.jd.cues import find_quantifier, resolve_priority
 from roleva.llm.client import LlmClient
-from roleva.matching.taxonomy import resolve
+from roleva.matching.taxonomy import find_in_text, resolve
 from roleva.models.common import Provenance, SourceDoc
 from roleva.models.job import (
     JobTarget,
@@ -184,6 +184,31 @@ def deduplicate(requirements: list[Requirement]) -> list[Requirement]:
     return result
 
 
+def _canonical_for(text: str) -> str | None:
+    """The one skill a requirement is about, if it is about exactly one.
+
+    `resolve` only recognises a string that *is* a skill name. Real postings do
+    not write "Python" — they write "3+ years of experience with Python
+    required", and `resolve` returns None for every one of those. Since every
+    tier of the matching cascade resolves `canonical or text`, a None here means
+    tiers 1 and 2 can never fire, and a live run produced zero matches against
+    fourteen requirements that plainly overlapped the resume.
+
+    So when the whole string does not resolve, the taxonomy is asked what skills
+    the sentence *names*. Exactly one is a canonical form. Several is genuinely
+    ambiguous — "at least one cloud provider (AWS, GCP or Azure)" is satisfied
+    by any of the three, and picking the first would under-match a resume that
+    has the second — so that case is left for the adjudicator, which can reason
+    about it.
+    """
+    resolution = resolve(text)
+    if resolution is not None:
+        return resolution.canonical
+
+    named = {canonical for canonical, _, _ in find_in_text(text)}
+    return named.pop() if len(named) == 1 else None
+
+
 def to_job_target(
     raw: LlmJobTarget,
     *,
@@ -201,8 +226,7 @@ def to_job_target(
         if not text:
             continue
 
-        resolution = resolve(text)
-        canonical = resolution.canonical if resolution else None
+        canonical = _canonical_for(text)
 
         # A skill named in the job title is mandatory whatever the body says:
         # a "Python Developer" needs Python.
