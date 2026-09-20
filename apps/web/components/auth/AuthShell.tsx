@@ -32,7 +32,7 @@ export function AuthShell({
         <div className="w-full max-w-[400px] mx-auto lg:mx-0 flex flex-col gap-8">
           <Link
             href="/"
-            className="display text-lg no-underline text-primary w-fit"
+            className="display text-lg no-underline text-primary w-fit inline-flex items-center min-h-[44px] rounded-sm"
             aria-label="Roleva, home"
           >
             Roleva

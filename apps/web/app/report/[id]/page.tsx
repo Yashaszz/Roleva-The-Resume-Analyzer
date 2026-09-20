@@ -13,7 +13,12 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
-import { AtsChecklist, BulletSuggestions, Recommendations } from "@/components/report/Advice";
+import {
+  AtsChecklist,
+  BulletSuggestions,
+  Recommendations,
+  SectionFeedback,
+} from "@/components/report/Advice";
 import { ScoreBreakdown } from "@/components/report/ScoreBreakdown";
 import { SkillLedger } from "@/components/report/SkillLedger";
 import { ThreadMap, type ThreadRow } from "@/components/report/Thread";
@@ -63,10 +68,9 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
 
         <BulletSuggestions suggestions={report.bullet_suggestions ?? []} />
 
-        <SkillLedger
-          requirements={requirements}
-          matches={matches}
-        />
+        <SkillLedger requirements={requirements} matches={matches} />
+
+        <SectionFeedback sections={report.section_feedback ?? []} />
 
         <AtsChecklist
           findings={report.ats.findings ?? []}

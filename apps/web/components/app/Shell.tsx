@@ -27,7 +27,12 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="min-h-dvh flex flex-col">
       <header className="border-b border-line-subtle">
         <div className="mx-auto w-full max-w-[1100px] px-5 sm:px-8 py-3 flex items-center gap-4 sm:gap-6">
-          <Link href="/analyze" className="display text-lg no-underline text-primary shrink-0">
+          {/* The wordmark is a link home, so it needs a real target like any
+              other. Text height alone put it at 23px. */}
+          <Link
+            href="/analyze"
+            className="display text-lg no-underline text-primary shrink-0 inline-flex items-center min-h-[44px] rounded-sm"
+          >
             Roleva
           </Link>
 

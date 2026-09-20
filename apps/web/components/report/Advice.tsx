@@ -21,6 +21,7 @@ import type { AnalysisReport } from "@/lib/types";
 type Recommendation = NonNullable<AnalysisReport["recommendations"]>[number];
 type BulletSuggestion = NonNullable<AnalysisReport["bullet_suggestions"]>[number];
 type AtsFinding = NonNullable<AnalysisReport["ats"]["findings"]>[number];
+type SectionFeedbackItem = NonNullable<AnalysisReport["section_feedback"]>[number];
 
 export function Recommendations({ items }: { items: Recommendation[] }) {
   if (items.length === 0) {
@@ -256,5 +257,87 @@ function SuggestionCard({ suggestion }: { suggestion: BulletSuggestion }) {
         </Button>
       </div>
     </Panel>
+  );
+}
+
+/**
+ * Section-by-section feedback. 7.25.
+ *
+ * Rated 1–5 against the same anchored rubric the quality score uses, so the
+ * ratings here and the number at the top of the page cannot disagree.
+ *
+ * The rating is drawn as filled marks rather than a bar, and the number is
+ * written beside them. A five-segment bar that only changes colour tells a
+ * colour-blind reader nothing, and "4 of 5" is the fact anyway.
+ *
+ * Renders nothing when the analysis produced no section feedback — an empty
+ * panel headed "Section feedback" reads as a failure rather than an absence.
+ */
+export function SectionFeedback({ sections }: { sections: SectionFeedbackItem[] }) {
+  if (sections.length === 0) return null;
+
+  return (
+    <section className="flex flex-col gap-4">
+      <PanelTitle>Section by section</PanelTitle>
+      <Panel padded={false}>
+        <ul className="flex flex-col m-0 p-0 list-none">
+          {sections.map((section) => (
+            <li
+              key={section.section}
+              className="flex flex-col gap-3 px-5 py-4 border-b border-line-subtle last:border-b-0"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <h3 className="text-base font-semibold text-primary m-0 capitalize">
+                  {section.section.replace(/_/g, " ")}
+                </h3>
+                <Rating value={section.rating} />
+              </div>
+
+              {(section.strengths ?? []).length > 0 ? (
+                <ul className="flex flex-col gap-1 m-0 p-0 list-none">
+                  {(section.strengths ?? []).map((item, index) => (
+                    <li key={index} className="flex gap-2 text-sm text-secondary leading-normal">
+                      <span className="text-shown shrink-0" aria-hidden="true">
+                        +
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              {(section.issues ?? []).length > 0 ? (
+                <ul className="flex flex-col gap-1 m-0 p-0 list-none">
+                  {(section.issues ?? []).map((item, index) => (
+                    <li key={index} className="flex gap-2 text-sm text-secondary leading-normal">
+                      <span className="text-capped shrink-0" aria-hidden="true">
+                        −
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </Panel>
+    </section>
+  );
+}
+
+function Rating({ value }: { value: number }) {
+  return (
+    <span className="flex items-center gap-2 shrink-0">
+      <span className="flex gap-1" aria-hidden="true">
+        {[1, 2, 3, 4, 5].map((step) => (
+          <span
+            key={step}
+            className={`w-2 h-2 rounded-full ${step <= value ? "bg-shown" : "bg-line-strong"}`}
+          />
+        ))}
+      </span>
+      <span className="numeric text-sm text-muted">{value} of 5</span>
+    </span>
   );
 }

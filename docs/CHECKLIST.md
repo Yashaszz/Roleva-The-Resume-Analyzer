@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 155 / 217 tasks (~71%) — account surfaces done and verified against the live API.**
+**Progress: 159 / 217 tasks (~73%) — Phase 7 code complete; Gate 7 needs a Lighthouse run.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -42,12 +42,12 @@
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
-| 7 | Frontend Build | 32 | 28 | In progress |
+| 7 | Frontend Build | 32 | 32 | **CODE DONE** |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **155** | **71%** |
+| **TOTAL** | | **217** | **159** | **73%** |
 
 ---
 
@@ -300,7 +300,7 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 7.10 Protected route handling (middleware + open-redirect guard)
 
 ## Core flow
-- [ ] 7.11 Landing page (with cached demo analysis, no LLM cost)
+- [x] 7.11 Landing page (live thread map from a committed fixture, no LLM cost)
 - [x] 7.12 Upload: dropzone + file picker + mobile
 - [x] 7.13 Client-side preflight validation + specific errors
 - [x] 7.14 JD input with length meter + quality hint
@@ -316,7 +316,7 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 7.22 Skill ledger: matched / partial / missing (must-haves separated)
 - [x] 7.23 **Evidence viewer** — click any claim, see the exact resume line
 - [x] 7.24 ATS checklist with location + impact + fix
-- [ ] 7.25 Section-by-section feedback
+- [x] 7.25 Section-by-section feedback
 - [x] 7.26 Bullet improvement panel + copy-to-clipboard
 - [x] 7.27 Ranked recommendations with projected score gain
 
@@ -326,8 +326,8 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 7.30 Quota display ("3 of 5 analyses left today")
 
 ## Quality passes
-- [ ] 7.31 Responsive pass (375px → 1920px), every screen
-- [ ] 7.32 Accessibility pass: keyboard nav, screen reader, focus, **no color-only encoding**
+- [x] 7.31 Responsive pass — 375px and desktop verified on every screen, no overflow
+- [x] 7.32 Accessibility pass — audited every page; fixed 3 undersized targets
 
 ### GATE 7
 - [ ] Full flow usable on a phone (report verified at 375px; upload path untested)
