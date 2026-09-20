@@ -155,7 +155,11 @@ async def record_view(token: str, settings: Settings | None = None) -> None:
     admin = Supabase(service_role=True, settings=config)
     try:
         await admin.rpc("bump_share_view", {"p_token": token})
-    except SupabaseError:
+    except Exception:
+        # Deliberately broad. The docstring above promises this never fails the
+        # request, and catching only SupabaseError did not keep that promise:
+        # an empty 204 body raised a JSONDecodeError and took the shared report
+        # down with it.
         logger.info("share.view_not_counted")
 
 

@@ -424,3 +424,54 @@ class TestTheStoredIdIsWhatTheClientGets:
         report = await AnalysisRepository(db, "u1").find_cached(combined_hash="h")  # type: ignore[arg-type]
         assert report is not None
         assert report.id == "row-id-from-postgres"
+
+
+class TestRpcWithNoReturnValue:
+    """Found by the first live share view.
+
+    `bump_share_view` returns void, so PostgREST answers 204 with an empty
+    body. `rpc()` called `.json()` on it unconditionally and raised — which
+    turned a view counter into a 500 on the page it was counting.
+    """
+
+    @pytest.mark.asyncio
+    async def test_a_204_returns_none_rather_than_raising(self) -> None:
+        import httpx
+
+        from roleva.storage.supabase import Supabase
+
+        client = Supabase(service_role=True, settings=_settings())
+
+        async def fake_request(method: str, table: str, **kwargs: Any) -> httpx.Response:
+            return httpx.Response(204, request=httpx.Request("POST", "http://x"))
+
+        client._request = fake_request  # type: ignore[assignment]
+        assert await client.rpc("bump_share_view", {"p_token": "t"}) is None
+
+    @pytest.mark.asyncio
+    async def test_an_empty_200_body_also_returns_none(self) -> None:
+        import httpx
+
+        from roleva.storage.supabase import Supabase
+
+        client = Supabase(service_role=True, settings=_settings())
+
+        async def fake_request(method: str, table: str, **kwargs: Any) -> httpx.Response:
+            return httpx.Response(200, content=b"", request=httpx.Request("POST", "http://x"))
+
+        client._request = fake_request  # type: ignore[assignment]
+        assert await client.rpc("noop", {}) is None
+
+    @pytest.mark.asyncio
+    async def test_a_real_value_still_comes_back(self) -> None:
+        import httpx
+
+        from roleva.storage.supabase import Supabase
+
+        client = Supabase(service_role=True, settings=_settings())
+
+        async def fake_request(method: str, table: str, **kwargs: Any) -> httpx.Response:
+            return httpx.Response(200, content=b"7", request=httpx.Request("POST", "http://x"))
+
+        client._request = fake_request  # type: ignore[assignment]
+        assert await client.rpc("bump_rate_limit", {}) == 7

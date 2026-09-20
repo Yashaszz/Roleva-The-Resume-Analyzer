@@ -151,9 +151,18 @@ class Supabase:
         )
 
     async def rpc(self, function: str, payload: dict[str, Any]) -> Any:
+        """Call a Postgres function.
+
+        A function returning `void` gets a 204 with an empty body, and calling
+        `.json()` on that raises — which is how a view counter managed to
+        return 500 for the page it was counting. Returning None for an empty
+        body is the honest answer: the function ran and had nothing to say.
+        """
         response = await self._request(
             "POST", f"rpc/{function}", headers=self._headers(), json=payload
         )
+        if response.status_code == 204 or not response.content:
+            return None
         return response.json()
 
 

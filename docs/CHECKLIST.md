@@ -22,9 +22,10 @@
 - [x] **PHASE 5 CODE COMPLETE** — all 16 tasks; a live analysis ran against a real key
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [x] **PHASE 7 COMPLETE** — Gate 7 passed
-- [ ] **← YOU ARE HERE. Phase 8: sharing & percentiles.**
+- [x] **PHASE 8 COMPLETE** — Gate 8 passed
+- [ ] **← YOU ARE HERE. Phase 9: hardening.**
 
-**Progress: 170 / 217 tasks (~78%) — Phase 8 code complete; 978 tests green.**
+**Progress: 170 / 217 tasks (~78%) — Gate 8 passed live: redaction, revocation, percentile floor.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -44,7 +45,7 @@
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
 | 7 | Frontend Build | 32 | 32 | **DONE** — Gate 7 passed |
-| 8 | Sharing & Percentiles | 11 | 11 | **CODE DONE** (Gate 8 needs migration 0003) |
+| 8 | Sharing & Percentiles | 11 | 11 | **DONE** — Gate 8 passed |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
@@ -354,8 +355,8 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 ### GATE 8
 - [x] Redaction verified server-side — tests serialise the report and grep the JSON
-- [ ] Revoked link returns 404 immediately
-- [ ] Percentile does not render below N=30
+- [x] Revoked link returns 404 immediately — verified live, API and page
+- [x] Percentile does not render below N=30 — `refresh_cohort_stats` wrote 0 cohorts from 4 samples
 
 ---
 
