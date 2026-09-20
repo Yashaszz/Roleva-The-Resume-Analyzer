@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 131 / 217 tasks (~60%) — direction changed to D; primitives rebuilt and rendering at /design.**
+**Progress: 137 / 217 tasks (~63%) — auth complete; sign-up renders against live Supabase.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -42,12 +42,12 @@
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
-| 7 | Frontend Build | 32 | 4 | In progress |
+| 7 | Frontend Build | 32 | 10 | In progress |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **131** | **60%** |
+| **TOTAL** | | **217** | **137** | **63%** |
 
 ---
 
@@ -292,12 +292,12 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 7.4  Loading + skeleton states
 
 ## Auth
-- [ ] 7.5  Sign-up screen
-- [ ] 7.6  Sign-in screen
-- [ ] 7.7  Email verification flow
-- [ ] 7.8  Password reset
-- [ ] 7.9  Google OAuth button
-- [ ] 7.10 Protected route handling
+- [x] 7.5  Sign-up screen
+- [x] 7.6  Sign-in screen
+- [x] 7.7  Email verification flow
+- [x] 7.8  Password reset (request + set-new)
+- [x] 7.9  Google OAuth button (hidden until the provider is configured)
+- [x] 7.10 Protected route handling (middleware + open-redirect guard)
 
 ## Core flow
 - [ ] 7.11 Landing page (with cached demo analysis, no LLM cost)
