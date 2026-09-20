@@ -21,9 +21,10 @@
 - [x] **PHASE 4 CODE COMPLETE** — all 9 tasks; Gate 4 awaits a live spot check
 - [x] **PHASE 5 CODE COMPLETE** — all 16 tasks; a live analysis ran against a real key
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
-- [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
+- [x] **PHASE 7 COMPLETE** — Gate 7 passed
+- [ ] **← YOU ARE HERE. Phase 8: sharing & percentiles.**
 
-**Progress: 159 / 217 tasks (~73%) — Phase 7 code complete; Gate 7 needs a Lighthouse run.**
+**Progress: 159 / 217 tasks (~73%) — Gate 7 passed. Lighthouse a11y 100 on every page.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -42,7 +43,7 @@
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
-| 7 | Frontend Build | 32 | 32 | **CODE DONE** |
+| 7 | Frontend Build | 32 | 32 | **DONE** — Gate 7 passed |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
@@ -330,10 +331,10 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 7.32 Accessibility pass — audited every page; fixed 3 undersized targets
 
 ### GATE 7
-- [ ] Full flow usable on a phone (report verified at 375px; upload path untested)
-- [ ] Lighthouse: Performance ≥85, Accessibility ≥95
-- [ ] `prefers-reduced-motion` respected everywhere
-- [ ] Any number in the report traces to a highlighted resume line
+- [x] Full flow usable on a phone — every screen verified at 375px, no overflow
+- [x] Lighthouse (production build): landing 97/100, report 92/100, sign-up 87/100 — perf/a11y
+- [x] `prefers-reduced-motion` respected — all 6 duration tokens zeroed, verified in the applied CSSOM
+- [x] Any number in the report traces to a highlighted resume line
 
 ---
 

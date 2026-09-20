@@ -95,6 +95,23 @@ body {
 }
 
 /*
+ * Links inside running text are underlined.
+ *
+ * Colour alone is not enough to mark a link — that is WCAG 1.4.1, the same rule
+ * the evidence states obey, and Lighthouse caught me breaking it here after I
+ * had enforced it everywhere else. A reader who cannot distinguish the signal
+ * colour from body text has no way to tell that "Sign in" is a link.
+ *
+ * Buttons and navigation opt out with Tailwind's `no-underline`, because those
+ * are distinguishable by shape and position rather than by colour.
+ */
+a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: from-font;
+}
+
+/*
  * Mono labels. The one typographic signal this design uses to say "instrument
  * reading": small, capitalised, widely tracked. Used for units and field
  * labels, never for anything the user has to read as a sentence.
