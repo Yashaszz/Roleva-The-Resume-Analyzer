@@ -25,6 +25,7 @@ from roleva.llm.client import (
     LlmError,
     SchemaViolationError,
     TransientLlmError,
+    _today,
 )
 from roleva.models.resume import ContactInfo
 
@@ -330,3 +331,135 @@ class TestModelFailover:
         client, _ = make_client([TransientLlmError("busy", status=503) for _ in range(6)])
         with pytest.raises(TransientLlmError):
             await client.structured(prompt="hi", output_model=Shape)
+
+
+class TestQuotaExhaustedModels:
+    """A live run found this: five calls each paying two retries against a model
+    whose daily allowance was gone turned a 20-second analysis into 50."""
+
+    @staticmethod
+    def _client(provider: Any, **kwargs: Any) -> LlmClient:
+        settings = Settings(
+            _env_file=None,
+            gemini_api_key="k",
+            gemini_model_main="main-model",
+            gemini_model_fallback="fallback-model",
+        )
+        return LlmClient(
+            provider,
+            settings,
+            DailyBudget(InMemoryUsageStore(), settings.llm_max_rpd),
+            backoff_base_seconds=0.0,
+            **kwargs,
+        )
+
+    class _QuotaExhausted:
+        """Refuses the main model for quota, answers on the fallback."""
+
+        def __init__(self) -> None:
+            self.attempts: list[str] = []
+
+        async def generate_json(self, *, prompt: str, model: str, **_: Any) -> str:
+            self.attempts.append(model)
+            if model == "main-model":
+                raise TransientLlmError("quota exceeded", status=429)
+            return '{"value": "ok"}'
+
+        async def embed(self, *, texts: list[str], model: str) -> list[list[float]]:
+            return [[0.0] for _ in texts]
+
+    class _Answer(BaseModel):
+        value: str
+
+    @pytest.mark.asyncio
+    async def test_the_first_call_fails_over_and_succeeds(self) -> None:
+        provider = self._QuotaExhausted()
+        client = self._client(provider)
+        answer, _ = await client.structured(prompt="p", output_model=self._Answer)
+        assert answer.value == "ok"
+        assert client.last_model_used == "fallback-model"
+
+    @pytest.mark.asyncio
+    async def test_the_exhausted_model_is_not_tried_again(self) -> None:
+        provider = self._QuotaExhausted()
+        client = self._client(provider)
+
+        await client.structured(prompt="p", output_model=self._Answer)
+        first_round = list(provider.attempts)
+        assert "main-model" in first_round
+
+        provider.attempts.clear()
+        await client.structured(prompt="p", output_model=self._Answer)
+        assert provider.attempts == ["fallback-model"]
+
+    @pytest.mark.asyncio
+    async def test_a_503_does_not_mark_a_model_exhausted(self) -> None:
+        """A busy minute is not an empty allowance; the model gets another go."""
+
+        class Busy:
+            def __init__(self) -> None:
+                self.attempts: list[str] = []
+
+            async def generate_json(self, *, prompt: str, model: str, **_: Any) -> str:
+                self.attempts.append(model)
+                if model == "main-model":
+                    raise TransientLlmError("busy", status=503)
+                return '{"value": "ok"}'
+
+            async def embed(self, *, texts: list[str], model: str) -> list[list[float]]:
+                return [[0.0] for _ in texts]
+
+        provider = Busy()
+        client = self._client(provider)
+        await client.structured(prompt="p", output_model=self._Answer)
+        provider.attempts.clear()
+        await client.structured(prompt="p", output_model=self._Answer)
+        assert "main-model" in provider.attempts
+
+    @pytest.mark.asyncio
+    async def test_the_last_model_is_never_skipped(self) -> None:
+        """An empty candidate list would fail an analysis that could have run."""
+        provider = self._QuotaExhausted()
+        client = self._client(provider)
+        client._exhausted = {"main-model": _today(), "fallback-model": _today()}
+
+        answer, _ = await client.structured(prompt="p", output_model=self._Answer)
+        assert answer.value == "ok"
+
+    def test_the_memo_expires_with_the_day(self) -> None:
+        from datetime import timedelta
+
+        client = self._client(self._QuotaExhausted())
+        client._exhausted = {"main-model": _today() - timedelta(days=1)}
+        assert client._is_exhausted("main-model") is False
+
+    @pytest.mark.asyncio
+    async def test_a_quota_refusal_is_not_retried(self) -> None:
+        """Our own bucket limits requests per minute; a vendor 429 means the
+        account is out, and waiting two seconds will not change that."""
+        provider = self._QuotaExhausted()
+        client = self._client(provider)
+        await client.structured(prompt="p", output_model=self._Answer)
+        assert provider.attempts.count("main-model") == 1
+
+    @pytest.mark.asyncio
+    async def test_a_server_error_is_still_retried(self) -> None:
+        class Flaky:
+            def __init__(self) -> None:
+                self.attempts: list[str] = []
+
+            async def generate_json(self, *, prompt: str, model: str, **_: Any) -> str:
+                self.attempts.append(model)
+                if len(self.attempts) == 1:
+                    raise TransientLlmError("busy", status=503)
+                return '{"value": "ok"}'
+
+            async def embed(self, *, texts: list[str], model: str) -> list[list[float]]:
+                return [[0.0] for _ in texts]
+
+        provider = Flaky()
+        client = self._client(provider)
+        answer, _ = await client.structured(prompt="p", output_model=self._Answer)
+        assert answer.value == "ok"
+        assert len(provider.attempts) == 2
+        assert client.last_model_used == "main-model"

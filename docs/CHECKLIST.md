@@ -19,9 +19,10 @@
 - [x] **PHASE 2 CODE COMPLETE** — all 18 tasks; Gate 2 awaits the 20-pair calibration set
 - [x] **PHASE 3 CODE COMPLETE** — all 19 tasks; Gate 3 awaits the 20-pair calibration set
 - [x] **PHASE 4 CODE COMPLETE** — all 9 tasks; Gate 4 awaits a live spot check
-- [ ] **← YOU ARE HERE. Phase 5: API & orchestration.**
+- [x] **PHASE 5 CODE COMPLETE** — all 16 tasks; a live analysis ran against a real key
+- [ ] **← YOU ARE HERE. Phase 6: design exploration — needs you to pick a direction.**
 
-**Progress: 114 / 217 tasks (~53%) — streaming, warm-up and scrubbed error reporting. 898 tests green.**
+**Progress: 115 / 217 tasks (~53%) — Phase 5 code complete; one real analysis ran end to end. 933 tests green.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -38,14 +39,14 @@
 | 2 | JD & Matching | 18 | 18 | **CODE DONE** (Gate 2 needs calibration set) |
 | 3 | Scoring & ATS | 19 | 19 | **CODE DONE** (Gate 3 needs calibration set) |
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
-| 5 | API & Orchestration | 16 | 15 | In progress |
+| 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 0 | Not started |
 | 7 | Frontend Build | 32 | 0 | Not started |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **114** | **53%** |
+| **TOTAL** | | **217** | **115** | **53%** |
 
 ---
 
@@ -249,10 +250,10 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 5.13 **Warm-up endpoint** + frontend ping strategy
 - [x] 5.14 GitHub Actions cron ping (keeps Render + Supabase awake)
 - [x] 5.15 Sentry + per-stage timing telemetry
-- [ ] 5.16 Integration tests across full corpus
+- [x] 5.16 Integration tests across full corpus
 
 ### GATE 5
-- [ ] End-to-end analysis works against a real Gemini key
+- [x] End-to-end analysis works against a real Gemini key — overall 55.0, 14 requirements, 5 LLM calls, 0 degraded stages
 - [ ] Warm p95 latency < 25s
 - [ ] Cold start handled with an honest UI state, not a hang
 - [ ] Every error path returns a specific, actionable message

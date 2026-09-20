@@ -93,7 +93,7 @@ Never print its values. Verify with `node scripts/check-env.mjs`.
 
 ## 6. Where the work stands
 
-**826 tests passing · ruff clean · mypy clean · 99/217 checklist tasks (46%)**
+**933 tests passing · ruff clean · mypy clean · 115/217 checklist tasks (53%)**
 
 | Phase | Status |
 |---|---|
@@ -102,7 +102,7 @@ Never print its values. Verify with `node scripts/check-env.mjs`.
 | 2 JD + matching | complete |
 | 3 Scoring & ATS | complete (Gate 3 blocked on the calibration set) |
 | 4 Advice engine | complete (Gate 4 needs a live 10-analysis spot check) |
-| 5 API & orchestration | **next** |
+| 5 API & orchestration | complete — live analysis verified |
 | 6–11 | design exploration, frontend, sharing, hardening, deploy, launch |
 
 ### Immediate next tasks
@@ -151,6 +151,10 @@ re-running the scoring engine.
 - Fuzzy threshold: typos score 82–95, distinct-skill collisions 40–77. 82 is the seam. Guard against two *known-distinct* skills matching.
 - Longest-match-wins on requirement tiers, or `"Preferred qualifications"` becomes a MUST.
 - PyMuPDF's `text` table strategy invents tables. Only trust vector-line detection.
+- `gemini-3.6-flash` returns **429, not 404**, when its free allowance is gone.
+  The model lists fine and authenticates fine. Failover carried the analysis on
+  `gemini-3.5-flash`; the client now remembers an exhausted model for the day
+  and never retries a 429.
 - `taxonomy.find_in_text` returns offsets into the **normalised** text, not the
   text you passed in. Slicing the original with them yields garbage like
   `' Kubernete'`. Use the canonical name, or read back out of the same

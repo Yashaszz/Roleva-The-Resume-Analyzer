@@ -21,6 +21,7 @@ import asyncio
 import logging
 from collections.abc import Iterator
 from contextlib import contextmanager
+from datetime import UTC, date, datetime
 from typing import Any, Protocol, TypeVar
 
 from pydantic import BaseModel, ValidationError
@@ -59,6 +60,10 @@ class TransientLlmError(LlmError):
 #: HTTP statuses worth another attempt. 429 is included because the vendor's
 #: own limiter can disagree with ours after a restart.
 _RETRIABLE_STATUS = {429, 500, 502, 503, 504}
+
+
+def _today() -> date:
+    return datetime.now(UTC).date()
 
 
 class LlmProvider(Protocol):
@@ -160,6 +165,13 @@ class LlmClient:
         #: Which model actually produced the last response. Recorded because
         #: a failover changes it, and a report has to say what generated it.
         self.last_model_used: str = settings.gemini_model_main
+        #: Models whose daily quota is gone, and the day they ran out. A 429
+        #: that survives every retry is not a busy minute, it is an allowance
+        #: that will not return until tomorrow, and re-attempting it on every
+        #: subsequent call costs the backoff for nothing. Measured on a live
+        #: run: five calls each paying two retries against an exhausted model
+        #: turned a 20-second analysis into 50.
+        self._exhausted: dict[str, date] = {}
         self._models = [
             settings.gemini_model_main,
             settings.gemini_model_light,
@@ -252,6 +264,19 @@ class LlmClient:
         if fallback and fallback != model_name:
             candidates.append(fallback)
 
+        # Skip models already known to be out of quota today, but never skip
+        # the last one: an empty candidate list would fail the analysis, and an
+        # exhausted model that has since been topped up should get the chance
+        # to say so.
+        usable = [c for c in candidates if not self._is_exhausted(c)]
+        if usable:
+            if len(usable) < len(candidates):
+                logger.info(
+                    "llm.skipping_exhausted",
+                    extra={"label": label, "skipped": len(candidates) - len(usable)},
+                )
+            candidates = usable
+
         last_error: LlmError | None = None
         for index, candidate in enumerate(candidates):
             try:
@@ -284,6 +309,10 @@ class LlmClient:
         A 503 means the request never reached the model, so it does not count
         against the per-analysis call budget — though it is still recorded
         against the daily quota, because the vendor counts it.
+
+        A 429 is not retried. It is the one transient status that says something
+        about the account rather than the moment, and the remedy is a different
+        model rather than a later attempt at this one.
         """
         last: TransientLlmError | None = None
 
@@ -305,6 +334,15 @@ class LlmClient:
                 await self.daily.record(model_name)
                 if attempt == self.transient_retries:
                     break
+                if exc.status == 429:
+                    # Do not retry a refusal for quota. Our own token bucket
+                    # already limits requests per minute, so a vendor 429 means
+                    # the vendor's own accounting says no — and waiting two
+                    # seconds will not change its mind. Failing over to another
+                    # model is both faster and more likely to work. Measured on
+                    # a live run: two retries against an exhausted model cost
+                    # six seconds each time, for nothing.
+                    break
                 delay = self.backoff_base_seconds * (2**attempt)
                 logger.warning(
                     "llm.transient",
@@ -321,11 +359,26 @@ class LlmClient:
             await self.daily.record(model_name, tokens=len(raw) // 4)
             return raw
 
+        if last is not None and last.status == 429:
+            # Every attempt was refused for quota. Remember it so the rest of
+            # today's analyses fail over immediately instead of paying the
+            # backoff again.
+            self._exhausted[model_name] = _today()
+            logger.warning("llm.quota_exhausted", extra={"model": model_name, "label": label})
+
         raise TransientLlmError(
             f"{label}: {model_name} unavailable after "
             f"{self.transient_retries + 1} attempts — {last}",
             status=last.status if last else None,
         )
+
+    def _is_exhausted(self, model_name: str) -> bool:
+        """Whether this model ran out of quota today.
+
+        Keyed on the date so the memo clears itself at midnight UTC without any
+        scheduled work, which suits a service that restarts unpredictably.
+        """
+        return self._exhausted.get(model_name) == _today()
 
     async def embed(
         self,

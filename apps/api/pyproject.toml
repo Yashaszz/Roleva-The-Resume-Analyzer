@@ -84,5 +84,6 @@ disallow_untyped_calls = false
 testpaths = ["tests"]
 asyncio_mode = "auto"
 markers = [
-    "integration: hits live external services; skipped when unconfigured",
+    "integration: crosses module boundaries; some hit live services",
+    "live: spends real LLM quota; skipped without GEMINI_API_KEY",
 ]
