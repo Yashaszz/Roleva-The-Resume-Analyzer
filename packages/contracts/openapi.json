@@ -230,6 +230,99 @@
         }
       }
     },
+    "/me/quota": {
+      "get": {
+        "summary": "Quota Remaining",
+        "description": "How many analyses the user has left today.\n\nRead without incrementing \u2014 `bump_rate_limit` is the only thing that counts,\nand asking how many you have left must not spend one. The counter is written\nby that function and simply read here.",
+        "operationId": "quota_remaining_me_quota_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Quota Remaining Me Quota Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/me/export": {
+      "get": {
+        "summary": "Export My Data",
+        "description": "Everything Roleva holds about this user, as JSON.\n\nA data-export endpoint is only honest if it returns *everything*, so this\nreads every user-owned table rather than a curated subset. It runs with the\ncaller's own token, so RLS decides what comes back \u2014 which means the export\ncannot accidentally include somebody else's row even if a filter were wrong.\n\n`score_samples` is deliberately absent, and its absence is the point: those\nrows carry no user id, so there is nothing to attribute to anyone. Saying so\nhere is more useful than silently omitting them.",
+        "operationId": "export_my_data_me_export_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Export My Data Me Export Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/me": {
+      "get": {
+        "summary": "Me",
+        "description": "Confirms a token is valid. Returns the user id only \u2014 the backend has no\nreason to echo an email address back to a client that already has it.",
+        "operationId": "me_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Me Me Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete My Account",
+        "description": "Delete the account and everything attached to it.\n\nUses the service-role key, which is the one place a user-owned deletion\nlegitimately needs it: removing a row from `auth.users` is an admin\noperation, and every table's foreign key cascades from there. So one call\nremoves the profile, the resumes, the job targets, the analyses and the\nshare links.\n\nA real delete, not a flag. Someone asking for their resume data to be\nremoved is not asking for a column to be set to true.",
+        "operationId": "delete_my_account_me_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -270,32 +363,6 @@
             }
           }
         }
-      }
-    },
-    "/me": {
-      "get": {
-        "summary": "Me",
-        "description": "Confirms a token is valid. Returns the user id only \u2014 the backend has no\nreason to echo an email address back to a client that already has it.",
-        "operationId": "me_me_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": true,
-                  "type": "object",
-                  "title": "Response Me Me Get"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
       }
     }
   },

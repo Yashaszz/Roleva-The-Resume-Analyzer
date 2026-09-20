@@ -16,8 +16,10 @@ from __future__ import annotations
 import asyncio
 import uuid
 from collections.abc import AsyncIterator
+from datetime import UTC, datetime
 from typing import Annotated, Any
 
+import httpx
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import StreamingResponse
 
@@ -32,7 +34,7 @@ from roleva.orchestration.pipeline import AnalysisRequest, Pipeline
 from roleva.scoring.engine import load_rubric
 from roleva.storage.repository import AnalysisRepository, content_hash
 from roleva.storage.samples import record as record_sample
-from roleva.storage.supabase import Supabase
+from roleva.storage.supabase import Supabase, SupabaseError
 from roleva.storage.usage import build_usage_store
 from roleva.telemetry.logging import get_logger
 
@@ -331,3 +333,122 @@ async def delete_analysis(request: Request, user: CurrentUser, analysis_id: str)
     """
     repository = AnalysisRepository(_db(request), user.id)
     await repository.delete(analysis_id)
+
+
+@router.get("/me/quota")
+async def quota_remaining(
+    request: Request,
+    user: CurrentUser,
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> dict[str, Any]:
+    """How many analyses the user has left today.
+
+    Read without incrementing — `bump_rate_limit` is the only thing that counts,
+    and asking how many you have left must not spend one. The counter is written
+    by that function and simply read here.
+    """
+    db = _db(request)
+    used = 0
+
+    try:
+        rows = await db.select(
+            "rate_limits",
+            columns="count",
+            filters={
+                "key": f"eq.user:{user.id}",
+                "window_start": f"eq.{quota.day_window().isoformat()}",
+            },
+            limit=1,
+        )
+        used = int(rows[0]["count"]) if rows else 0
+    except Exception:
+        # A quota display that cannot be read is not worth failing a page over.
+        logger.info("quota.read_failed")
+
+    limit = settings.user_daily_analysis_quota
+    return {"used": min(used, limit), "limit": limit, "remaining": max(0, limit - used)}
+
+
+@router.get("/me/export")
+async def export_my_data(request: Request, user: CurrentUser) -> dict[str, Any]:
+    """Everything Roleva holds about this user, as JSON.
+
+    A data-export endpoint is only honest if it returns *everything*, so this
+    reads every user-owned table rather than a curated subset. It runs with the
+    caller's own token, so RLS decides what comes back — which means the export
+    cannot accidentally include somebody else's row even if a filter were wrong.
+
+    `score_samples` is deliberately absent, and its absence is the point: those
+    rows carry no user id, so there is nothing to attribute to anyone. Saying so
+    here is more useful than silently omitting them.
+    """
+    db = _db(request)
+
+    tables = {
+        "profile": ("profiles", f"eq.{user.id}", "id"),
+        "resumes": ("resumes", f"eq.{user.id}", "user_id"),
+        "job_targets": ("job_targets", f"eq.{user.id}", "user_id"),
+        "analyses": ("analyses", f"eq.{user.id}", "user_id"),
+        "share_links": ("share_links", f"eq.{user.id}", "user_id"),
+    }
+
+    export: dict[str, Any] = {
+        "exported_at": datetime.now(UTC).isoformat(),
+        "user_id": user.id,
+        "note": (
+            "This is everything Roleva stores that is linked to your account. "
+            "Your uploaded PDFs are not here because they are never stored — only "
+            "the structured information read out of them. Anonymous score samples "
+            "are not here either: they carry no user id, so nothing in them can be "
+            "attributed to you."
+        ),
+    }
+
+    for name, (table, value, column) in tables.items():
+        try:
+            export[name] = await db.select(table, filters={column: value})
+        except SupabaseError:
+            # Reporting the failure beats silently returning a short export that
+            # looks complete.
+            export[name] = {"error": "could not be read"}
+            logger.warning("export.table_failed", table=table)
+
+    return export
+
+
+@router.delete("/me", status_code=204)
+async def delete_my_account(request: Request, user: CurrentUser) -> None:
+    """Delete the account and everything attached to it.
+
+    Uses the service-role key, which is the one place a user-owned deletion
+    legitimately needs it: removing a row from `auth.users` is an admin
+    operation, and every table's foreign key cascades from there. So one call
+    removes the profile, the resumes, the job targets, the analyses and the
+    share links.
+
+    A real delete, not a flag. Someone asking for their resume data to be
+    removed is not asking for a column to be set to true.
+    """
+    settings = get_settings()
+    admin = Supabase(service_role=True, settings=settings)
+
+    if not admin.configured:
+        raise RolevaError(ErrorCode.ANALYSIS_FAILED, "Account deletion is unavailable.")
+
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        response = await client.delete(
+            f"{settings.supabase_url.rstrip('/')}/auth/v1/admin/users/{user.id}",
+            headers={
+                "apikey": settings.supabase_service_role_key,
+                "Authorization": f"Bearer {settings.supabase_service_role_key}",
+            },
+        )
+
+    if response.status_code >= 400:
+        logger.error("account.delete_failed", status=response.status_code)
+        raise RolevaError(
+            ErrorCode.ANALYSIS_FAILED,
+            "We couldn't delete your account. Please try again, or contact support.",
+        )
+
+    logger.info("account.deleted", user_id=user.id)

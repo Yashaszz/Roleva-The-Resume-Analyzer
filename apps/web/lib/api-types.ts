@@ -100,6 +100,93 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/me/quota": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Quota Remaining
+         * @description How many analyses the user has left today.
+         *
+         *     Read without incrementing — `bump_rate_limit` is the only thing that counts,
+         *     and asking how many you have left must not spend one. The counter is written
+         *     by that function and simply read here.
+         */
+        get: operations["quota_remaining_me_quota_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export My Data
+         * @description Everything Roleva holds about this user, as JSON.
+         *
+         *     A data-export endpoint is only honest if it returns *everything*, so this
+         *     reads every user-owned table rather than a curated subset. It runs with the
+         *     caller's own token, so RLS decides what comes back — which means the export
+         *     cannot accidentally include somebody else's row even if a filter were wrong.
+         *
+         *     `score_samples` is deliberately absent, and its absence is the point: those
+         *     rows carry no user id, so there is nothing to attribute to anyone. Saying so
+         *     here is more useful than silently omitting them.
+         */
+        get: operations["export_my_data_me_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Me
+         * @description Confirms a token is valid. Returns the user id only — the backend has no
+         *     reason to echo an email address back to a client that already has it.
+         */
+        get: operations["me_me_get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete My Account
+         * @description Delete the account and everything attached to it.
+         *
+         *     Uses the service-role key, which is the one place a user-owned deletion
+         *     legitimately needs it: removing a row from `auth.users` is an admin
+         *     operation, and every table's foreign key cascades from there. So one call
+         *     removes the profile, the resumes, the job targets, the analyses and the
+         *     share links.
+         *
+         *     A real delete, not a flag. Someone asking for their resume data to be
+         *     removed is not asking for a column to be set to true.
+         */
+        delete: operations["delete_my_account_me_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -146,27 +233,6 @@ export interface paths {
          *     remove. It reads no rows and reveals nothing.
          */
         get: operations["warmup_warmup_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Me
-         * @description Confirms a token is valid. Returns the user id only — the backend has no
-         *     reason to echo an email address back to a client that already has it.
-         */
-        get: operations["me_me_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1149,6 +1215,90 @@ export interface operations {
             };
         };
     };
+    quota_remaining_me_quota_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    export_my_data_me_export_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    me_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    delete_my_account_me_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     health_health_get: {
         parameters: {
             query?: never;
@@ -1172,28 +1322,6 @@ export interface operations {
         };
     };
     warmup_warmup_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
-    };
-    me_me_get: {
         parameters: {
             query?: never;
             header?: never;

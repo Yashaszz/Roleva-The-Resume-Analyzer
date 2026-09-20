@@ -23,7 +23,7 @@
 - [x] **PHASE 6 COMPLETE** — Direction B, The Instrument
 - [ ] **← YOU ARE HERE. Phase 7: frontend build (32 tasks).**
 
-**Progress: 152 / 217 tasks (~70%) — first live end-to-end run passed; it found two real bugs.**
+**Progress: 155 / 217 tasks (~71%) — account surfaces done and verified against the live API.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -42,12 +42,12 @@
 | 4 | Advice Engine | 9 | 9 | **CODE DONE** (Gate 4 needs a 10-analysis spot check) |
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
-| 7 | Frontend Build | 32 | 25 | In progress |
+| 7 | Frontend Build | 32 | 28 | In progress |
 | 8 | Sharing & Percentiles | 11 | 0 | Not started |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **152** | **70%** |
+| **TOTAL** | | **217** | **155** | **71%** |
 
 ---
 
@@ -321,9 +321,9 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 - [x] 7.27 Ranked recommendations with projected score gain
 
 ## Account surfaces
-- [ ] 7.28 History dashboard (past analyses)
-- [ ] 7.29 Settings: data export, delete analysis, delete account
-- [ ] 7.30 Quota display ("3 of 5 analyses left today")
+- [x] 7.28 History dashboard (past analyses)
+- [x] 7.29 Settings: data export, sign out, delete account
+- [x] 7.30 Quota display ("3 of 5 analyses left today")
 
 ## Quality passes
 - [ ] 7.31 Responsive pass (375px → 1920px), every screen
