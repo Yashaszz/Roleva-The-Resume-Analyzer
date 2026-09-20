@@ -24,7 +24,7 @@
 - [x] **PHASE 7 COMPLETE** — Gate 7 passed
 - [ ] **← YOU ARE HERE. Phase 8: sharing & percentiles.**
 
-**Progress: 159 / 217 tasks (~73%) — Gate 7 passed. Lighthouse a11y 100 on every page.**
+**Progress: 170 / 217 tasks (~78%) — Phase 8 code complete; 978 tests green.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -44,11 +44,11 @@
 | 5 | API & Orchestration | 16 | 16 | **CODE DONE** |
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
 | 7 | Frontend Build | 32 | 32 | **DONE** — Gate 7 passed |
-| 8 | Sharing & Percentiles | 11 | 0 | Not started |
+| 8 | Sharing & Percentiles | 11 | 11 | **CODE DONE** (Gate 8 needs migration 0003) |
 | 9 | Hardening | 18 | 0 | Not started |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **159** | **73%** |
+| **TOTAL** | | **217** | **170** | **78%** |
 
 ---
 
@@ -340,20 +340,20 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 
 # PHASE 8: SHARING & PERCENTILES
 
-- [ ] 8.1  Share token generation (32-byte random)
-- [ ] 8.2  Visibility mode: scores only
-- [ ] 8.3  Visibility mode: full redacted (default)
-- [ ] 8.4  Visibility mode: full identified
-- [ ] 8.5  Expiry (default 7d, max 30d)
-- [ ] 8.6  Revocation + view counter
-- [ ] 8.7  Public share view page
-- [ ] 8.8  `noindex, nofollow` + `X-Robots-Tag` verified
-- [ ] 8.9  Share-link management UI in settings
-- [ ] 8.10 Cohort aggregation job → `cohort_stats`
-- [ ] 8.11 **Percentile display gated at N≥30**, with sample-size label
+- [x] 8.1  Share token generation (32-byte random)
+- [x] 8.2  Visibility mode: scores only
+- [x] 8.3  Visibility mode: full redacted (default)
+- [x] 8.4  Visibility mode: full identified
+- [x] 8.5  Expiry (default 7d, max 30d, clamped)
+- [x] 8.6  Revocation + view counter
+- [x] 8.7  Public share view page
+- [x] 8.8  `noindex, nofollow` on the page + `X-Robots-Tag` on the JSON
+- [x] 8.9  Share-link management UI (on the report, where the thing being shared is)
+- [x] 8.10 Cohort aggregation → `cohort_stats` (migration 0003)
+- [x] 8.11 **Percentile gated at N≥30 in SQL**, so a UI bug cannot render one
 
 ### GATE 8
-- [ ] Redaction verified server-side (not just hidden in CSS)
+- [x] Redaction verified server-side — tests serialise the report and grep the JSON
 - [ ] Revoked link returns 404 immediately
 - [ ] Percentile does not render below N=30
 

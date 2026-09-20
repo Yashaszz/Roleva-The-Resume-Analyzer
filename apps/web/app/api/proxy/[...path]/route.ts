@@ -26,6 +26,10 @@ const ALLOWED: { method: string; pattern: RegExp }[] = [
   { method: "GET", pattern: /^me\/quota$/ },
   { method: "GET", pattern: /^me\/export$/ },
   { method: "DELETE", pattern: /^me$/ },
+  { method: "GET", pattern: /^shares$/ },
+  { method: "POST", pattern: /^shares$/ },
+  // Tokens are URL-safe base64, so the character class is deliberately narrow.
+  { method: "DELETE", pattern: /^shares\/[\w-]+$/ },
 ];
 
 async function forward(request: NextRequest, path: string[]) {
@@ -58,7 +62,13 @@ async function forward(request: NextRequest, path: string[]) {
   try {
     const upstream = await fetch(url, {
       method,
-      headers: { Authorization: `Bearer ${session.access_token}` },
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        ...(method === "POST" ? { "Content-Type": "application/json" } : {}),
+      },
+      // Only POST carries one, and it is read as text so the JSON reaches the
+      // API byte-for-byte rather than being re-serialised here.
+      body: method === "POST" ? await request.text() : undefined,
       cache: "no-store",
     });
 
@@ -85,6 +95,10 @@ async function forward(request: NextRequest, path: string[]) {
 }
 
 export async function GET(request: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
+  return forward(request, (await ctx.params).path);
+}
+
+export async function POST(request: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
   return forward(request, (await ctx.params).path);
 }
 

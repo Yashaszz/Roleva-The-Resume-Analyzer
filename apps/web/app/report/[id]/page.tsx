@@ -20,9 +20,11 @@ import {
   SectionFeedback,
 } from "@/components/report/Advice";
 import { ScoreBreakdown } from "@/components/report/ScoreBreakdown";
+import { ShareControls } from "@/components/report/ShareControls";
 import { SkillLedger } from "@/components/report/SkillLedger";
 import { ThreadMap, type ThreadRow } from "@/components/report/Thread";
 import { Verdict } from "@/components/report/Verdict";
+import { PanelTitle } from "@/components/ui/Panel";
 import { ToastProvider } from "@/components/ui/Toast";
 import { serverClient } from "@/lib/supabase";
 import type { AnalysisReport } from "@/lib/types";
@@ -79,6 +81,11 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
         />
 
         <ScoreBreakdown scores={report.scores} />
+
+        <section className="flex flex-col gap-4">
+          <PanelTitle>Share this analysis</PanelTitle>
+          <ShareControls analysisId={id} />
+        </section>
 
         {degraded.length > 0 ? (
           <footer className="flex flex-col gap-2 p-4 bg-capped-bg border-l-2 border-capped rounded-r-sm">

@@ -20,8 +20,9 @@ from datetime import UTC, datetime
 from typing import Annotated, Any
 
 import httpx
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Request, Response, UploadFile
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 from roleva.api import quota, sse
 from roleva.api.auth import CurrentUser, VerifiedUser
@@ -32,6 +33,9 @@ from roleva.llm.client import build_client
 from roleva.models.report import AnalysisReport, ProgressEvent
 from roleva.orchestration.pipeline import AnalysisRequest, Pipeline
 from roleva.scoring.engine import load_rubric
+from roleva.sharing import links, redaction
+from roleva.sharing.redaction import Visibility
+from roleva.sharing.redaction import describe as describe_visibility
 from roleva.storage.repository import AnalysisRepository, content_hash
 from roleva.storage.samples import record as record_sample
 from roleva.storage.supabase import Supabase, SupabaseError
@@ -452,3 +456,100 @@ async def delete_my_account(request: Request, user: CurrentUser) -> None:
         )
 
     logger.info("account.deleted", user_id=user.id)
+
+
+# ------------------------------------------------------------------ sharing ---
+
+
+class ShareRequest(BaseModel):
+    """What the owner is choosing when they create a link."""
+
+    analysis_id: str
+    visibility: Visibility = Visibility.FULL_REDACTED
+    expires_in_days: int | None = None
+
+
+@router.post("/shares", status_code=201)
+async def create_share(request: Request, user: CurrentUser, body: ShareRequest) -> dict[str, Any]:
+    """Create a share link for one of the caller's analyses.
+
+    Written with the caller's own token, so RLS refuses a link for somebody
+    else's analysis. The ownership check is the database's.
+    """
+    link = await links.create(
+        _db(request),
+        user_id=user.id,
+        analysis_id=body.analysis_id,
+        visibility=body.visibility,
+        expires_in_days=body.expires_in_days,
+    )
+    return {
+        "token": link.token,
+        "visibility": link.visibility.value,
+        "expires_at": link.expires_at.isoformat(),
+        "description": describe_visibility(link.visibility),
+    }
+
+
+@router.get("/shares")
+async def list_shares(request: Request, user: CurrentUser) -> dict[str, Any]:
+    found = await links.list_for_user(_db(request), user.id)
+    return {
+        "shares": [
+            {
+                "token": link.token,
+                "analysis_id": link.analysis_id,
+                "visibility": link.visibility.value,
+                "expires_at": link.expires_at.isoformat(),
+                "view_count": link.view_count,
+                "active": link.active,
+                "revoked": link.revoked,
+            }
+            for link in found
+        ]
+    }
+
+
+@router.delete("/shares/{token}", status_code=204)
+async def revoke_share(request: Request, user: CurrentUser, token: str) -> None:
+    """Revoke immediately. The next read of this token is a 404."""
+    await links.revoke(_db(request), user_id=user.id, token=token)
+
+
+@router.get("/shared/{token}", response_model=AnalysisReport)
+async def read_shared(token: str, response: Response) -> AnalysisReport:
+    """Read a shared report. No authentication — the token is the authorisation.
+
+    **The redaction happens here**, before the report is serialised, so what a
+    reader can see and what a reader can fetch are the same thing. Nothing is
+    hidden in CSS.
+
+    Expired, revoked and never-existed all return the same 404: telling a holder
+    of an old link that it used to be real is information the owner did not
+    agree to share.
+    """
+    link = await links.resolve(token)
+
+    settings = get_settings()
+    admin = Supabase(service_role=True, settings=settings)
+    rows = await admin.select(
+        "analyses",
+        columns="id,report",
+        filters={"id": f"eq.{link.analysis_id}"},
+        limit=1,
+    )
+    if not rows or not rows[0].get("report"):
+        raise RolevaError(ErrorCode.NOT_FOUND)
+
+    report = AnalysisReport.model_validate(rows[0]["report"])
+    report.id = str(rows[0]["id"])
+
+    await links.record_view(token)
+
+    # A shared report contains somebody's resume. It must never be indexed, and
+    # the header is set here as well as in the page's metadata because a crawler
+    # fetching the JSON never sees a <meta> tag.
+    response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
+    response.headers["Cache-Control"] = "private, no-store"
+
+    return redaction.apply(report, link.visibility)
