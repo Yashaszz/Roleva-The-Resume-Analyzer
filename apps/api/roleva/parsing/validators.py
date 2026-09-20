@@ -177,7 +177,18 @@ def open_validated(data: bytes, settings: Settings) -> Iterator[tuple[mu.Documen
         raise RolevaError(ErrorCode.PDF_CORRUPT) from exc
 
     try:
-        stats = _check_document(doc, settings)
+        try:
+            stats = _check_document(doc, settings)
+        except RolevaError:
+            raise
+        except Exception as exc:
+            # `mu.open_stream` succeeding does not mean the document is sound:
+            # a PDF can declare `/Count 999999` with one real page, and
+            # PyMuPDF raises "Invalid number of pages" the first time anything
+            # touches it. Reading a damaged structure is a corrupt file, and
+            # the user deserves that sentence rather than "analysis failed".
+            raise RolevaError(ErrorCode.PDF_CORRUPT) from exc
+
         yield doc, stats
     finally:
         mu.close(doc)

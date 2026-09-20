@@ -25,7 +25,7 @@
 - [x] **PHASE 8 COMPLETE** — Gate 8 passed
 - [ ] **← YOU ARE HERE. Phase 9: hardening.**
 
-**Progress: 170 / 217 tasks (~78%) — Gate 8 passed live: redaction, revocation, percentile floor.**
+**Progress: 178 / 217 tasks (~82%) — security block done; 1013 tests green.**
 
 > **Resuming in a fresh session?** Read [`HANDOFF.md`](HANDOFF.md) first — it carries
 > the principles, the repo map, the open blockers and the mistakes already paid for.
@@ -46,10 +46,10 @@
 | 6 | Design Exploration | 12 | 12 | **DONE** — Gate 6 passed |
 | 7 | Frontend Build | 32 | 32 | **DONE** — Gate 7 passed |
 | 8 | Sharing & Percentiles | 11 | 11 | **DONE** — Gate 8 passed |
-| 9 | Hardening | 18 | 0 | Not started |
+| 9 | Hardening | 18 | 8 | In progress |
 | 10 | Deployment | 14 | 0 | Not started |
 | 11 | Launch | 10 | 0 | Not started |
-| **TOTAL** | | **217** | **170** | **78%** |
+| **TOTAL** | | **217** | **178** | **82%** |
 
 ---
 
@@ -363,14 +363,14 @@ Highest-risk subsystem. Everything downstream inherits its errors.
 # PHASE 9: HARDENING
 
 ## Security
-- [ ] 9.1  Upload attack surface tested (zip bomb, polyglot, malformed)
-- [ ] 9.2  RLS re-verified with a cross-user test suite
-- [ ] 9.3  IDOR test on analyses + share tokens
-- [ ] 9.4  CSP, CORS, HSTS, security headers configured
-- [ ] 9.5  Secrets audit — no key reachable from the browser
-- [ ] 9.6  Dependency vulnerability scan
-- [ ] 9.7  **Prompt-injection test resumes** (hidden text, instruction text)
-- [ ] 9.8  **PII redaction audit — capture outbound payloads, confirm nothing un-redacted**
+- [x] 9.1  Upload attack surface tested — bombs, polyglot, truncation, lying page count
+- [x] 9.2  RLS re-verified live — 18 cross-user tests passing
+- [x] 9.3  IDOR on analyses, cache and share tokens — 404 not 403
+- [x] 9.4  CSP, HSTS, frame-ancestors, permissions — verified on a live response
+- [x] 9.5  Secrets audit — `scripts/check-secrets.mjs`, tracked files + client bundle
+- [x] 9.6  Dependency scan — pnpm audit and pip-audit, both clean
+- [x] 9.7  **Prompt-injection defences tested** — fencing, detection, and no model-sourced number
+- [x] 9.8  **PII redaction audit** — every outbound payload captured and searched
 
 ## Testing
 - [ ] 9.9  Playwright E2E: happy path
